@@ -12,4 +12,4 @@ is this really what i'm looking for?
 
 ## How this happened?
 
-* automatic jekylly?
+* automatic jekyll?
