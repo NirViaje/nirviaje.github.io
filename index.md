@@ -1,6 +1,6 @@
 # Welcome to my blog
 
-I'm glad you are here. I plan to talk about the Exponential Deep Space Industries
+I'm glad you are here. I plan to talk about the Exponential Deep Space Industries.
 
 ## 第二十次星际圆桌话题：自复制深空矿业
 
@@ -8,11 +8,48 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 形式：Skype 讨论。
 时长：预计一到三小时。
 参与人：
+
+9月22日会议：
 1. NirViaje
 2. emptymalei
-3. alex00zoe?
-4. compiler?
+4. compiler
 5. TBD
+
+主要议题：
+
+1. bootstrap第一批薄膜反射镜展开，抛物面天线展开
+2. 支架/展开板姿态稳定
+
+科技树：
+
+1. 能量站
+    * 反射聚焦
+        * 结构，尺度
+        * 结构稳定性
+        * 自适应光学
+    * 镀膜发电
+2. 采矿与冶炼
+3. 成型
+    * 热/冷轧
+    * 抛光
+    * 黑色金属挤出？
+    * 拉丝
+    * 制粉
+4. 在轨施工/架设
+    * 自主机器人
+        * 小蜜蜂（泛工质？
+        * 脚手架（供电？
+    * 工作量
+    * 在轨绝缘材料
+5. 地面支持
+6. AI系统
+
+9月23日会议
+1. NirViaje
+2. emptymalei
+4. compiler
+5. Wenjia Jiang
+3. alex00zoe
 
 顾问团：
 1. 在轨姿态
@@ -57,6 +94,7 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 - [ ] 3. 其他潜在方案
 - [ ] 4. 涉及相关学科及物色参与者
 - [ ] 5. 下一次会议形式
+
 ---
 过往圆桌索引：
 [星际圆桌讨论话题库及过往索引](https://github.com/InterImm/roundTable/issues/4)
