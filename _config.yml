@@ -2,19 +2,8 @@ title: the Exponential Deep Space Industries
 author: EDS committee
 email: nirvanajay@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  通过如如下体系
-
-  1. 自适应光学手段
-  2. 对M类金属小行星等
-  3. 进行太阳能聚焦矿坑熔融开采
-  4. 以及材料成型（板材/型材/打印材料）
-  5. 实现对自适应光学聚焦系统等结构件的规模复制（如板材反射面加电推姿态）（通过空间机械关节系统与AI工具）
-
-  达到尽量少依靠地球组件材料供应，通过初始基地包实现bootstrap可自复制大规模扩张深空工业的目的。
-
-  # Write an awesome description for your new site here. You can edit this
-  # line in _config.yml. It will appear in your document head meta (for
-  # Google search results) and in your feed.xml site description.
+  
+  以指数级自复制小行星深空工业体系为基础实现规模性空间可控环境
 
 # social links
 twitter_username: your-twitter-handle
@@ -23,3 +12,17 @@ github_username:  your-github-handle
 show_excerpts: true # set to false to remove excerpts on the homepage
 
 theme: jekyll-theme-slate
+
+  # Write an awesome description for your new site here. You can edit this
+  # line in _config.yml. It will appear in your document head meta (for
+  # Google search results) and in your feed.xml site description.
+
+  # 通过如如下体系
+
+  # 1. 自适应光学手段
+  # 2. 对M类金属小行星等
+  # 3. 进行太阳能聚焦矿坑熔融开采
+  # 4. 以及材料成型（板材/型材/打印材料）
+  # 5. 实现对自适应光学聚焦系统等结构件的规模复制（如板材反射面加电推姿态）（通过空间机械关节系统与AI工具）
+
+  # 达到尽量少依靠地球组件材料供应，通过初始基地包实现bootstrap可自复制大规模扩张深空工业的目的。
