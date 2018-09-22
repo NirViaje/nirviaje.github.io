@@ -4,7 +4,7 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 
 ## 第二十次星际圆桌话题：自复制深空矿业
 
-时间：2018年09月？日，周？，UTC ？
+时间：2018年09月？日，周？，UTC？
 形式：Skype 讨论。
 时长：预计一到三小时。
 参与人：
@@ -22,12 +22,16 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 
 科技树：
 
+0. M类小行星
+    * 小行星自转轴极点保凸性，进动，进动模拟？
+    * 不考虑利用小行星引力效应
+    * 三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速
 1. 能量站
     * 反射聚焦
         * 结构，尺度
         * 结构稳定性
-        * 自适应光学
-    * 镀膜发电
+        * 自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开
+    * 镀膜发电（地面运送
 2. 采矿与冶炼
 3. 成型
     * 热/冷轧
