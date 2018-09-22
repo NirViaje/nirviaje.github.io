@@ -4,7 +4,7 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 
 ## 指数增长自复制深空矿业第一次会议
 
-时间：2018年09月？日，周？，UTC？
+时间：2018年09月份第三个周末，930pm@UTC+8
 形式：Skype 讨论。
 时长：预计一到三小时。
 参与人：
