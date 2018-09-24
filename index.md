@@ -79,7 +79,7 @@ I'm glad you are here. I plan to talk about the Exponential Deep Space Industrie
 * [第5章电弧炉炼钢](http://www1.xpc.edu.cn/dhl/flash/4/%E7%AC%AC5%E7%AB%A0%E7%94%B5%E5%BC%A7%E7%82%89%E7%82%BC%E9%92%A2.pdf)
 
 ---
-[感谢协作单位星际移民局的大力支持](https://github.com/InterImm/roundTable/issues/4)
+[感谢协作单位星际移民局大力支持](https://github.com/InterImm/roundTable/issues/4)
 
 <!-- ## Let me know several or a few
 

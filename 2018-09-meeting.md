@@ -36,9 +36,9 @@
 * 主题游戏
     * 参照
         * 坎巴拉 [Kerbal Space Program](https://en.wikipedia.org/wiki/Kerbal_Space_Program)
-        * 缺氧 [Oxygen Not Included](https://en.wikipedia.org/wiki/Oxygen_Not_Included) [知乎话题](https://www.zhihu.com/topic/20082453/hot)
-        * [微积分游戏](https://zhuanlan.zhihu.com/p/38528111) | [功能游戏](https://zhuanlan.zhihu.com/p/37449861)
-        * 资源建设型：[Factorio](https://store.steampowered.com/app/427520/Factorio/) [如何评价异星工厂？](https://www.zhihu.com/question/25052970)
+        * 缺氧 [Oxygen Not Included](https://en.wikipedia.org/wiki/Oxygen_Not_Included)，[知乎话题](https://www.zhihu.com/topic/20082453/hot)
+        * [微积分游戏](https://zhuanlan.zhihu.com/p/38528111)，[功能游戏](https://zhuanlan.zhihu.com/p/37449861)
+        * 资源建设型：[Factorio](https://store.steampowered.com/app/427520/Factorio/)，[如何评价异星工厂？](https://www.zhihu.com/question/25052970)
     * 以上微操原因基本无官方iOS/手游端，KSP有第三方简化版
     * 桌游体系（@Romax
         * 可玩性
