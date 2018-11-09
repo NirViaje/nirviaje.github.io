@@ -33,6 +33,55 @@
     * DRL
     * -
 
+## Calculator
+
+1. Probe constellar
+    * Density in space
+    * commication link
+    * mass/propulsion
+2. solar furnace
+    * stationary
+    * on orbit
+    * calc
+        * size
+        * effective area
+            * full power
+        * focal distance
+        * focus spot
+            * focus spot size
+            * power desity
+        * mechanic
+            * mass
+            * construction speed
+            * on orbit
+                * weight
+            * stationary
+                * track speed
+3. smelting in field
+    * power desity
+    * reflect ratio
+    * Molten pool productivity
+4. zone melting
+    * size of raw material
+    * power desity
+    * speed
+    * total time
+    * productivity
+5. Magnetic work shield
+    * Magnetic tower
+    * Magnetic torquer of work station
+6. Electromagnetic momentum management system
+    * fix position for furnace
+    * positioning for robots
+    * Electromagnetic launch system for work station
+7. Exponential growth
+    * productivity per set
+    * productivity of solar furnace
+    * robots duty
+    * further construction, cabin etc
+
+<!-- <style>
+
 /* Begin Contact Form CSS */
 .contactform {
 position: static;
@@ -63,7 +112,7 @@ border: 1px solid #ff0000;
 }
 /* End Contact Form CSS */
 
-</style>
+</style> -->
 
 <script type="text/javascript">
 
@@ -83,12 +132,84 @@ obj.value=obj.value.substring(0,mlength)
 
 </head>
 
-<body class="orange hid_6">
+<!-- <body class="orange hid_6"> -->
 
-<div id="wrapper">
+<!-- <div id="wrapper"> -->
+
+## Basic constants
+* Solar constant: 1.362 kW/m² @1AU
+* 1AU = 1.49597871E8 km
+* Moon-Earth Distance (LD): 3.84400E5 km
 
 <div id="header">
-
+<!-- eds solar furnace-->
+<!-- Inputs -->
+<P><STRONG>Solar Furnace Calculator:<BR>
+</STRONG>
+<TABLE id="Table1" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
+    <TR>
+        <TD>Distance</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="1" name="Distance"></TD>
+        <TD><SELECT id="twSelect2" onchange="tw_calc()" name="twSelect2">
+                <OPTION value="0.0035" selected>AU</OPTION>
+                <OPTION value="2.54e-3">LD</OPTION>
+                <OPTION value="0.1">km</OPTION>
+            </SELECT></TD>
+        <TD bgColor="#ccffcc">Solar Power Density</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="twText3"></TD>
+        <TD>kW/m²</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Equivalent size/Actual diameter</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="50" name="Distance"></TD>
+        <TD>m</TD>
+        <TD bgColor="#ccffcc">Effective area</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="twText3"></TD>
+        <TD>m sq</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Efficency</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="90" name="Distance"></TD>
+        <TD>%</TD>
+        <TD bgColor="#ccffcc">Full Power</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="twText3"></TD>
+        <TD>kW</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Focus Distance</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="100" name="Distance"></TD>
+        <TD>m</TD>
+        <TD bgColor="#ccffcc">Focus Spot Size</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="2" name="twText3"></TD>
+        <TD>m</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Focus Quality</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="80" name="Distance"></TD>
+        <TD>%</TD>
+        <TD bgColor="#ccffff">Focus Spot Power Density</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="1000" name="twText3"></TD>
+        <TD>kW/m sq</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffffcc">MPC designation</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="12" value="(6178) 1986 DA" name="twText3"></TD>
+        <TD></TD>
+        <TD bgColor="#ccffcc">Surface Gravity</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="0.25" name="Distance"></TD>
+        <TD>g/kg</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffcc">Mass</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="20" name="Distance"></TD>
+        <TD>Ton</TD>
+        <TD bgColor="#ccffcc">Weight</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="5" name="twText3"></TD>
+        <TD>kg-force</TD>
+    </TR>
+</TABLE>
+</P>
+<!-- Inputs -->
 <P><STRONG>Inputs:<BR>
 </STRONG>
 <TABLE id="Table1" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
@@ -109,6 +230,7 @@ obj.value=obj.value.substring(0,mlength)
     </TR>
 </TABLE>
 </P>
+<!-- Options -->
 <P><STRONG>Optional Inputs:<BR>
 </STRONG>
 <TABLE id="Table2" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
@@ -145,6 +267,7 @@ obj.value=obj.value.substring(0,mlength)
     </TR>
 </TABLE>
 </P>
+<!-- Results I -->
 <P><STRONG>Results for Internal Layers:<BR>
 </STRONG>
 <TABLE id="Table3" cellSpacing="1" cellPadding="1" width="300" bgColor="#ccffcc" border="1">
@@ -174,6 +297,7 @@ obj.value=obj.value.substring(0,mlength)
     </TR>
 </TABLE>
 </P>
+<!-- Results II -->
 <P><STRONG><STRONG>Results for </STRONG>External Layers in Air:<BR>
 </STRONG>
 <TABLE id="Table4" cellSpacing="1" cellPadding="1" width="300" bgColor="#ccffcc" border="1">
@@ -204,31 +328,9 @@ obj.value=obj.value.substring(0,mlength)
 </TABLE>
 </P>
 
-<!-- Notes -->
-
-<P><STRONG>Notes:</STRONG></P>
-<P>The trace width is calculated as follows:</P>
-<P>First, the Area is calculated:
-</P>
-<P>Area[mils^2] = (Current[Amps]/(k*(Temp_Rise[deg. C])^b))^(1/c)
-</P>
-<P>Then, the Width is calculated:
-</P>
-<P>Width[mils] = Area[mils^2]/(Thickness[oz]*1.378[mils/oz])
-</P>
-<P>For IPC-2221 internal layers: k = 0.024, b = 0.44, c = 0.725
-</P>
-<P>For IPC-2221 external layers: k = 0.048, b = 0.44, c = 0.725
-</P>
-<P>where k, b, and c are constants resulting from curve fitting to the IPC-2221 
-curves
-</P>
-<P><strong>For geometry diagrams, click on the pictures below.</strong></P>
-<a target=_blank class="imagelink" title="pcb-trace-geometry-2.png" href="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-2.png"><img id="image61" alt=pcb-trace-geometry-2.png src="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-2.thumbnail.png" /> </a> &nbsp;&nbsp;&nbsp;
-<a target=_blank class="imagelink" title="pcb-trace-geometry-1.png" href="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-1.png"><img id="image60" alt=pcb-trace-geometry-1.png src="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-1.thumbnail.png" /> </a>
-<P><strong>For frequently asked questions, see the comments.</strong></P>
 <script language="javascript" src="http://circuitcalculator.com/js/pcpcookielib/pcpcookielib.js">
 </script>
+
 <script language="javascript">
     //copyright circuitcalculator.com
     //please do not copy without permission
@@ -323,6 +425,31 @@ curves
     tw_calc()
     window.onunload=function() { tw_save() }
 </script> 
+
+
+<!-- Notes -->
+
+<P><STRONG>Notes:</STRONG></P>
+<P>The trace width is calculated as follows:</P>
+<P>First, the Area is calculated:
+</P>
+<P>Area[mils^2] = (Current[Amps]/(k*(Temp_Rise[deg. C])^b))^(1/c)
+</P>
+<P>Then, the Width is calculated:
+</P>
+<P>Width[mils] = Area[mils^2]/(Thickness[oz]*1.378[mils/oz])
+</P>
+<P>For IPC-2221 internal layers: k = 0.024, b = 0.44, c = 0.725
+</P>
+<P>For IPC-2221 external layers: k = 0.048, b = 0.44, c = 0.725
+</P>
+<P>where k, b, and c are constants resulting from curve fitting to the IPC-2221 
+curves
+</P>
+<P><strong>For geometry diagrams, click on the pictures below.</strong></P>
+<a target=_blank class="imagelink" title="pcb-trace-geometry-2.png" href="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-2.png"><img id="image61" alt=pcb-trace-geometry-2.png src="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-2.thumbnail.png" /> </a> &nbsp;&nbsp;&nbsp;
+<a target=_blank class="imagelink" title="pcb-trace-geometry-1.png" href="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-1.png"><img id="image60" alt=pcb-trace-geometry-1.png src="http://circuitcalculator.com/wordpress/wp-content/uploads/2007/04/pcb-trace-geometry-1.thumbnail.png" /> </a>
+<P><strong>For frequently asked questions, see the comments.</strong></P>
 
 </body>
 </html>
