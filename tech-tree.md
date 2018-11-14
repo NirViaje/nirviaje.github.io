@@ -17,6 +17,12 @@
     /* background: yellow; */
 
 }
+.right {
+    position:absolute;
+    left:782; top:142px; bottom: 0;
+    /* width: 782px; */
+    /* background: red; */
+}
 </style>
 
 <!-- 
@@ -385,3 +391,7 @@ obj.value=obj.value.substring(0,mlength)
         return Math.pow((current/(k*Math.pow(rise,b))),1/c)
     }
 </script>
+
+<div class = "right">
+    <iframe src="https://baidu.com" width="700px" height="500px" frameborder="0" scrolling="no"> </iframe>
+</div>
