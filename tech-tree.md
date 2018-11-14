@@ -250,6 +250,7 @@ obj.value=obj.value.substring(0,mlength)
         return Math.pow((current/(k*Math.pow(rise,b))),1/c)
     }
 </script>
+
 ## Tech Tree
 
 0. M类小行星
