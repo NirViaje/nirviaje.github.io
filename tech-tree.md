@@ -66,7 +66,8 @@ obj.value=obj.value.substring(0,mlength)
     <TR>
         <TD>Distance</TD>
         <TD><INPUT id="evaluDistance" onkeyup="furnace_calc()" type="text" size="5" value="1" name="evaluDistance"> </TD>
-        <TD id = distUnits>AU
+        <TD>AU
+        <!-- id = distUnits -->
         <!-- <SELECT id="distanUnit" onchange="distance_unit()" name="distanUnit">
                 <OPTION value="1" selected>AU</OPTION>
                 <OPTION value="3.84400E5">LD</OPTION>
