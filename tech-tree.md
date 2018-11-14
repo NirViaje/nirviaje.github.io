@@ -12,14 +12,15 @@
 }
 .main {
     position: absolute;
-    left:378px; top:92px;
+    left:378px; top:142px;
     right:0; bottom:0;
     /* background: yellow; */
 
 }
 .right {
     position:absolute;
-    left:782; top:142px; bottom: 0;
+    top:142px; bottom: 0;
+    left:560px;
     /* width: 782px; */
     /* background: red; */
 }
@@ -393,5 +394,5 @@ obj.value=obj.value.substring(0,mlength)
 </script>
 
 <div class = "right">
-    <iframe src="https://baidu.com" width="700px" height="500px" frameborder="0" scrolling="no"> </iframe>
+    <iframe src="http://asterank.com/3d/" width="700px" height="500px" frameborder="0" scrolling="no"> </iframe>
 </div>
