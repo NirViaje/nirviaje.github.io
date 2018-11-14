@@ -1,111 +1,3 @@
-## 科技树
-
-0. M类小行星
-    * 小行星自转轴极点保凸性，进动，[自转不稳定](https://www.zhihu.com/question/291673801/answer/477032669)，进动分布仿真？
-    * 不考虑利用小行星引力效应
-    * 三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速
-1. 能量站
-    * 反射聚焦(炼钢太阳灶)
-        * 结构，尺度
-        * 结构稳定性
-        * 自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开
-    * 镀膜发电（地面运送
-2. 采矿与冶炼
-    * 铁砂飞溅
-3. 成型
-    * 热/冷轧
-    * 抛光
-    * 黑色金属挤出？
-    * 拉丝
-    * 制粉
-4. 在轨施工/架设
-    * 自主机器人
-        * 小蜜蜂（泛工质？
-        * 脚手架（供电？
-    * 工作量
-    * 在轨绝缘材料
-5. 地面支持
-    * 地面团队
-    * 近地轨道实验环境
-6. AI系统
-    * 机器人学
-    * 工程视觉
-    * DRL
-    * -
-
-## Calculator
-
-1. Target asteroid #3
-    * character
-        * orbit
-        * physical property
-        * composition
-    * Observatory
-        * optical
-            * images
-            * color wheel
-            * spectrum
-        * radar
-    * Probe constellation/Vehicle
-        * Density in space
-        * communication link
-        * mass/propulsion
-            * power supply
-            * load
-                * attitude
-                * instrument
-            * propulsion
-                * specific impulse
-                * Total impulse
-2. solar furnace #5
-    * stationary
-    * on orbit
-    * calc
-        * size
-        * effective area
-            * full power
-        * focal distance
-        * focus spot
-            * focus spot size
-            * power desity
-        * mechanic
-            * mass
-            * construction speed
-                * accuracy in need
-            * on orbit
-                * weight
-            * stationary
-                * track speed
-3. smelting in field #6
-    * power desity
-    * reflect ratio
-    * Molten pool productivity
-        * pour out rate
-4. zone melting #6
-    * size of raw material
-    * power desity
-    * speed
-    * total time
-    * productivity
-5. Magnetic work shield #4
-    * Magnetic tower
-    * Magnetic torquer of work station
-6. Electromagnetic momentum management system
-    * fix position for furnace
-    * positioning for robots
-    * Electromagnetic launch system for work station
-7. Exponential growth
-    * productivity per set
-    * productivity of solar furnace
-    * robots duty #7
-    * further construction, cabin etc
-    * one shot for whole
-    * orbital transfer for C-type
-8. Orgnization
-    * Time frame #20
-    * Initial base package (IBP) and supplement #13
-    * Resource in need
-
 <!-- <style>
 
 /* Begin Contact Form CSS */
@@ -358,7 +250,116 @@ obj.value=obj.value.substring(0,mlength)
         var c = 0.725
         return Math.pow((current/(k*Math.pow(rise,b))),1/c)
     }
-</script> 
+</script>
+## Tech Tree
+
+0. M类小行星
+    * 小行星自转轴极点保凸性，进动，[自转不稳定](https://www.zhihu.com/question/291673801/answer/477032669)，进动分布仿真？
+    * 不考虑利用小行星引力效应
+    * 三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速
+1. 能量站
+    * 反射聚焦(炼钢太阳灶)
+        * 结构，尺度
+        * 结构稳定性
+        * 自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开
+    * 镀膜发电（地面运送
+2. 采矿与冶炼
+    * 铁砂飞溅
+3. 成型
+    * 热/冷轧
+    * 抛光
+    * 黑色金属挤出？
+    * 拉丝
+    * 制粉
+4. 在轨施工/架设
+    * 自主机器人
+        * 小蜜蜂（泛工质？
+        * 脚手架（供电？
+    * 工作量
+    * 在轨绝缘材料
+5. 地面支持
+    * 地面团队
+    * 近地轨道实验环境
+6. AI系统
+    * 机器人学
+    * 工程视觉
+    * DRL
+    * -
+
+## Calculator
+
+1. Target asteroid #3
+    * character
+        * orbit
+        * physical property
+        * composition
+    * Observatory
+        * optical
+            * images
+            * color wheel
+            * spectrum
+        * radar
+    * Probe constellation/Vehicle
+        * Density in space
+        * communication link
+        * mass/propulsion
+            * power supply
+            * load
+                * attitude
+                * instrument
+            * propulsion
+                * specific impulse
+                * Total impulse
+2. solar furnace #5
+    * stationary
+    * on orbit
+    * calc
+        * size
+        * effective area
+            * full power
+        * focal distance
+        * focus spot
+            * focus spot size
+            * power desity
+        * mechanic
+            * mass
+            * construction speed
+                * accuracy in need
+            * on orbit
+                * weight
+            * stationary
+                * track speed
+3. smelting in field #6
+    * power desity
+    * reflect ratio
+    * Molten pool productivity
+        * pour out rate
+4. zone melting #6
+    * size of raw material
+    * power desity
+    * speed
+    * total time
+    * productivity
+5. Magnetic work shield #4
+    * Magnetic tower
+    * Magnetic torquer of work station
+6. Electromagnetic momentum management system
+    * fix position for furnace
+    * positioning for robots
+    * Electromagnetic launch system for work station
+7. Exponential growth
+    * productivity per set
+    * productivity of solar furnace
+    * robots duty #7
+    * further construction, cabin etc
+    * one shot for whole
+    * orbital transfer for C-type
+8. Orgnization
+    * Time frame #20
+    * Initial base package (IBP) and supplement #13
+    * Resource in need
+
+
 <!-- Inputs -->
 <P><STRONG>Inputs:<BR>
 </STRONG>
