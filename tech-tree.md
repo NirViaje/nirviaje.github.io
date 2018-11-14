@@ -1,5 +1,21 @@
-<!-- <style>
+<style>
+.top {
+    position:absolute;
+    left:0; right:0;
+    height: 92px;
+}
+.left {
+    position:absolute;
+    left:10; top:142px; bottom: 0;
+    width: 378px;
+}
+.main {
+    position: absolute;
+    left:378px; top:92px; right:0; bottom:0;
+}
+</style>
 
+<!-- 
 /* Begin Contact Form CSS */
 .contactform {
 position: static;
@@ -57,7 +73,121 @@ obj.value=obj.value.substring(0,mlength)
 * 1AU = 1.49597871E8 km
 * Moon-Earth Distance (LD): 3.84400E5 km
 
-<div id="header" class="pull-left">
+
+<div class="left">
+
+## Calculator
+
+1. Target asteroid #3
+    * character
+        * orbit
+        * physical property
+        * composition
+    * Observatory
+        * optical
+            * images
+            * color wheel
+            * spectrum
+        * radar
+    * Probe constellation/Vehicle
+        * Density in space
+        * communication link
+        * mass/propulsion
+            * power supply
+            * load
+                * attitude
+                * instrument
+            * propulsion
+                * specific impulse
+                * Total impulse
+2. solar furnace #5
+    * stationary
+    * on orbit
+    * calc
+        * size
+        * effective area
+            * full power
+        * focal distance
+        * focus spot
+            * focus spot size
+            * power desity
+        * mechanic
+            * mass
+            * construction speed
+                * accuracy in need
+            * on orbit
+                * weight
+            * stationary
+                * track speed
+3. smelting in field #6
+    * power desity
+    * reflect ratio
+    * Molten pool productivity
+        * pour out rate
+4. zone melting #6
+    * size of raw material
+    * power desity
+    * speed
+    * total time
+    * productivity
+5. Magnetic work shield #4
+    * Magnetic tower
+    * Magnetic torquer of work station
+6. Electromagnetic momentum management system
+    * fix position for furnace
+    * positioning for robots
+    * Electromagnetic launch system for work station
+7. Exponential growth
+    * productivity per set
+    * productivity of solar furnace
+    * robots duty #7
+    * further construction, cabin etc
+    * one shot for whole
+    * orbital transfer for C-type
+8. Orgnization
+    * Time frame #20
+    * Initial base package (IBP) and supplement #13
+    * Resource in need
+
+
+## Tech Tree
+
+0. M类小行星
+    * 小行星自转轴极点保凸性，进动，[自转不稳定](https://www.zhihu.com/question/291673801/answer/477032669)，进动分布仿真？
+    * 不考虑利用小行星引力效应
+    * 三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速
+1. 能量站
+    * 反射聚焦(炼钢太阳灶)
+        * 结构，尺度
+        * 结构稳定性
+        * 自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开
+    * 镀膜发电（地面运送
+2. 采矿与冶炼
+    * 铁砂飞溅
+3. 成型
+    * 热/冷轧
+    * 抛光
+    * 黑色金属挤出？
+    * 拉丝
+    * 制粉
+4. 在轨施工/架设
+    * 自主机器人
+        * 小蜜蜂（泛工质？
+        * 脚手架（供电？
+    * 工作量
+    * 在轨绝缘材料
+5. 地面支持
+    * 地面团队
+    * 近地轨道实验环境
+6. AI系统
+    * 机器人学
+    * 工程视觉
+    * DRL
+    * -
+
+</div>
+
+<div id="header" class="main">
 <!-- eds solar furnace-->
 <!-- Inputs -->
 <P><STRONG>Solar Furnace Calculator:<BR>
@@ -190,8 +320,8 @@ obj.value=obj.value.substring(0,mlength)
     <TD>m sq</TD>
 </TR>
 </TABLE>
+
 </P>
-</div>
 
 <script language="javascript">
 
@@ -213,30 +343,30 @@ obj.value=obj.value.substring(0,mlength)
         
     eDist=document.getElementById("evaluDistance").value
     var SPD = nominalSPD/Math.pow(eDist, 2)
-    var tr=document.getElementById("twText2").value
-    var tunit=document.getElementById("twSelect5").value;
-    if (tunit=="F"){
-        tr=tr*5/9;
-    }
-    var tk=document.getElementById("twText3").value*document.getElementById("twSelect2").value;//cm
-    var ta=document.getElementById("twText4").value
-    tunit=document.getElementById("twSelect6").value;
-    if (tunit=="F"){
-        ta=(ta-32)*5/9;
-    }
-    var len=document.getElementById("twText5").value/document.getElementById("twSelect4").value;//cm
-    //calcs
-    var rho=1.7e-6 //ohm-cm
+    // var tr=document.getElementById("twText2").value
+    // var tunit=document.getElementById("twSelect5").value;
+    // if (tunit=="F"){
+    //     tr=tr*5/9;
+    // }
+    // var tk=document.getElementById("twText3").value*document.getElementById("twSelect2").value;//cm
+    // var ta=document.getElementById("twText4").value
+    // tunit=document.getElementById("twSelect6").value;
+    // if (tunit=="F"){
+    //     ta=(ta-32)*5/9;
+    // }
+    // var len=document.getElementById("twText5").value/document.getElementById("twSelect4").value;//cm
+    // //calcs
+    // var rho=1.7e-6 //ohm-cm
     //output
     document.getElementById("solarPowerDensity").value=SPD.toPrecision(3)
-    document.getElementById("twText7").value=ri.toPrecision(3)
-    document.getElementById("twText8").value=vi.toPrecision(3)
-    document.getElementById("twText9").value=pi.toPrecision(3)
+    // document.getElementById("twText7").value=ri.toPrecision(3)
+    // document.getElementById("twText8").value=vi.toPrecision(3)
+    // document.getElementById("twText9").value=pi.toPrecision(3)
     
-    document.getElementById("twText10").value=we.toPrecision(3)
-    document.getElementById("twText11").value=re.toPrecision(3)
-    document.getElementById("twText12").value=ve.toPrecision(3)
-    document.getElementById("twText13").value=pe.toPrecision(3)
+    // document.getElementById("twText10").value=we.toPrecision(3)
+    // document.getElementById("twText11").value=re.toPrecision(3)
+    // document.getElementById("twText12").value=ve.toPrecision(3)
+    // document.getElementById("twText13").value=pe.toPrecision(3)
     }
     function A_external(current,rise) {
         var k = 0.048
@@ -251,112 +381,3 @@ obj.value=obj.value.substring(0,mlength)
         return Math.pow((current/(k*Math.pow(rise,b))),1/c)
     }
 </script>
-
-<!-- <div class="pull-left">图片url</div> -->
-## Tech Tree
-
-0. M类小行星
-    * 小行星自转轴极点保凸性，进动，[自转不稳定](https://www.zhihu.com/question/291673801/answer/477032669)，进动分布仿真？
-    * 不考虑利用小行星引力效应
-    * 三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速
-1. 能量站
-    * 反射聚焦(炼钢太阳灶)
-        * 结构，尺度
-        * 结构稳定性
-        * 自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开
-    * 镀膜发电（地面运送
-2. 采矿与冶炼
-    * 铁砂飞溅
-3. 成型
-    * 热/冷轧
-    * 抛光
-    * 黑色金属挤出？
-    * 拉丝
-    * 制粉
-4. 在轨施工/架设
-    * 自主机器人
-        * 小蜜蜂（泛工质？
-        * 脚手架（供电？
-    * 工作量
-    * 在轨绝缘材料
-5. 地面支持
-    * 地面团队
-    * 近地轨道实验环境
-6. AI系统
-    * 机器人学
-    * 工程视觉
-    * DRL
-    * -
-
-## Calculator
-
-1. Target asteroid #3
-    * character
-        * orbit
-        * physical property
-        * composition
-    * Observatory
-        * optical
-            * images
-            * color wheel
-            * spectrum
-        * radar
-    * Probe constellation/Vehicle
-        * Density in space
-        * communication link
-        * mass/propulsion
-            * power supply
-            * load
-                * attitude
-                * instrument
-            * propulsion
-                * specific impulse
-                * Total impulse
-2. solar furnace #5
-    * stationary
-    * on orbit
-    * calc
-        * size
-        * effective area
-            * full power
-        * focal distance
-        * focus spot
-            * focus spot size
-            * power desity
-        * mechanic
-            * mass
-            * construction speed
-                * accuracy in need
-            * on orbit
-                * weight
-            * stationary
-                * track speed
-3. smelting in field #6
-    * power desity
-    * reflect ratio
-    * Molten pool productivity
-        * pour out rate
-4. zone melting #6
-    * size of raw material
-    * power desity
-    * speed
-    * total time
-    * productivity
-5. Magnetic work shield #4
-    * Magnetic tower
-    * Magnetic torquer of work station
-6. Electromagnetic momentum management system
-    * fix position for furnace
-    * positioning for robots
-    * Electromagnetic launch system for work station
-7. Exponential growth
-    * productivity per set
-    * productivity of solar furnace
-    * robots duty #7
-    * further construction, cabin etc
-    * one shot for whole
-    * orbital transfer for C-type
-8. Orgnization
-    * Time frame #20
-    * Initial base package (IBP) and supplement #13
-    * Resource in need
