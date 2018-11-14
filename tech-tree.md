@@ -57,7 +57,7 @@ obj.value=obj.value.substring(0,mlength)
 * 1AU = 1.49597871E8 km
 * Moon-Earth Distance (LD): 3.84400E5 km
 
-<div id="header">
+<div id="header" class="pull-left">
 <!-- eds solar furnace-->
 <!-- Inputs -->
 <P><STRONG>Solar Furnace Calculator:<BR>
@@ -252,6 +252,7 @@ obj.value=obj.value.substring(0,mlength)
     }
 </script>
 
+<!-- <div class="pull-left">图片url</div> -->
 ## Tech Tree
 
 0. M类小行星
