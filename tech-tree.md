@@ -48,8 +48,6 @@ obj.value=obj.value.substring(0,mlength)
 
 </script>
 
-</head>
-
 <!-- <body class="orange hid_6"> -->
 
 <!-- <div id="wrapper"> -->
