@@ -191,6 +191,66 @@ obj.value=obj.value.substring(0,mlength)
 </TR>
 </TABLE>
 </P>
+</div>
+
+<script language="javascript">
+
+    var eDist = 1
+    function distance_unit() {
+        const AU = 1.49597871E8
+        const LD = 3.84400E5
+        eDist=document.getElementById("evaluDistance").value
+        // *document.getElementById("distanUnit").value
+
+    //   var cell = document.createElement("td");
+      var cellText = document.createTextNode("cell in row ");
+      document.getElementById("distUnits").setChild(cellText);
+
+        furnace_calc()
+    }
+    function furnace_calc() {
+    const nominalSPD = 1362
+        
+    eDist=document.getElementById("evaluDistance").value
+    var SPD = nominalSPD/Math.pow(eDist, 2)
+    var tr=document.getElementById("twText2").value
+    var tunit=document.getElementById("twSelect5").value;
+    if (tunit=="F"){
+        tr=tr*5/9;
+    }
+    var tk=document.getElementById("twText3").value*document.getElementById("twSelect2").value;//cm
+    var ta=document.getElementById("twText4").value
+    tunit=document.getElementById("twSelect6").value;
+    if (tunit=="F"){
+        ta=(ta-32)*5/9;
+    }
+    var len=document.getElementById("twText5").value/document.getElementById("twSelect4").value;//cm
+    //calcs
+    var rho=1.7e-6 //ohm-cm
+    //output
+    document.getElementById("solarPowerDensity").value=SPD.toPrecision(3)
+    document.getElementById("twText7").value=ri.toPrecision(3)
+    document.getElementById("twText8").value=vi.toPrecision(3)
+    document.getElementById("twText9").value=pi.toPrecision(3)
+    
+    document.getElementById("twText10").value=we.toPrecision(3)
+    document.getElementById("twText11").value=re.toPrecision(3)
+    document.getElementById("twText12").value=ve.toPrecision(3)
+    document.getElementById("twText13").value=pe.toPrecision(3)
+    }
+    function A_external(current,rise) {
+        var k = 0.048
+        var b = 0.44
+        var c = 0.725
+        return Math.pow((current/(k*Math.pow(rise,b))),1/c)
+    }
+    function A_internal(current,rise) {
+        var k = 0.024
+        var b = 0.44
+        var c = 0.725
+        return Math.pow((current/(k*Math.pow(rise,b))),1/c)
+    }
+</script>
 
 ## Tech Tree
 
