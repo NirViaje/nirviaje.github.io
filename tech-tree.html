@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tech-tree.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+	font-size: 14px;
+	padding: 0 12px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	color: #4080D0;
+	text-decoration: none;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+a:hover {
+	color: #4080D0;
+	text-decoration: underline;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left: 5px solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+.mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.vscode-light,
+.vscode-light pre code {
+	color: rgb(30, 30, 30);
+}
+
+.vscode-dark,
+.vscode-dark pre code {
+	color: #DDD;
+}
+
+.vscode-high-contrast,
+.vscode-high-contrast pre code {
+	color: white;
+}
+
+.vscode-light code {
+	color: #A31515;
+}
+
+.vscode-dark code {
+	color: #D7BA7D;
+}
+
+.vscode-light pre:not(.hljs),
+.vscode-light code > div {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre:not(.hljs),
+.vscode-dark code > div {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre:not(.hljs),
+.vscode-high-contrast code > div {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vscode-light blockquote,
+.vscode-dark blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.vscode-high-contrast blockquote {
+	background: transparent;
+	border-color: #fff;
+}
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family:  "Meiryo", "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+</head>
+<body>
+<style>
+.top {
+    position:absolute;
+    left:0; right:0;
+    height: 92px;
+}
+.left {
+    position:absolute;
+    left:10; top:142px; bottom: 0;
+    width: 378px;
+}
+.main {
+    position: absolute;
+    left:378px; top:92px; right:0; bottom:0;
+}
+</style>
+<!-- 
+/* Begin Contact Form CSS */
+.contactform {
+position: static;
+overflow: hidden;
+}
+
+.contactleft {
+width: 25%;
+text-align: right;
+clear: both;
+float: left;
+display: inline;
+padding: 4px;
+margin: 5px 0;
+}
+
+.contactright {
+width: 70%;
+text-align: left;
+float: right;
+display: inline;
+padding: 4px;
+margin: 5px 0;
+}
+
+.contacterror {
+border: 1px solid #ff0000;
+}
+/* End Contact Form CSS */
+
+</style> -->
+<script type="text/javascript">
+
+/***********************************************
+* Textarea Maxlength script- � Dynamic Drive (www.dynamicdrive.com)
+* This notice must stay intact for legal use.
+* Visit http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+function ismaxlength(obj){
+var mlength=obj.getAttribute? parseInt(obj.getAttribute("maxlength")) : ""
+if (obj.getAttribute && obj.value.length>mlength)
+obj.value=obj.value.substring(0,mlength)
+}
+
+</script>
+<!-- <body class="orange hid_6"> -->
+<!-- <div id="wrapper"> -->
+<h2 id="basic-constants">Basic constants</h2>
+<ul>
+<li>Solar constant: 1.362 kW/m² @1AU</li>
+<li>1AU = 1.49597871E8 km</li>
+<li>Moon-Earth Distance (LD): 3.84400E5 km</li>
+</ul>
+<div class="left">
+<h2 id="calculator">Calculator</h2>
+<ol>
+<li>Target asteroid #3
+<ul>
+<li>character
+<ul>
+<li>orbit</li>
+<li>physical property</li>
+<li>composition</li>
+</ul>
+</li>
+<li>Observatory
+<ul>
+<li>optical
+<ul>
+<li>images</li>
+<li>color wheel</li>
+<li>spectrum</li>
+</ul>
+</li>
+<li>radar</li>
+</ul>
+</li>
+<li>Probe constellation/Vehicle
+<ul>
+<li>Density in space</li>
+<li>communication link</li>
+<li>mass/propulsion
+<ul>
+<li>power supply</li>
+<li>load
+<ul>
+<li>attitude</li>
+<li>instrument</li>
+</ul>
+</li>
+<li>propulsion
+<ul>
+<li>specific impulse</li>
+<li>Total impulse</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>solar furnace #5
+<ul>
+<li>stationary</li>
+<li>on orbit</li>
+<li>calc
+<ul>
+<li>size</li>
+<li>effective area
+<ul>
+<li>full power</li>
+</ul>
+</li>
+<li>focal distance</li>
+<li>focus spot
+<ul>
+<li>focus spot size</li>
+<li>power desity</li>
+</ul>
+</li>
+<li>mechanic
+<ul>
+<li>mass</li>
+<li>construction speed
+<ul>
+<li>accuracy in need</li>
+</ul>
+</li>
+<li>on orbit
+<ul>
+<li>weight</li>
+</ul>
+</li>
+<li>stationary
+<ul>
+<li>track speed</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>smelting in field #6
+<ul>
+<li>power desity</li>
+<li>reflect ratio</li>
+<li>Molten pool productivity
+<ul>
+<li>pour out rate</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>zone melting #6
+<ul>
+<li>size of raw material</li>
+<li>power desity</li>
+<li>speed</li>
+<li>total time</li>
+<li>productivity</li>
+</ul>
+</li>
+<li>Magnetic work shield #4
+<ul>
+<li>Magnetic tower</li>
+<li>Magnetic torquer of work station</li>
+</ul>
+</li>
+<li>Electromagnetic momentum management system
+<ul>
+<li>fix position for furnace</li>
+<li>positioning for robots</li>
+<li>Electromagnetic launch system for work station</li>
+</ul>
+</li>
+<li>Exponential growth
+<ul>
+<li>productivity per set</li>
+<li>productivity of solar furnace</li>
+<li>robots duty #7</li>
+<li>further construction, cabin etc</li>
+<li>one shot for whole</li>
+<li>orbital transfer for C-type</li>
+</ul>
+</li>
+<li>Orgnization
+<ul>
+<li>Time frame #20</li>
+<li>Initial base package (IBP) and supplement #13</li>
+<li>Resource in need</li>
+</ul>
+</li>
+</ol>
+<h2 id="tech-tree">Tech Tree</h2>
+<ol start="0">
+<li>M类小行星
+<ul>
+<li>小行星自转轴极点保凸性，进动，<a href="https://www.zhihu.com/question/291673801/answer/477032669">自转不稳定</a>，进动分布仿真？</li>
+<li>不考虑利用小行星引力效应</li>
+<li>三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速</li>
+</ul>
+</li>
+<li>能量站
+<ul>
+<li>反射聚焦(炼钢太阳灶)
+<ul>
+<li>结构，尺度</li>
+<li>结构稳定性</li>
+<li>自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开</li>
+</ul>
+</li>
+<li>镀膜发电（地面运送</li>
+</ul>
+</li>
+<li>采矿与冶炼
+<ul>
+<li>铁砂飞溅</li>
+</ul>
+</li>
+<li>成型
+<ul>
+<li>热/冷轧</li>
+<li>抛光</li>
+<li>黑色金属挤出？</li>
+<li>拉丝</li>
+<li>制粉</li>
+</ul>
+</li>
+<li>在轨施工/架设
+<ul>
+<li>自主机器人
+<ul>
+<li>小蜜蜂（泛工质？</li>
+<li>脚手架（供电？</li>
+</ul>
+</li>
+<li>工作量</li>
+<li>在轨绝缘材料</li>
+</ul>
+</li>
+<li>地面支持
+<ul>
+<li>地面团队</li>
+<li>近地轨道实验环境</li>
+</ul>
+</li>
+<li>AI系统
+<ul>
+<li>机器人学</li>
+<li>工程视觉</li>
+<li>DRL</li>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+<div id="header" class="main">
+<!-- eds solar furnace-->
+<!-- Inputs -->
+<P><STRONG>Solar Furnace Calculator:<BR>
+</STRONG>
+<TABLE id="Table1" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
+    <TR>
+        <TD>Distance</TD>
+        <TD><INPUT id="evaluDistance" onkeyup="furnace_calc()" type="text" size="5" value="1" name="evaluDistance"> </TD>
+        <TD>AU
+        <!-- id = distUnits -->
+        <!-- <SELECT id="distanUnit" onchange="distance_unit()" name="distanUnit">
+                <OPTION value="1" selected>AU</OPTION>
+                <OPTION value="3.84400E5">LD</OPTION>
+                <OPTION value="1.49597871E8">km</OPTION>
+            </SELECT> -->
+        </TD>
+        <TD bgColor="#ccffcc">Solar Power Density</TD>
+        <TD><INPUT id="solarPowerDensity" onkeyup="furnace_calc()" type="text" size="8" value="1362" name="solarPowerDensity"></TD>
+        <TD>W/m²</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Equivalent size/Actual diameter</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="50" name="furnaceSize"></TD>
+        <TD>m</TD>
+        <TD bgColor="#ccffcc">Effective area</TD>
+        <TD><INPUT id="effectArea" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="effectArea"></TD>
+        <TD>m sq</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Efficency</TD>
+        <TD><INPUT id="furnaceEfficency" onkeyup="tw_calc()" type="text" size="8" value="90" name="furnaceEfficency"></TD>
+        <TD>%</TD>
+        <TD bgColor="#ccffcc">Full Power</TD>
+        <TD><INPUT id="fullPower" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="fullPower"></TD>
+        <TD>kW</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Focus Distance</TD>
+        <TD><INPUT id="focusDistance" onkeyup="tw_calc()" type="text" size="8" value="100" name="focusDistance"></TD>
+        <TD>m</TD>
+        <TD bgColor="#ccffcc">Focus Spot Size</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="2" name="twText3"></TD>
+        <TD>m</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffccaa">Focus Quality</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="80" name="focuQuality"></TD>
+        <TD>%</TD>
+        <TD bgColor="#ccffff">Nominal Focus Spot Power Density</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="1000" name="nomFSPD"></TD>
+        <TD>kW/m sq</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#666666">Asteroid related</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ffffcc">MPC designation</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="12" value="(6178) 1986 DA" name="twText3"></TD>
+        <TD></TD>
+        <TD bgColor="#ccffcc">Surface Gravity</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="0.25" name="Distance"></TD>
+        <TD>g/kg</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffcc">Perihelion</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="1.1805" name="tgtPerihelion"></TD>
+        <TD>AU</TD>
+        <TD bgColor="#ccffcc">Aphelion</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="4.4648" name="tgtAphelion"></TD>
+        <TD>AU</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffff">PeriFSPD</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="1.1805" name="periFSPD"></TD>
+        <TD>kW/m sq</TD>
+        <TD bgColor="#ccffff">ApheFSPD</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="4.4648" name="apheFSPD"></TD>
+        <TD>kW/m sq</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffcc">Orbital period</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="4.74" name="orbPeriod"></TD>
+        <TD>yr</TD>
+        <TD bgColor="#ccffcc">Rotation period</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="3.50" name="rotPeriod"></TD>
+        <TD>h</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffcc">Spectral type</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="M" name="specType"></TD>
+        <TD></TD>
+        <TD bgColor="#ccffcc">Dimensions</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="3.15" name="tgtSize"></TD>
+        <TD>km</TD>
+    </TR>
+    <TR>
+        <TD bgColor="#ccffcc">Mass</TD>
+        <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="20" name="Distance"></TD>
+        <TD>Ton</TD>
+        <TD bgColor="#ccffff">Weight</TD>
+        <TD><INPUT id="twText3" onkeyup="tw_calc()" type="text" size="8" value="5" name="twText3"></TD>
+        <TD>kg-force</TD>
+    </TR>
+</TABLE>
+</P>
+<P><STRONG>Smelting in the field<BR>
+</STRONG>
+<TABLE id="Table1" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
+<TR>
+    <TD>Distance</TD>
+    <TD><INPUT id="evaluDistance" onkeyup="furnace_calc()" type="text" size="5" value="1" name="evaluDistance"> </TD>
+    <TD>AU
+    <!-- id = distUnits -->
+    <!-- <SELECT id="distanUnit" onchange="distance_unit()" name="distanUnit">
+            <OPTION value="1" selected>AU</OPTION>
+            <OPTION value="3.84400E5">LD</OPTION>
+            <OPTION value="1.49597871E8">km</OPTION>
+        </SELECT> -->
+    </TD>
+    <TD bgColor="#ccffcc">Solar Power Density</TD>
+    <TD><INPUT id="solarPowerDensity" onkeyup="furnace_calc()" type="text" size="8" value="1362" name="solarPowerDensity"></TD>
+    <TD>W/m²</TD>
+</TR>
+<TR>
+    <TD bgColor="#ffccaa">Equivalent size/Actual diameter</TD>
+    <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="50" name="furnaceSize"></TD>
+    <TD>m</TD>
+    <TD bgColor="#ccffcc">Effective area</TD>
+    <TD><INPUT id="effectArea" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="effectArea"></TD>
+    <TD>m sq</TD>
+</TR>
+</TABLE>
+</P>
+<script language="javascript">
+
+    var eDist = 1
+    function distance_unit() {
+        const AU = 1.49597871E8
+        const LD = 3.84400E5
+        eDist=document.getElementById("evaluDistance").value
+        // *document.getElementById("distanUnit").value
+
+    //   var cell = document.createElement("td");
+      var cellText = document.createTextNode("cell in row ");
+      document.getElementById("distUnits").setChild(cellText);
+
+        furnace_calc()
+    }
+    function furnace_calc() {
+    const nominalSPD = 1362
+        
+    eDist=document.getElementById("evaluDistance").value
+    var SPD = nominalSPD/Math.pow(eDist, 2)
+    // var tr=document.getElementById("twText2").value
+    // var tunit=document.getElementById("twSelect5").value;
+    // if (tunit=="F"){
+    //     tr=tr*5/9;
+    // }
+    // var tk=document.getElementById("twText3").value*document.getElementById("twSelect2").value;//cm
+    // var ta=document.getElementById("twText4").value
+    // tunit=document.getElementById("twSelect6").value;
+    // if (tunit=="F"){
+    //     ta=(ta-32)*5/9;
+    // }
+    // var len=document.getElementById("twText5").value/document.getElementById("twSelect4").value;//cm
+    // //calcs
+    // var rho=1.7e-6 //ohm-cm
+    //output
+    document.getElementById("solarPowerDensity").value=SPD.toPrecision(3)
+    // document.getElementById("twText7").value=ri.toPrecision(3)
+    // document.getElementById("twText8").value=vi.toPrecision(3)
+    // document.getElementById("twText9").value=pi.toPrecision(3)
+    
+    // document.getElementById("twText10").value=we.toPrecision(3)
+    // document.getElementById("twText11").value=re.toPrecision(3)
+    // document.getElementById("twText12").value=ve.toPrecision(3)
+    // document.getElementById("twText13").value=pe.toPrecision(3)
+    }
+    function A_external(current,rise) {
+        var k = 0.048
+        var b = 0.44
+        var c = 0.725
+        return Math.pow((current/(k*Math.pow(rise,b))),1/c)
+    }
+    function A_internal(current,rise) {
+        var k = 0.024
+        var b = 0.44
+        var c = 0.725
+        return Math.pow((current/(k*Math.pow(rise,b))),1/c)
+    }
+</script>
+
+</body>
+</html>

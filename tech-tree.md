@@ -8,10 +8,14 @@
     position:absolute;
     left:10; top:142px; bottom: 0;
     width: 378px;
+    /* background: red; */
 }
 .main {
     position: absolute;
-    left:378px; top:92px; right:0; bottom:0;
+    left:378px; top:92px;
+    right:0; bottom:0;
+    /* background: yellow; */
+
 }
 </style>
 
