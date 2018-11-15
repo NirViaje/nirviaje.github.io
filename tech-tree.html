@@ -389,24 +389,24 @@ blockquote {
 .top {
     position:absolute;
     left:0; right:0;
-    height: 92px;
+    height: 62px;
 }
 .left {
     position:absolute;
     left:10; top:142px; bottom: 0;
-    width: 378px;
+    width: 340px;
     /* background: red; */
 }
 .main {
     position: absolute;
-    left:378px; top:142px;
+    left:340px; top:142px;
     right:0; bottom:0;
     /* background: yellow; */
 
 }
 .right {
     position:absolute;
-    top:142px; bottom: 0;
+    top:50px; bottom: 0;
     left:560px;
     /* width: 782px; */
     /* background: red; */
@@ -610,72 +610,6 @@ obj.value=obj.value.substring(0,mlength)
 </ul>
 </li>
 </ol>
-<h2 id="tech-tree">Tech Tree</h2>
-<ol start="0">
-<li>M类小行星
-<ul>
-<li>小行星自转轴极点保凸性，进动，<a href="https://www.zhihu.com/question/291673801/answer/477032669">自转不稳定</a>，进动分布仿真？</li>
-<li>不考虑利用小行星引力效应</li>
-<li>三约束：1. 面对太阳 2. 避开阴影 3. 焦点集中在自转轴极点，可利用缓慢进动/自转减速</li>
-</ul>
-</li>
-<li>能量站
-<ul>
-<li>反射聚焦(炼钢太阳灶)
-<ul>
-<li>结构，尺度</li>
-<li>结构稳定性</li>
-<li>自适应光学/反射镜姿态放置（航天器对接/离心悬索结构/弯管/玻璃幕墙/机器人空间桁架/抛物天线展开</li>
-</ul>
-</li>
-<li>镀膜发电（地面运送</li>
-</ul>
-</li>
-<li>采矿与冶炼
-<ul>
-<li>铁砂飞溅</li>
-</ul>
-</li>
-<li>成型
-<ul>
-<li>热/冷轧</li>
-<li>抛光</li>
-<li>黑色金属挤出？</li>
-<li>拉丝</li>
-<li>制粉</li>
-</ul>
-</li>
-<li>在轨施工/架设
-<ul>
-<li>自主机器人
-<ul>
-<li>小蜜蜂（泛工质？</li>
-<li>脚手架（供电？</li>
-</ul>
-</li>
-<li>工作量</li>
-<li>在轨绝缘材料</li>
-</ul>
-</li>
-<li>地面支持
-<ul>
-<li>地面团队</li>
-<li>近地轨道实验环境</li>
-</ul>
-</li>
-<li>AI系统
-<ul>
-<li>机器人学</li>
-<li>工程视觉</li>
-<li>DRL</li>
-<li>
-<ul>
-<li></li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
 </div>
 <div id="header" class="main">
 <!-- eds solar furnace-->
@@ -869,8 +803,200 @@ obj.value=obj.value.substring(0,mlength)
         return Math.pow((current/(k*Math.pow(rise,b))),1/c)
     }
 </script>
+<div id="divhead">
+<!-- align="center"> -->
+  <h2>Satellite Link Budget Calculator</h2>
+  <p>Complete all white boxes and then click any calculate button to obtain results in the green boxes.</p>
+  <form action="http://www.satsig.net/linkbugt.htm">
+    <table>
+      <tbody><tr>
+        <td>Uplink frequency GHz</td>
+        <td><input type="TEXT" name="frequp" size="10" onfocus="this.form.frequp.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td>Uplink antenna diameter m</td>
+        <td><input type="TEXT" name="esdiaup" size="10" onfocus="this.form.esdiaup.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td>Uplink antenna aperture efficiency e.g. 0.65</td>
+        <td><input type="TEXT" name="eff" size="10" value="0.65" onfocus="this.form.eff.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Uplink antenna transmit gain dBi</td>
+        <td><input type="TEXT" name="esupgain" size="5"></td>
+      </tr>
+      <tr>
+        <td>Uplink antenna, power at the feed W</td>
+        <td><input type="TEXT" name="espowup" size="5" onfocus="this.form.espowup.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Uplink EIRP dBW</td>
+        <td><input type="TEXT" name="esupeirp" size="5"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/ssazelm.htm">Range</a> (35778 - 41679) km</td>
+        <td><input type="TEXT" name="range" size="10" value="38500.0" onfocus="this.form.range.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Uplink path loss dB</td>
+        <td><input type="TEXT" name="plup" size="5"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td><a href="http://www.satsig.net/lbpfd.htm">Uplink pfd at satellite dBW/m^2</a></td>
+        <td><input type="TEXT" name="pfdup" size="5"></td>
+      </tr>
+      <tr>
+        <td>Bandwidth Hz</td>
+        <td><input type="TEXT" name="bandwidth" size="10" onfocus="this.form.bandwidth.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/lbgt.htm">Satellite uplink G/T dB/K</a></td>
+        <td><input type="TEXT" name="gontup" size="10" onfocus="this.form.gontup.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Uplink C/N dB</td>
+        <td><input type="TEXT" name="cnup" size="5"></td>
+      </tr>
+    </tbody></table>
+    <p><input type="BUTTON" value="Click to calculate results" onclick="computeform(this.form)"> </p>
+    <table cellpadding="0" cellspacing="1" style="border-collapse: collapse">
+      <tbody><tr>
+        <td>Downlink frequency GHz</td>
+        <td><input type="TEXT" name="freqdn" size="10" onfocus="this.form.freqdn.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td>Downlink receive antenna diameter m</td>
+        <td><input type="TEXT" name="esdiadn" size="10" onfocus="this.form.esdiadn.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td>Downlink receive antenna aperture efficiency e.g. 0.65</td>
+        <td><input type="TEXT" name="effdn" value="0.65" size="10" onfocus="this.form.effdn.value=&#39;&#39;"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/noise.htm">Downlink system noise temperature (antenna+LNA) K</a></td>
+        <td><input type="TEXT" name="temp" size="10" onfocus="this.form.temp.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Downlink receive antenna gain dBi</td>
+        <td><input type="TEXT" name="esdngain" size="5"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Downlink receive antenna G/T dB/K</td>
+        <td><input type="TEXT" name="gontdn" size="5"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/lbeirp.htm">Downlink satellite EIRP dBW</a></td>
+        <td><input type="TEXT" name="eirpdn" size="10" onfocus="this.form.eirpdn.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Downlink path loss dB</td>
+        <td><input type="TEXT" name="pldn" size="5"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Downlink C/N dB</td>
+        <td><input type="TEXT" name="cndn" size="5"></td>
+      </tr>
+    </tbody></table>
+    <p><input type="BUTTON" value="Click to calculate results" onclick="computeform(this.form)"> </p>
+    <table cellpadding="0" cellspacing="1" style="border-collapse: collapse">
+      <tbody><tr>
+        <td><a href="http://www.satsig.net/interfer.htm">Uplink C/interference dB</a></td>
+        <td><input type="TEXT" name="ciup" size="10" value="28.0" onfocus="this.form.ciup.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Uplink C/N dB</td>
+        <td><input type="TEXT" name="cnup2" size="5"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/interfer.htm">Satellite C/intermod dB</a></td>
+        <td><input type="TEXT" name="cim" size="10" value="21.0" onfocus="this.form.cim.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Downlink C/N dB</td>
+        <td><input type="TEXT" name="cndn2" size="5"></td>
+      </tr>
+      <tr>
+        <td><a href="http://www.satsig.net/interfer.htm">Downlink C/interference dB</a></td>
+        <td><input type="TEXT" name="cidn" size="10" value="28.0" onfocus="this.form.cidn.value=&#39;&#39;"></td>
+      </tr>
+      <tr bgcolor="#99FF99">
+        <td>Total link C/N dB</td>
+        <td><input type="TEXT" name="cntot" size="5"></td>
+      </tr>
+    </tbody></table>
+    <p><input type="BUTTON" value="Click to calculate results" onclick="computeform(this.form)"><input type="Reset" value="Click to zero everything except defaults" onclick="ClearForm(this.form)"></p>
+  </form>
+</div>
+<script type="text/javascript">
+// <!-- hide this script tag's contents from old browsers
+function gain(freq, dia, e) {
+//freq in GHz,  dia in m,   e=efficiency e.g. 0.65 is 65%
+a=10.0*Math.log(4*3.14159*e*3.14159*dia*dia*freq*freq/(4*.3*.3))/Math.log(10.0);
+return a;
+}
+function eirp(gain, pow) {
+//antenna gain in dBi, power in watts
+a=gain+10.0*Math.log(pow)/Math.log(10.0);
+return a;
+}
+function pathloss(range, freq) {
+// range in km,  freq in GHz
+a=92.45+20.0*Math.log(range)/Math.log(10.0)+20.0*Math.log(freq)/Math.log(10.0);
+return a;
+}
+function lnkb(eirp,pathloss,gont,bw) {
+a=eirp-pathloss-10.0*Math.log(bw)/Math.log(10.0)+228.6;
+a=1.0*gont+a;
+return a;
+}
+function sumdb(a,b,c,d,e) {
+a1=1.0/(Math.pow(10.0, a/10.0));
+b1=1.0/(Math.pow(10.0, b/10.0));
+c1=1.0/(Math.pow(10.0, c/10.0));
+d1=1.0/(Math.pow(10.0, d/10.0));
+e1=1.0/(Math.pow(10.0, e/10.0));
+sdb=-10.0*Math.log(a1+b1+c1+d1+e1)/Math.log(10.0);
+return sdb;
+}
+function computeform(form) {
+gainupdb= gain(form.frequp.value, form.esdiaup.value, form.eff.value);
+eirpdb  = eirp(gainupdb, form.espowup.value);
+plupdb  = pathloss(form.range.value, form.frequp.value);
+pfdupdb = eirpdb - plupdb  + gain(form.frequp.value, 1.128379, 1.0);
+cnupdb  = lnkb(eirpdb, plupdb, form.gontup.value, form.bandwidth.value);
+//
+pldndb  = pathloss(form.range.value, form.freqdn.value);
+gaindndb= gain(form.freqdn.value, form.esdiadn.value, form.effdn.value);
+gontdndb= gaindndb -10*Math.log(form.temp.value)/Math.log(10);
+cndndb  = lnkb(form.eirpdn.value, pldndb, gontdndb, form.bandwidth.value);
+//
+cntotdb = sumdb(form.ciup.value,cnupdb,form.cim.value,cndndb,form.cidn.value);
+//
+form.esupgain.value=gainupdb;
+form.esdngain.value=gaindndb;
+form.esupeirp.value=eirpdb;
+form.plup.value    =plupdb;
+form.pfdup.value   =pfdupdb;
+form.cnup.value    =cnupdb;
+//
+form.pldn.value    =pldndb;
+form.gontdn.value  =gontdndb;
+form.cndn.value    =cndndb;
+//
+form.cnup2.value   =cnupdb;
+form.cndn2.value   =cndndb;
+form.cntot.value   =cntotdb;
+//
+return;
+}
+<!-- // -- done hiding from old browsers -->
+</script>
 <div class = "right">
     <iframe src="http://asterank.com/3d/" width="700px" height="500px" frameborder="0" scrolling="no"> </iframe>
+    <img src="https://user-images.githubusercontent.com/1320252/48569629-38cc7380-e93d-11e8-8317-639868a95439.png"  alt="eds-0a" />
+    <img src="https://user-images.githubusercontent.com/1320252/48569700-67e2e500-e93d-11e8-8200-74e84e535a61.png"  alt="eds-0a" />
+    <img src="https://user-images.githubusercontent.com/1320252/48569754-8a74fe00-e93d-11e8-9ab3-e559e10bac27.png"  alt="eds-0a" />
+    <img src="https://user-images.githubusercontent.com/1320252/48569759-8ea11b80-e93d-11e8-8f66-23718c605b86.png"  alt="eds-0a" />
 </div>
 </body>
 </html>
