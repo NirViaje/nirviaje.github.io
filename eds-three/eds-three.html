@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<!-- saved from url=(0072)https://threejs.org/docs/scenes/geometry-browser.html#ParametricGeometry -->
+<html lang="en" class="gr__threejs_org"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<title>Three.js Geometry Browser</title>
+		<style>
+			@font-face {
+				font-family: 'inconsolata';
+				src: url('../files/inconsolata.woff') format('woff');
+				font-weight: normal;
+				font-style: normal;
+			}
+
+			body {
+				margin:0;
+				/* font-family: 'inconsolata'; */
+				font-size: 15px;
+				line-height: 18px;
+				overflow: hidden;
+			}
+
+			canvas { width: 100%; height: 100% }
+
+			#newWindow {
+				display: block;
+				position: absolute;
+				bottom: 0.3em;
+				left: 0.5em;
+				color: #fff;
+			}
+		</style>
+	<style type="text/css">.dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity .1s linear;transition:opacity .1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1!important}.dg.main .close-button.drag,.dg.main:hover .close-button{opacity:1}.dg.main .close-button{-webkit-transition:opacity .1s linear;transition:opacity .1s linear;border:0;position:absolute;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-x:hidden}.dg.a.has-save>ul{margin-top:27px}.dg.a.has-save>ul.closed{margin-top:0}.dg.a .save-row{position:fixed;top:0;z-index:1002}.dg li{-webkit-transition:height .1s ease-out;transition:height .1s ease-out}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;overflow:hidden;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid transparent}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li>*{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .c{float:left;width:60%}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:9px}.dg .c select{margin-top:5px}.dg .cr.boolean,.dg .cr.boolean *,.dg .cr.function,.dg .cr.function *,.dg .cr.function .property-name{cursor:pointer}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco,monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px Lucida Grande,sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid hsla(0,0%,100%,.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.color{border-left:3px solid}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2fa1d6}.dg .cr.number input[type=text]{color:#2fa1d6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.boolean:hover,.dg .cr.function:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2fa1d6;max-width:100%}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}</style></head>
+	<body data-gr-c-s-loaded="true">
+
+		<a id="newWindow" href="http://exponentialdeepspace.org/" target="_blank">Open eds in New Window</a>
+
+		<script src="https://threejs.org/build/three.min.js"></script>
+		<script src='https://threejs.org/examples/js/libs/dat.gui.min.js'></script>
+		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script src="https://threejs.org/examples/js/ParametricGeometries.js"></script>
+
+		<script src='https://threejs.org/docs/scenes/js/geometry.js'></script>
+		<script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+		
+		<!-- <script src="./three.js webgl - io - CTM loader_files/WebGL.js.下载"></script> -->
+		<script src="https://threejs.org/examples/js/loaders/ctm/lzma.js"></script>
+		<script src="https://threejs.org/examples/js/loaders/ctm/ctm.js"></script>
+		<script src="https://threejs.org/examples/js/loaders/ctm/CTMLoader.js"></script>
+
+		<script>
+
+			document.getElementById( 'newWindow' ).href += window.location.hash;
+
+			var gui = new dat.GUI();
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 500000 );
+			camera.position.z = 1500;
+
+			var renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0x000000, 1 );
+			document.body.appendChild( renderer.domElement );
+
+			var orbit = new THREE.OrbitControls( camera, renderer.domElement );
+			orbit.enableZoom = true;
+
+
+			var container, stats;
+			container = document.createElement( 'div' );
+			document.body.appendChild( container );
+			// STATS
+			stats = new Stats();
+			// container.appendChild( stats.dom );
+
+			var lights = [];
+			lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+			lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+			lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+
+			lights[ 0 ].position.set( 0, 0, 20000 );
+			lights[ 1 ].position.set( 100, 200, 100 );
+			lights[ 2 ].position.set( - 100, - 200, - 100 );
+
+			scene.add( lights[ 0 ] );
+			// scene.add( lights[ 1 ] );
+			// scene.add( lights[ 2 ] );
+
+			var group = new THREE.Group();
+			var targetGroup = new THREE.Group();
+
+			var geometry = new THREE.BufferGeometry();
+			geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( [], 3 ) );
+
+			var lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, opacity: 0.5 } );
+			var meshMaterial = new THREE.MeshPhongMaterial( { color: 0x156289, emissive: 0x072534, side: THREE.DoubleSide, flatShading: true } );
+
+			group.add( new THREE.LineSegments( geometry, lineMaterial ) );
+			group.add( new THREE.Mesh( geometry, meshMaterial ) );
+
+			var options = chooseFromHash( group );
+
+			// scene.add( group );
+
+			var geometry = new THREE.ParametricGeometry( THREE.ParametricGeometries.klein, 25, 25 );
+			// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			var klein = new THREE.Mesh( geometry, meshMaterial );
+			// scene.add( klein );
+
+			function paraboloid(u,v,target) {
+				var k = 100;//x、y取值范围
+				var a = 0.2;//旋转抛物面焦点
+				var x = k*u*Math.sin(315*v/50);
+				var y = k*u*Math.cos(315*v/50);
+				// (u-0.5)*k;
+				// var y = (v-0.5)*k;
+				var z = .25*k*Math.pow(u,2);	//a,2)*(Math.pow(x,2)+Math.pow(y,2));	//focus k/4
+				// return new THREE.Vector3(x,y,z)
+				target.set( x, y, z );
+			}
+			var parGeometry = new THREE.ParametricGeometry(paraboloid,20,50);
+			var material=new THREE.MeshPhongMaterial({
+				color:0xFFFFFF,//三角面颜色
+				side:THREE.DoubleSide//两面可见
+			});//材质对象
+			// material.wireframe = true;//线条模式渲染(查看细分数)
+			var paraMesh=new THREE.Mesh(parGeometry,material);//线模型对象
+			// scene.add( new THREE.LineSegments( paraMesh, lineMaterial ) );
+			scene.add(paraMesh);//线模型添加到场景中
+			
+			material=new THREE.MeshPhongMaterial({
+				color:0x888888,//三角面颜色
+				emissive: 0x888888,
+				side:THREE.DoubleSide//两面可见
+			});//材质对象
+			material.wireframe = true;//线条模式渲染(查看细分数)
+			
+			var paraMesh = new THREE.Mesh(parGeometry, material)
+
+			paraMesh.castShadow = true;
+			paraMesh.receiveShadow = true;
+			
+			scene.add(paraMesh);//线模型添加到场景中
+
+			var prevFog = false;
+
+			var globalAxis = new THREE.AxisHelper(150);
+			scene.add(globalAxis);
+			
+			var textureLoader = new THREE.TextureLoader();
+			var texture = textureLoader.load('/assets/sunsprite.png');
+			var sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+				map: texture,
+				blending: THREE.AdditiveBlending,
+				// useScreenCoordinates: false,
+				color: 0xffffff
+			}));
+			sprite.scale.x = 100000;	//opts.sun_scale;
+			sprite.scale.y = 100000;	//opts.sun_scale;
+			sprite.scale.z = 100000;
+			sprite.position.set( 0, 0, 300000 );
+			scene.add(sprite);
+		
+			var loader = new THREE.CTMLoader();
+
+			loader.load( "/assets/ctm/Eros.ctm", function ( geometry ) {	//WaltHead.ctm
+
+				var material1 = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+				// var material2 = new THREE.MeshPhongMaterial( { color: 0xff4400, specular: 0x333333, shininess: 100 } );
+				// var material3 = new THREE.MeshPhongMaterial( { color: 0x00ff44, specular: 0x333333, shininess: 100 } );
+
+				callbackModel( geometry, 15, material1, 0, 0, 350, 0, 90, 0);
+				// callbackModel( geometry, 2, material2, 100, 0, 125, 0, 0 );
+				// callbackModel( geometry, 2, material3, - 100, 0, 125, 0, 0 );
+
+			}, { useWorker: true } );
+
+			function callbackModel( geometry, s, material, x, y, z, rx, ry , rz) {
+				var mesh = new THREE.Mesh( geometry, material );
+
+				mesh.position.set( x, y, z );
+				mesh.scale.set( s, s, s );
+				mesh.rotation.x = rx;
+				mesh.rotation.y = ry;
+				mesh.rotation.z = rz;
+
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+
+				// scene.add( mesh );
+				
+				var targetAxis = new THREE.AxisHelper(150);
+				targetAxis.position.set(0,0,350);
+				targetGroup.add(targetAxis);
+
+				targetGroup.add(mesh);
+				scene.add(targetGroup);
+			}
+
+			// //创建dat.GUI，传递并设置属性
+			// var gui = new dat.GUI();
+			// gui.add(controls, 'numberOfObjects').name("当前对象个数").listen();
+			// gui.add(controls, 'rotationSpeed', 0, 0.5);
+			// gui.add(controls, 'addCube');
+			// gui.add(controls, 'removeCube');
+			// gui.add(controls, 'overrideMaterial').name("使用相同材质");
+			// gui.add(controls, 'foggy').name("雾化");
+			// gui.add(controls, 'outputObjects').name("输出所有对象");
+
+			var render = function () {
+
+				requestAnimationFrame( render );
+
+				if ( ! options.fixed ) {
+
+					// group.rotation.x += 0.0001;
+					targetGroup.rotation.z += 0.005;
+
+					// mesh.rotation.x += 0.005;
+					// mesh.rotation.y += 0.005;
+				}
+
+				renderer.render( scene, camera );
+
+			};
+
+			window.addEventListener( 'resize', function () {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}, false );
+
+			render();
+			
+			// function render() {
+			// 	camera.position.x += ( mouseX - camera.position.x ) * .05;
+			// 	camera.position.y += ( - mouseY - camera.position.y ) * .05;
+
+			// 	camera.lookAt( scene.position );
+
+			// 	renderer.render( scene, camera );
+
+			// }
+
+			// function animate() {
+			// 	requestAnimationFrame( animate );
+
+			// 	render();
+			// 	stats.update();
+			// }
+		</script>
+		
+		<div class="dg ac"><div class="dg main a" style="width: 245px;">
+		<div style="width: 6px; margin-left: -3px; height: 28px; cursor: ew-resize; position: absolute;">
+		</div><ul style="height: auto;">
+			<li class="folder"><div class="dg"><ul class="closed">
+			<li class="title">THREE.ParametricGeometry</li>
+			<li class="cr number has-slider"><div><span class="property-name">slices</span>
+				<div class="c"><div><input type="text"></div><div class="slider">
+					<div class="slider-fg" style="width: 24.2424%;">
+				</div></div></div></div></li>
+				<li class="cr number has-slider"><div>
+					<span class="property-name">stacks</span><div class="c"><div>
+						<input type="text"></div>
+						<div class="slider">
+							<div class="slider-fg" style="width: 24.2424%;"></div></div></div></div>
+						</li></ul></div></li></ul>
+						<div class="close-button" style="width: 245px;">Close Controls</div></div></div>
+						<canvas width="1600" height="740" style="width: 1600px; height: 740px;"></canvas>
+	
+
+</body></html>
