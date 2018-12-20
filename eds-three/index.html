@@ -43,9 +43,9 @@
 		<script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
 		
 		<!-- <script src="./three.js webgl - io - CTM loader_files/WebGL.js.下载"></script> -->
-		<script src="/js/lzma.js"></script>
-		<script src="/js/ctm.js"></script>
-		<script src="/js/CTMLoader.js"></script>
+		<script src="js/lzma.js"></script>
+		<script src="js/ctm.js"></script>
+		<script src="js/CTMLoader.js"></script>
 
 		<script>
 
@@ -148,7 +148,7 @@
 			scene.add(globalAxis);
 			
 			var textureLoader = new THREE.TextureLoader();
-			var texture = textureLoader.load('/assets/sunsprite.png');
+			var texture = textureLoader.load('assets/sunsprite.png');
 			var sprite = new THREE.Sprite(new THREE.SpriteMaterial({
 				map: texture,
 				blending: THREE.AdditiveBlending,
@@ -163,7 +163,7 @@
 		
 			var loader = new THREE.CTMLoader();
 
-			loader.load( "/assets/ctm/Eros.ctm", function ( geometry ) {	//WaltHead.ctm
+			loader.load( "assets/ctm/Eros.ctm", function ( geometry ) {	//WaltHead.ctm
 
 				var material1 = new THREE.MeshLambertMaterial( { color: 0xffffff } );
 				// var material2 = new THREE.MeshPhongMaterial( { color: 0xff4400, specular: 0x333333, shininess: 100 } );
