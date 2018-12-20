@@ -295,7 +295,36 @@ obj.value=obj.value.substring(0,mlength)
     <TD>m sq</TD>
 </TR>
 </TABLE>
-
+</P>
+<P><STRONG>Hertz–Knudsen equation for evaporating liquids<BR>
+</STRONG>
+<img src="https://user-images.githubusercontent.com/1320252/50152288-31163b00-02fe-11e9-9d15-105578109cef.png"/>
+<!-- < Gas constant = 8.3144598(48) J⋅mol−1⋅K−1 Avogadro constant = 6.022E23 > -->
+<TABLE id="Table1" cellSpacing="1" cellPadding="1" width="300" bgColor="#ffffcc" border="1">
+<TR>
+    <TD>α</TD>
+    <TD><INPUT id="evaluDistance" onkeyup="furnace_calc()" type="text" size="5" value="1" name="evaluDistance"> </TD>
+    <TD>0≤α≤1
+    <!-- id = distUnits -->
+    <!-- <SELECT id="distanUnit" onchange="distance_unit()" name="distanUnit">
+            <OPTION value="1" selected>AU</OPTION>
+            <OPTION value="3.84400E5">LD</OPTION>
+            <OPTION value="1.49597871E8">km</OPTION>
+        </SELECT> -->
+    </TD>
+    <TD bgColor="#ccffcc">The gas pressure</TD>
+    <TD><INPUT id="solarPowerDensity" onkeyup="furnace_calc()" type="text" size="8" value="1362" name="solarPowerDensity"></TD>
+    <TD>Pa</TD>
+</TR>
+<TR>
+    <TD bgColor="#ffccaa">Molar mass</TD>
+    <TD><INPUT id="twText1" onkeyup="tw_calc()" type="text" size="8" value="50" name="furnaceSize"></TD>
+    <TD>kg mol−1</TD>
+    <TD bgColor="#ccffcc">Temperature</TD>
+    <TD><INPUT id="effectArea" onkeyup="tw_calc()" type="text" size="8" value="1.362" name="effectArea"></TD>
+    <TD>K</TD>
+</TR>
+</TABLE>
 </P>
 
 <script language="javascript">
