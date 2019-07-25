@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],
+        .ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}
+        .ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}
+    </style>
+
+    <!-- derived from milkywaystars -->
+    <title>NebulaLive</title>
+    <!-- if ( ! Detector.webgl ) -->
+
+    <script type="text/javascript" src="./assets/jquery-1.11.0-beta3.min.js"></script>
+    <script type="text/javascript" src="./assets/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/angular.min.js"></script>
+    <script type="text/javascript" src="./assets/angular-touch.min.js"></script>
+
+    <link rel="stylesheet" href="./assets/style_nebula.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="./assets/reset.css" type="text/css" media="screen">
+    <link rel="stylesheet" type="text/css" href="./assets/bootstrap.min.css">
+
+    <link href="./assets/perfect-scrollbar-0.4.6.min.css" rel="stylesheet" type="text/css">
+    <link href="./assets/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="./assets/style.css" rel="stylesheet" type="text/css">
+
+    <script src="./assets/perfect-scrollbar-0.4.6.with-mousewheel.min.js"></script>
+    <script src="./assets/uop-jsonp.js"></script>
+    
+    <!-- <script type="text/javascript">  
+        var uop_custom_panel = "";          
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) //if mobile, don't show info
+        { 
+            var uop_custom_panel = "";
+        } else var uop_custom_panel = "f9Z6JBzsUVjv8Bjq";
+    </script> -->
+	<!-- <script type="text/javascript">
+	  	if ( ! Detector.webgl )
+		{ 
+			Detector.addGetWebGLMessage(); 
+			alert("There appears to be a problem with 'WEBGL'. This is used to render 3D objects in your browser. Try Chrome, Firefox, IE or Safari. Go to 'http://get.webgl.org' for help.");
+		} 
+    </script> -->
+        
+    <script type="text/javascript" src="./assets/three.min.js"></script>
+    <script type="text/javascript" src="./assets/StereoEffect.js"></script>
+    <script type="text/javascript" src="./assets/orbitcontrols.js"></script>
+    <!-- <script type="text/javascript" src="./assets/Detector.js"></script> -->
+    <script type="text/javascript" src="./assets/stats.min.js"></script>
+    <script type="text/javascript" src="./assets/colortemptorgb.js"></script>
+    <script type="text/javascript" src="./assets/dat.gui.min.js"></script>
+                
+    <script type="text/javascript" src="./assets/colortemptorgb.js"></script>
+    <script type="text/javascript" src="./assets/perlin.js"></script>
+    <script type="text/javascript" src="./assets/audio.js"></script>
+
+    <script type="text/javascript">
+        var nebulas=[];
+        var nebulas_info=[];
+        var skybox;
+    </script>
+
+    <script type="x-shader/x-vertex" id="vertexshader">
+        uniform float scale;
+        attribute float size;
+        attribute float opacity;
+        attribute vec3 customColor;
+
+        varying vec4 vColor;
+        
+
+        void main() {
+            vColor = vec4 ( customColor, opacity);
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            gl_PointSize = size * ( scale / length( mvPosition.xyz ) );
+            gl_Position = projectionMatrix * mvPosition;
+        }
+
+    </script><script type="x-shader/x-fragment" id="fragmentshader">
+        uniform sampler2D texture;
+        varying vec4 vColor;
+        void main() {
+            gl_FragColor = vec4(vColor.xyz,texture2D( texture, gl_PointCoord ).r*vColor.a);
+        }
+
+    </script><script type="x-shader/x-vertex" id="mappedvertexshader">
+        uniform float scale;
+        attribute float size;
+        attribute float opacity;
+        attribute vec2 customColor;
+
+        varying vec3 vColor;
+        
+
+        void main() {
+            vColor = vec3 ( customColor, opacity);
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            gl_PointSize = size * ( scale / length( mvPosition.xyz ) );
+            gl_Position = projectionMatrix * mvPosition;
+        }
+
+    </script><script type="x-shader/x-fragment" id="mappedfragmentshader">
+        uniform sampler2D texture;
+        uniform sampler2D colormap;
+        varying vec3 vColor;
+        void main() {
+            vec4 cmap = texture2D( colormap, vColor.xy );
+            vec4 color= texture2D( texture, gl_PointCoord );
+            gl_FragColor = vec4(cmap.xyz*color.xyz,vColor.z*color.r);
+        }
+    </script>
+
+    <script type="text/javascript" src="./assets/nebula_material.js">
+    </script><script type="text/javascript" src="./assets/nebula_hourglass.js">
+    </script><script type="text/javascript" src="./assets/nebula_ring.js">
+    </script><script type="text/javascript" src="./assets/nebula_minkowski.js">
+    </script><script type="text/javascript" src="./assets/nebula_calabash.js">
+    </script><script type="text/javascript" src="./assets/nebula_eskimo.js">
+    </script><script type="text/javascript" src="./assets/nebula_cateye.js">
+    </script>
+
+<script type="text/javascript">
+    // if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+    var container, stats;
+    var global = {}, camera, scene, renderer, effect, particles, geometry, materials = [], parameters, i, h, color, sprite, size;
+    global.autoCamera = false;
+    global.stereo = false;
+    var mouseX = 0, mouseY = 0;
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+    
+    var camera_path = null;
+    var camera_path_duration = 0;
+    var camera_path_start = Date.now();
+    
+    function generate_camera_path(){
+        var v = new THREE.Vector3( Math.random()*20000-10000, Math.random()*20000-10000, Math.random()*20000-10000 )
+        v.x*=Math.random();
+        v.y*=Math.random();
+        camera_path = new THREE.CubicBezierCurve3(
+            new THREE.Vector3( Math.random()*10000-5000, Math.random()*10000-5000, Math.random()*10000-5000 ).add(v),
+            new THREE.Vector3( Math.random()*10000-5000, Math.random()*10000-5000, Math.random()*10000-5000 ).add(v),
+            new THREE.Vector3( Math.random()*10000-5000, Math.random()*10000-5000, Math.random()*10000-5000 ).add(v),
+            new THREE.Vector3( Math.random()*10000-5000, Math.random()*10000-5000, Math.random()*10000-5000 ).add(v)
+        );
+        camera_path_duration = Math.random()*10000+5000;
+        camera_path_start = Date.now();
+    }
+    
+    function clear_scene(scene){
+        var obj, i;
+        for ( i = scene.children.length - 1; i >= 0 ; i -- ) {
+            obj = scene.children[ i ];
+            
+            if ( obj.isNebula === true) {
+                scene.remove(obj);
+            }
+        }
+    };
+    
+    var clock = new THREE.Clock();
+    var nebula = nebulas[0];
+    function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
+        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 10, 200000 );
+        camera.position.z = 10000;
+        
+        scene = new THREE.Scene();
+    
+
+        /* // Code for cubemap background
+        var r = "milkyway/";
+        var urls = [ r + "dark-s_px.jpg", r + "dark-s_nx.jpg",
+                     r + "dark-s_py.jpg", r + "dark-s_ny.jpg",
+                     r + "dark-s_pz.jpg", r + "dark-s_nz.jpg" ];
+
+        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+        textureCube.format = THREE.RGBFormat;
+        var skyboxShader = THREE.ShaderLib[ "cube" ];
+        skyboxShader.uniforms[ "tCube" ].value = textureCube;
+
+        var skyboxMaterial = new THREE.ShaderMaterial( {
+
+            fragmentShader: skyboxShader.fragmentShader,
+            vertexShader: skyboxShader.vertexShader,
+            uniforms: skyboxShader.uniforms,
+            depthWrite: false,
+            side: THREE.BackSide
+
+        } );
+
+        skybox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), skyboxMaterial );
+        scene.add( skybox );
+        */
+        
+        
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        
+        effect = new THREE.StereoEffect(renderer);
+        effect.eyeSeparation = 100;
+        effect.focalLength = 10000;
+        
+        container.appendChild( renderer.domElement );
+
+        // CONTROLS
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.minDistance = 10;
+        controls.maxDistance = 20000;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.1;
+        
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+        document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+        document.addEventListener( 'keydown', onKeyDown, false );
+        
+        window.addEventListener( 'resize', onWindowResize, false );
+        onWindowResize();
+
+        // console.log('nebulas: ' + nebula.description);
+        nebula.func(scene,7);
+        // play_file(nebula.audio); //lod
+    }
+
+    function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        effect.setSize( window.innerWidth, window.innerHeight );
+        if(scale_uniform!=undefined){
+            scale_uniform.value = window.innerHeight / 2;
+        }
+
+    }
+
+    function onDocumentMouseMove( event ) {
+        mouseX = event.clientX - windowHalfX;
+        mouseY = event.clientY - windowHalfY;
+
+    }
+
+    function onDocumentTouchStart( event ) {
+        if ( event.touches.length === 1 ) {
+            event.preventDefault();
+            mouseX = event.touches[ 0 ].pageX - windowHalfX;
+            mouseY = event.touches[ 0 ].pageY - windowHalfY;
+        }
+    }
+
+    function onDocumentTouchMove( event ) {
+        if ( event.touches.length === 1 ) {
+            event.preventDefault();
+            mouseX = event.touches[ 0 ].pageX - windowHalfX;
+            mouseY = event.touches[ 0 ].pageY - windowHalfY;
+        }
+    }
+    function onKeyDown(event){
+        generate_camera_path();
+    }
+
+    function simulation() {
+        ;
+
+        // scene.children[0].rotation.x = Math.random()*.06;
+        // scene.children[0].rotation.y = Math.random()*.06;
+        // scene.children[0].rotation.z = Math.random()*.06;
+
+        // scene.children[0].geometry.vertices *= Math.random();
+        vLength = scene.children[0].geometry.vertices.length/2;
+        for(var i = 0; i < vLength; i++) {
+            // scene.children[0].geometry.vertices[i].x *= Math.random();
+            // scene.children[0].geometry.vertices[i].y *= 10*Math.random();
+            // scene.children[0].geometry.colors[i] = Math.random();
+            // scene.children[0].geometry.vertices[i].z *= Math.random();
+            // console.log('length: ' + scene.children[0].geometry.vertices[i]);
+        }
+        // scene.children[0].geometry.vertices.needsUpdate = true;
+
+        // console.log('length: ' + scene.children[0].geometry.vertices[142].z);//.length);//nebula.func.attributes.position.length);
+    }
+    function animate() {
+        setTimeout( function() {
+            requestAnimationFrame( animate );
+        }, 1000 / 30 );
+
+        simulation();
+        render();
+    }
+
+    function render() {
+        if(global.autoCamera){
+            var time = (Date.now() - camera_path_start)/camera_path_duration;
+            
+            camera.position.x += ( mouseX*100- camera.position.x ) * 0.05;
+            camera.position.y += ( - mouseY*100 - camera.position.y ) * 0.05;
+            camera.position.z*=0.999;
+            
+            if(camera_path === null || time>1){
+                generate_camera_path();
+                time=0;
+            }
+            var p = camera_path.getPoint(time);
+            camera.position.x=p.x ;
+            camera.position.y=p.y ;
+            camera.position.z=p.z ;
+        
+            camera.lookAt( scene.position );
+        }else{
+            var delta = clock.getDelta();
+            controls.update( delta );
+        }
+        if(skybox!== undefined){
+            skybox.position.set(camera.position.x,camera.position.y,camera.position.z);
+        }
+        if(!global.stereo){
+            renderer.render( scene, camera );
+        }else{
+            effect.render(scene, camera);
+        }
+    }
+
+    // // $scope.nebulas = nebulas;   //
+    // showSelection = false;
+    // cameraType="Auto";
+    // autoCamera = true;
+    // function toggleCamera(){
+    //     if(cameraType=="Manual"){
+    //         cameraType="Auto";
+    //         autoCamera = true;
+    //     }else{
+    //         cameraType="Manual";
+    //         autoCamera = false;
+    //     }
+    // }
+    var ang = angular.module('NebulaApplication', ['ngTouch'])
+    .controller('NebulaController', ['$scope', '$window', function($scope, $window) {
+        $(".nodisplay").removeClass("nodisplay");
+      
+        $scope.info = false;
+        $scope.toggleInfo = function(){
+            $scope.info = !$scope.info;
+            console.log('toggleInfo inside.')
+        }
+      
+        $scope.audioPlaying = true;
+        $scope.toggleAudioPlaying = function(){
+            $scope.audioPlaying = !$scope.audioPlaying;
+            if($scope.audioPlaying == false){
+                stopAll();
+            }else{
+                play_file($scope.nebula.audio);
+            }
+        }
+      
+        $scope.renderMode = "3D";
+        global.stereo = false;
+        $scope.toggleRenderMode = function(){
+            if($scope.renderMode == "VR"){
+                $scope.renderMode = "3D"
+                global.stereo = false;
+            }else{
+                $scope.renderMode = "VR"
+                global.stereo = true;
+                $scope.info = false;
+            }
+            onWindowResize();
+        }
+        $scope.nebulas = nebulas;   //
+        $scope.showSelection = false;
+        $scope.cameraType="Auto";
+        global.autoCamera = true;
+        $scope.toggleCamera=function(){
+            if($scope.cameraType=="Manual"){
+                $scope.cameraType="Auto";
+                global.autoCamera = true;
+            }else{
+                $scope.cameraType="Manual";
+                global.autoCamera = false;
+            }
+        }
+        $scope.launchFullScreen=function(){
+        if(document.documentElement.requestFullScreen) {
+            document.documentElement.requestFullScreen();
+        } else if(document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if(document.documentElement.webkitRequestFullScreen) {
+            document.documentElement.webkitRequestFullScreen();
+        }
+            console.log('launchFullScreen inside render.')
+        }
+        $scope.lod=7; //4,5,7
+        $scope.toggleQuality=function(){
+            if($scope.lod==7){
+                $scope.lod=5;
+            }else if($scope.lod==5){
+                $scope.lod=4;
+            }else{
+                $scope.lod=7;
+            }
+            clear_scene(scene); 
+            $scope.nebula.func(scene,$scope.lod);
+            console.log("lod:" + $scope.lod);
+            document.getElementById('test').innerHTML = "lod:" + $scope.lod;
+        }
+        // $scope.simulation = function(){
+        //     ;
+        //     console.log('geometry.length: ' + $scope.nebula.func.geometry.length);
+        // }
+        $scope.iNebula = 0;
+        $scope.nebula = $scope.nebulas[$scope.iNebula];
+        $scope.nextNebula = function() {
+            $scope.iNebula = $scope.iNebula + 1;
+
+            if($scope.showSelection){
+                $scope.nebula = $scope.nebulas[$scope.iNebula];
+                clear_scene(scene); 
+                $scope.nebula.func(scene,$scope.lod);
+                stopAll();
+                if($scope.audioPlaying){
+                    play_file($scope.nebula.audio);
+                }
+                document.getElementById('test').innerHTML = $scope.nebula.name + ' ' + $scope.nebula.observation[1].value;  //name+" has loaded";
+            }else{
+                document.getElementById('test').innerHTML = "Please, select Nebula from the list";
+                // clear_scene(scene); 
+            }
+            $scope.showSelection=!$scope.showSelection;
+            console.log("iNebula:" + $scope.iNebula);
+        }
+        $scope.setNebula = function(n) {
+            if($scope.showSelection){
+                $scope.nebula = n;
+                clear_scene(scene); 
+                $scope.nebula.func(scene,$scope.lod);
+                stopAll();
+                if($scope.audioPlaying){
+                    play_file($scope.nebula.audio);
+                }
+                document.getElementById('test').innerHTML = n.name+" has loaded";
+            }else{
+                document.getElementById('test').innerHTML = "Please, select Nebula from the list";
+                clear_scene(scene); 
+            }
+            $scope.showSelection=!$scope.showSelection;
+        };
+        // $(function(){$scope.nebula.func(scene,7);play_file($scope.nebula.audio);}); //lod
+    }]);
+</script>
+
+<script type="text/javascript">
+    function testOrientation() {
+      //document.getElementById('block_land').style.display = (screen.width>screen.height) ? 'none' : 'block';
+    }
+      $(document).ready(function(){
+        init();
+        animate();
+        $(window).resize(function() {
+          $("iframe").css("height", $(window).innerHeight() - 51 +"px");
+        });
+        $("iframe").css("height", $(window).innerHeight() - 51 +"px");
+        
+        myTimer();	
+      });
+
+    var infoItem = 0;
+    var loadArray = ["Welcome to Nebula Bliss. Experience stunning 3D interactive nebula with music."];
+    var infoArray = ["Turn off the 'auto' camera in the menu at the top", "For VR, Try the website with Google Cardboard"];
+    
+    loadingflag = false;
+                
+
+    var myVar = setInterval(function(){myTimer()}, 7000);
+
+    function myTimer() {
+        if(!loadingflag) 
+        { 
+            // document.getElementById('test').innerHTML = loadArray[0]; 
+            loadingflag = true;
+        }
+        else{
+            // document.getElementById('test').innerHTML = infoArray[infoItem];
+            
+            if (++infoItem === infoArray.length){
+                infoItem = 0;
+            }
+        }
+    }
+    function getQuerystring(key, default_)
+    {
+        if (default_==null) default_="";
+        key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+        var qs = regex.exec(window.location.href);
+        if(qs == null)
+        return default_;
+        else
+        return qs[1];
+    }
+    $(function(){
+    
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || getQuerystring('REAL3D') == "enable") //if mobile, don't show info
+        { 
+            var clicked=true;
+            $(".infotext").css({"top":"-500px"});
+            $(".info").on('click', function(){
+                if(clicked)
+                {
+                    clicked=false;
+                    $(".infotext").css({"top": 0});
+                }
+                else
+                {
+                    clicked=true;
+                    $(".infotext").css({"top": "-500px"});
+
+                }
+            });
+        } else	{ 
+             var clicked=true;
+            $(".infotext").css({"top": 0});
+            $(".info").on('click', function(){
+                if(clicked)
+                {
+                    clicked=false;
+                    $(".infotext").css({"top": "-500px"});
+                }
+                else
+                {
+                    clicked=true;
+                    $(".infotext").css({"top": 0});
+                }
+            });
+        }
+    });
+</script>
+</head>
+
+<body style="overflow: hidden; min-height: 100%; height: 100%;" 
+    onorientationchange="testOrientation();" onload="testOrientation();" 
+    ng-app="NebulaApplication" ng-controller="NebulaController" 
+    data-gr-c-s-loaded="true" class="ng-scope">
+
+    <span id="my-gui-container" style="display:inline-block; position:absolute;"></span>
+
+    <header>
+        <div class="center ng-binding">					
+            <!-- <h1><a href="https://www.nebulabliss.com/index.html" title="Go to Nebular Bliss Home page">Nebular Bliss</a></h1>				 -->
+            <span ng-click="toggleCamera()" id="camera" title="" class="glyphicon glyphicon-facetime-video tt" data-toggle="tooltip" data-placement="bottom" data-original-title="Take Control of the Camera"></span>Manual
+            <span ng-click="toggleRenderMode()" class="glyphicon glyphicon-eye-open tt" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="switching 3D/VR mode"></span>3D
+            <span ng-click="toggleQuality()" class="glyphicon glyphicon-dashboard tt" data-toggle="tooltip" data-placement="bottom" title="Quality"></span>High Res
+            <!-- <span ng-click="toggleInfo()" class="glyphicon glyphicon-info-sign tt targetme" data-toggle="tooltip" data-placement="bottom" title="Add/remove Information on the left"></span>Off					 -->
+            <span ng-click="nextNebula()" class="glyphicon glyphicon-info-sign tt targetme" data-toggle="tooltip" data-placement="bottom" title="Next nebula"></span>Next
+            <span ng-click="toggleAudioPlaying()" class="glyphicon tt glyphicon-volume-off" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Turn Music Off/On"></span> Sound
+            <span ng-click="launchFullScreen()" class="glyphicon glyphicon-new-window tt" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="FullScreen"></span> FullScreen
+            <p class="help" id="test">For VR, Try the website with Google Cardboard</p>
+        </div>
+    </header>
+    <footer></footer>
+
+    <script type="text/javascript">		
+        function hide (elements) {
+            elements = elements.length ? elements : [elements];
+            for (var index = 0; index < elements.length; index++) {
+            elements[index].style.display = 'none';
+            }
+        }
+
+        // if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) //if mobile, don't show info
+        // { 
+        //     hide(document.querySelectorAll('.targetme'));          	
+        // } 
+        // <script type="text/javascript">  
+		//  	var uop_custom_panel = "";          
+        //     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) //if mobile, don't show info
+        //     { 
+        //     	var uop_custom_panel = "";
+        // 	} else var uop_custom_panel = "f9Z6JBzsUVjv8Bjq";
+
+        // Find the right method, call on correct element
+        function launchFullScreen(element) {
+            if(element.requestFullScreen) {
+            element.requestFullScreen();
+            } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+            } else if(element.webkitRequestFullScreen) {
+            element.webkitRequestFullScreen();
+            }
+            console.log('launchFullScreen inside the function.')
+        }
+    </script>
+</body></html>

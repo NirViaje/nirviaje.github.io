@@ -1,0 +1,129 @@
+body {
+		background-color: #000000;
+		margin: 0px;
+		overflow: hidden;
+		font-family:Monospace;
+		font-size:14px;
+		text-align:center;
+		font-weight: bold;
+		text-align:center;
+	}
+
+	a {
+		color:#0078ff;
+	}
+
+	#info {
+		color:#fff;
+		position: absolute;
+		top: 0px; width: 100%;
+		padding: 5px;
+		z-index:100;
+	}
+	.nebula-ui {
+		height:100%;
+		overflow-y: auto;
+		z-index:2;
+		opacity:0.8;
+		background:#404040; 
+		border:white;
+		display:inline-block; 
+		position:absolute;
+		right:0;
+		width:20%;
+		padding:10px;
+		font-size: 14px;
+		text-align: left;
+	}
+	.nebula-ui h2,.nebula-ui h3{
+		background: #00b0f0;
+		text-align:center;
+		margin: 1px;
+	}
+	.nebula-ui table{
+		width:100%;
+	}
+	.nebula-ui td, .nebula-ui th{
+		font-size: 14px;
+	}
+	.nebula-ui td{
+		text-align: left;
+	}
+	.nebula-ui th{
+		color: yellow !important;
+		text-align: right;
+	}
+	.nebula-ui div div, .nebula-ui table{
+		background: #606060;
+		margin-bottom:10px;
+		overflow-y: auto;
+		max-height: 99%;
+
+	}
+	.nebula-ui .active_false{
+		background:white;
+		color:black;
+	}
+	.nebula-ui h2{
+		font-size: 2vw;
+		white-space:nowrap;
+		transition: all .2s ease-in-out;
+	}
+	.nebula-ui .show_selection_false .active_false{
+		display:none;
+		transform: scale(0.0);
+	}
+	
+	@keyframes blink {  
+		0% { color: white; }
+		50% { color: #bee; }
+		0% { color: white; }
+	}
+	@-webkit-keyframes blink {
+		0% { color: white; }
+		50% { color: #bee; }
+		100% { color: white; }
+	}
+	.nebula-ui .show_selection_false .active_true{
+		-webkit-animation: blink 1.5s linear infinite;
+		-moz-animation: blink 1.5s linear infinite;
+		-ms-animation: blink 1.5s linear infinite;
+		-o-animation: blink 1.5s linear infinite;
+		animation: blink 1.5s linear infinite;
+	} 
+
+	
+	
+	.nebula-ui .show_selection_false .active_true{
+		cursor:pointer;
+		text-decoration:underline;
+	}
+	
+	.nebula-ui .show_selection_true h2.active_false{
+		transform: scale(0.7); 
+	}
+	.nebula-ui .show_selection_true h2.active_true{
+		transform: scale(0.8); 
+	}
+	.nebula-ui .show_selection_true h2:hover{
+		transform: scale(0.9); 
+	}
+	.nodisplay{
+		display:none;
+	}
+	.header {font-size: 2vw;}
+	.nebula-ui .glyphicon {font-size: 1.5vw;}
+	.glyphicon{
+		background-color:transparent;
+		width:25px;height:25px;
+		border: none; 
+		font-size: 24px; 
+		color:grey; 
+		padding:0px;
+		cursor: pointer;
+		vertical-align: middle;
+		margin:3px;
+	}
+	.glyphicon:hover{
+		color:white;
+	}

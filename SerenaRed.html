@@ -9,8 +9,9 @@ precision highp float;
   uniform sampler2D samp;
   varying vec2 tc;
 void main(void) {
-   float rg = 1. + texture2D(samp, tc).b;
-   gl_FragColor = vec4(1. + rg, rg, rg, 1.);
+   gl_FragColor = texture2D(samp, tc) + 1.0;
+  //  float rg = 1. + texture2D(samp, tc).b;
+   //gl_FragColor = vec4(1. + rg, 0.2 + rg, rg, 1.);  //color
 }
 </script> 
 
@@ -137,7 +138,7 @@ function main() {
    gl.attachShader(prog_force, getShader( gl, "force-fs" ));
    gl.linkProgram(prog_force);
    gl.useProgram(prog_force);
-   gl.uniform1f(gl.getUniformLocation(prog_force, "c"), .001*.5*10 );
+   gl.uniform1f(gl.getUniformLocation(prog_force, "c"), .01*.5*10 );
 
    prog_advec  = gl.createProgram();
    gl.attachShader(prog_advec, getShader( gl, "shader-vs" ));
@@ -176,8 +177,10 @@ function main() {
    for(var i = 0; i<n; i++)
      for(var j = 0; j<n; j++){
        var x = h*(j-n/2),  y = h*(i-n/2) - .75;
-       if (x*x + y*y > .05) T = 0; else T= -3;
-       pixels.push( 0, 0, T, 0 );
+      //  if (x*x + y*y > .05) T = 0; else T= -3;
+       if (y > .05 | x > 0.05) T = 0; else T= -1;
+       pixels.push( T, T, T, 0 );
+      //  pixels.push( 0, 0, T, 0 );
      }
    texture = gl.createTexture();
    gl.activeTexture(gl.TEXTURE0);
