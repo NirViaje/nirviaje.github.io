@@ -1,6 +1,7 @@
 //Nebula Bliss Engine
 nebula_sprite = THREE.ImageUtils.loadTexture( "particleTexture.png" );
 scale_uniform = { type: "f", value: window.innerHeight / 2	};
+
 function addNebulaParticle(geometry,vertex,size,opacity,color){
 		geometry.vertices.push( vertex );
 		geometry.colors.push( color );
@@ -31,7 +32,8 @@ function createNebulaMaterial(geometry){
 
 	var uniforms = {
 		texture:   { type: "t", value: nebula_sprite},
-		scale:   scale_uniform
+		scale:   scale_uniform,
+		val:	{ type: 'f', value: 1.0}	//
 	};
 
 	return nebulaMaterial = new THREE.ShaderMaterial( {

@@ -98,7 +98,7 @@ nebulas.push({
 				if(i%2==0){ //large outer bluge 
 					if (vertex.z > 200){
 					vertex.multiplyScalar(0.5+noise.simplex3(vertex.x*0.001,vertex.y*0.001,vertex.z*0.001)*0.05);
-					addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
+					// addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
 					}
 
 				} else{ 
@@ -121,8 +121,8 @@ nebulas.push({
 				
 				vertex.x = Math.sin(phi)*vertex.z*(900);
 				vertex.y = Math.cos(phi)*vertex.z*(900);
-				var a = Math.cos(vertex.z*0.85+1.15);
-				a*=0.27;
+				var a = Math.cos(vertex.z*0.85+1.15);	//inner cone
+				a*=.27;
 				vertex.x*=a;
 				vertex.y*=a;
 				vertex.z *=vertex.z*300*Math.cos(vertex.z)*0.8;
@@ -133,7 +133,7 @@ nebulas.push({
 				if(i%2){ 
 					vertex.multiplyScalar(0.5+noise.simplex3(vertex.x*0.009,vertex.y*0.009,vertex.z*0.015)*0.115);
 					//color = color1.lerp(color2,1+vertex.z*0.0006);
-					addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color);
+					// addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color);
 				} else {vertex.multiplyScalar(0.5+noise.simplex3(vertex.x*0.009,vertex.y*0.009,vertex.z*0.015)*0.115);
 					//color = color1.lerp(color2,1+vertex.z*0.0006);
 					addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color);}
@@ -162,13 +162,13 @@ nebulas.push({
 				if(i%2==0){ 
 					if (vertex.z < 200){
 					vertex.multiplyScalar(0.5+noise.simplex3(vertex.x*0.001,vertex.y*0.001,vertex.z*0.001)*0.05);
-					addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
+					// addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
 					}
 
 				} else{ 
 					if (vertex.z > -200){
 					vertex.multiplyScalar(0.5+noise.simplex3(vertex.x*0.001,vertex.y*0.001,vertex.z*0.001)*0.05);
-					addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
+					// addNebulaParticle(geometry2,vertex,1000>>lev,(lev*0.1+0.3)*0.2,color2);
 					}
 				}
 			}
@@ -179,33 +179,32 @@ nebulas.push({
 		var nebulaMappedMaterial =createNebulaMappedMaterial(geometry);
 				
 		var particles = new THREE.PointCloud( geometry, nebulaMappedMaterial);
-		particles.sortParticles = true;
-		particles.isNebula=true;
+		// particles.sortParticles = true;
+		// particles.isNebula=true;
 		scene.add( particles );
 		
 		var nebulaMaterial =createNebulaMaterial(geometry2);
-		var particles2 = new THREE.PointCloud( geometry2, nebulaMaterial);
-		particles2.sortParticles = true;
-		particles2.isNebula=true;
-		scene.add( particles2 );
+		// var particles2 = new THREE.PointCloud( geometry2, nebulaMaterial);
+		// particles2.sortParticles = true;
+		// particles2.isNebula=true;
+		// scene.add( particles2 );
 
-		var geometry = new THREE.Geometry();
-		geometry.colors = [];
-		geometry.sizes = [];
-		geometry.opacities = [];
-		var nebulaMaterial =createNebulaMaterial(geometry);
+		// var geometry = new THREE.Geometry();
+		// geometry.colors = [];
+		// geometry.sizes = [];
+		// geometry.opacities = [];
+		// var nebulaMaterial =createNebulaMaterial(geometry);
 		
 		//custom stars
-		var vertex = new THREE.Vector3();
+		// var vertex = new THREE.Vector3();
 		
+		// addNebulaParticle(geometry,vertex,2500,1.0,new THREE.Color( 1.0,0.75,0.5 ));
+		// addNebulaParticle(geometry,vertex,500,1.0,new THREE.Color( 1,1,1 ));
 		
-		addNebulaParticle(geometry,vertex,2500,1.0,new THREE.Color( 1.0,0.75,0.5 ));
-		addNebulaParticle(geometry,vertex,500,1.0,new THREE.Color( 1,1,1 ));
-		
-		addStars(geometry);		
+		// addStars(geometry);		
 		var particles = new THREE.PointCloud( geometry, nebulaMaterial);
-		particles.sortParticles = true;
-		particles.isNebula=true;
+		// particles.sortParticles = true;
+		// particles.isNebula=true;
 		scene.add( particles );
 	}
 });

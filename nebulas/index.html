@@ -56,10 +56,12 @@
         var nebulas=[];
         var nebulas_info=[];
         var skybox;
+        var initTime;
     </script>
 
     <script type="x-shader/x-vertex" id="vertexshader">
         uniform float scale;
+        uniform float val;
         attribute float size;
         attribute float opacity;
         attribute vec3 customColor;
@@ -69,7 +71,7 @@
 
         void main() {
             vColor = vec4 ( customColor, opacity);
-            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            vec4 mvPosition = modelViewMatrix * vec4( position*val, 1.0 );
             gl_PointSize = size * ( scale / length( mvPosition.xyz ) );
             gl_Position = projectionMatrix * mvPosition;
         }
@@ -110,10 +112,10 @@
 
     <script type="text/javascript" src="./assets/nebula_material.js">
     </script><script type="text/javascript" src="./assets/nebula_hourglass.js">
-    </script><script type="text/javascript" src="./assets/nebula_ring.js">
     </script><script type="text/javascript" src="./assets/nebula_minkowski.js">
-    </script><script type="text/javascript" src="./assets/nebula_calabash.js">
     </script><script type="text/javascript" src="./assets/nebula_eskimo.js">
+    </script><script type="text/javascript" src="./assets/nebula_calabash.js">
+    </script><script type="text/javascript" src="./assets/nebula_ring.js">
     </script><script type="text/javascript" src="./assets/nebula_cateye.js">
     </script>
 
@@ -222,7 +224,8 @@
 
         // console.log('nebulas: ' + nebula.description);
         nebula.func(scene,7);
-        // play_file(nebula.audio); //lod
+        play_file(nebula.audio); //lod
+        initTime = Date.now();
     }
 
     function onWindowResize() {
@@ -269,13 +272,23 @@
     function simulation() {
         ;
 
+        //TODO: the brightness and color should change by time, get dim by distance
+        //TODO: denotes of time and scale, scale should charge according to camera distance
+        var k = Date.now() - initTime;
+        var easeVal = k/100000.0;
+        // - 0.5 * (--k * (k - 2) - 1);
+        scene.children[0].material.uniforms.val.value = easeVal;
+        // console.log('easeVal: ' + easeVal);
+        // .material.uniforms.val.value = easeVal;
+
         // scene.children[0].rotation.x = Math.random()*.06;
         // scene.children[0].rotation.y = Math.random()*.06;
         // scene.children[0].rotation.z = Math.random()*.06;
 
         // scene.children[0].geometry.vertices *= Math.random();
-        vLength = scene.children[0].geometry.vertices.length/2;
-        for(var i = 0; i < vLength; i++) {
+        // vLength = scene.children[0].geometry.vertices.length/2;
+        // for(var i = 0; i < vLength; i++) 
+        {
             // scene.children[0].geometry.vertices[i].x *= Math.random();
             // scene.children[0].geometry.vertices[i].y *= 10*Math.random();
             // scene.children[0].geometry.colors[i] = Math.random();
@@ -284,6 +297,7 @@
         }
         // scene.children[0].geometry.vertices.needsUpdate = true;
 
+        // console.log('length: ' + scene.children[0].material.uniforms.val.value);
         // console.log('length: ' + scene.children[0].geometry.vertices[142].z);//.length);//nebula.func.attributes.position.length);
     }
     function animate() {
@@ -375,7 +389,7 @@
         }
         $scope.nebulas = nebulas;   //
         $scope.showSelection = false;
-        $scope.cameraType="Auto";
+        $scope.cameraType="Manual"; //Auto
         global.autoCamera = true;
         $scope.toggleCamera=function(){
             if($scope.cameraType=="Manual"){

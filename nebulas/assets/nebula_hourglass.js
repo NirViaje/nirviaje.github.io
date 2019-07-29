@@ -146,6 +146,11 @@ nebulas.push({
 		var particles = new THREE.PointCloud( geometry, nebulaMaterial);
 		particles.sortParticles = true;
 		particles.isNebula=true;
+		console.log('particles.nebulaMaterial.uniforms.val.value: ' + particles.material.uniforms.val.value);
 		scene.add( particles );
 	}
+	// ,
+	// setVal: function(value) {
+	// 	func.particles.material.uniforms.val.value = value;
+	// }
 });
