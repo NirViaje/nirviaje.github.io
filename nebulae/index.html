@@ -112,8 +112,8 @@
 
     <script type="text/javascript" src="./assets/nebula_material.js">
     </script><script type="text/javascript" src="./assets/nebula_hourglass.js">
-    </script><script type="text/javascript" src="./assets/nebula_minkowski.js">
     </script><script type="text/javascript" src="./assets/nebula_eskimo.js">
+    </script><script type="text/javascript" src="./assets/nebula_minkowski.js">
     </script><script type="text/javascript" src="./assets/nebula_calabash.js">
     </script><script type="text/javascript" src="./assets/nebula_ring.js">
     </script><script type="text/javascript" src="./assets/nebula_cateye.js">
@@ -276,8 +276,9 @@
         //TODO: denotes of time and scale, scale should charge according to camera distance
         var k = Date.now() - initTime;
         var easeVal = k/100000.0;
+        scene.children[0].material.uniforms.val.value = 100000.0;//easeVal;
+
         // - 0.5 * (--k * (k - 2) - 1);
-        scene.children[0].material.uniforms.val.value = easeVal;
         // console.log('easeVal: ' + easeVal);
         // .material.uniforms.val.value = easeVal;
 

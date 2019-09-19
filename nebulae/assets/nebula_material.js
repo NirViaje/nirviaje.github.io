@@ -1,5 +1,6 @@
 //Nebula Bliss Engine
-nebula_sprite = THREE.ImageUtils.loadTexture( "particleTexture.png" );
+nebula_sprite = THREE.ImageUtils.loadTexture( "star-texture/star_small.png");//particleTexture.png" );
+//star-texture/star_small.png, star_large.png, cloud_01.png
 scale_uniform = { type: "f", value: window.innerHeight / 2	};
 
 function addNebulaParticle(geometry,vertex,size,opacity,color){

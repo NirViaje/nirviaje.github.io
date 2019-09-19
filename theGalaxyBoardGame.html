@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.container {
+  position: relative;
+}
+.FrontImg {
+  position: absolute;
+  top: 15px;
+  left: 3px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.CardDiv {
+  position: relative;
+  left: 29px;
+  width: 700px;	//auto;
+  //align: center;
+  //border: 2px solid #2173AD;
+  border-radius: 9px;
+  display: none;	//block;
+}
+
+.CardFront {
+  border-radius: 15px;
+  width: 310px;
+  height: 435px;
+  background-color: black;
+  border: 3px solid #73AD21;
+}
+.CardBack {
+  position: absolute;
+  top: 0px;
+  left: 370px;
+  
+  border-radius: 15px;
+  width: 310px;
+  height: 435px;
+  background-color: black;
+  border: 3px solid #73AD21;
+}
+
+.CardTitle {
+  position: absolute;
+  top: 9px;
+  left: 7px;
+  padding: 3px;
+  color: black;
+  background-color: lightgray;
+  border-radius: 2px;
+}
+.CardClass {
+  position: absolute;
+  top: 360px;
+  left: 10px;
+  padding: 3px;
+  color: black;
+  background-color: Orange;
+  border-radius: 2px;
+}
+.Dist {
+  position: absolute;
+  top: 382px;
+  left: 10px;
+  padding: 3px;
+  color: black;
+  background-color: lightgreen;
+  border-radius: 2px;
+}
+.Size {
+  position: absolute;
+  top: 382px;
+  left: 72px;
+  padding: 3px;
+  color: black;
+  background-color: Green;
+  border-radius: 2px;
+}
+.NumNotes {
+  position: absolute;
+  top: 400px;
+  left: 270px;
+  padding: 3px;
+  color: black;
+  background-color: lightblue;
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 100px 20px;
+  height: 160%;
+}
+
+#Home {background-color: red;}
+#Howto {background-color: green;}
+#Contact {background-color: blue;}
+#About {background-color: orange;}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  //padding: 16px;
+  margin-top: -50px;
+  color: white;
+  font-weight: bold;
+  font-size: 32px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: .5s;
+  animation-name: fade;
+  animation-duration: .5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+</style>
+</head>
+<body>
+
+<button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">Home</button>
+<button class="tablink" onclick="openPage('Howto', this, 'green')">How to</button>
+<button class="tablink" onclick="openPage('Contact', this, 'blue')">Contact</button>
+<button class="tablink" onclick="openPage('About', this, 'orange')">About</button>
+
+<div id="Home" class="tabcontent">
+  <h3>Home</h3>
+  <p>Home is where the heart is..</p>
+  
+  <div class="container fade">
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="http://cdn.spacetelescope.org/archives/images/screen/opo9607a.jpg" alt="Nebula MyCn18" style="width:100%;max-width:300px">
+      <span class="CardTitle">Hourglass | MyCn18</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">8000 ly</span>
+      <span class="Size">1.3 ly</span>
+      <span class="NumNotes">#17</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://user-images.githubusercontent.com/1320252/62818187-839ab500-bb76-11e9-8370-2106657150dc.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">Pillars of Creation | M16, NGC6611</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/NGC6543.jpg/600px-NGC6543.jpg" alt="Nebula NGC6302" style="width:100%;max-width:300px">
+      <span class="CardTitle">Cat's Eye | NGC6543</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="NumNotes">#19</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="http://cdn.spacetelescope.org/archives/images/screen/opo9501c.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <p id="array-demo"></p>
+  </div>
+
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">星云 | Nebulae</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">行星状星云</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">超新星遗迹 | Supernova remnant</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">暗星云</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">反射星云 | Reflection nebula</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+  <div class="CardDiv fade">
+    <div class="CardFront">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+      <span class="CardTitle">Pillars of Creation | M16, NGC6611</span>
+      <span class="CardClass">Planetary Nebula</span>
+      <span class="Dist">6,500ly</span>
+      <span class="Size">~60ly</span>
+      <span class="NumNotes">#18</span>
+    </div>
+    <div class="CardBack">
+      <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    </div>
+  </div>
+
+  <a class="prev" onclick="plusCards(-1)">❮</a>
+  <a class="next" onclick="plusCards(1)">❯</a>
+  
+  </div>
+
+</div>
+
+<div id="Howto" class="tabcontent">
+  <h3>How to Play?</h3>
+  <p>Characters
+  </p><p>Action/Mechanics
+    <li><a href="http://www.boardgamizer.com/mechanics/definition/press_your_luck">Mechanics</a></li>
+  </p><p>Outcomes/Victory
+  </p><p>Map</p>
+  </p><p>Scoreboard</p>
+  <h3>News</h3>
+  <p>Some news this fine day!</p> 
+</div>
+
+<div id="Contact" class="tabcontent">
+  <h3>Contact</h3>
+  <p>Get in touch, or swing by for a cup of coffee.
+  </p><p>find me on WeChat: 12131957
+  </p><p>or Email: nirvanajay[a]gmail.com
+  </p>
+</div>
+
+<div id="About" class="tabcontent">
+  <h3>About Giant-Stellar-Nursery</h3>
+  <p>Who we are and what we do.</p>
+</div>
+
+<script>
+function openPage(pageName,elmnt,color) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(pageName).style.display = "block";
+  elmnt.style.backgroundColor = color;
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+
+<script>
+var CardIndex = 1;
+showCards(CardIndex);
+
+function plusCards(n) {
+  showCards(CardIndex += n);
+}
+
+function currentCard(n) {
+  showCards(CardIndex = n);
+}
+
+function showCards(n) {
+  var i;
+  var Cards = document.getElementsByClassName("CardDiv");
+  var dots = document.getElementsByClassName("demo");
+  var captionText = document.getElementById("caption");
+  if (n > Cards.length) {CardIndex = 1}
+  if (n < 1) {CardIndex = Cards.length}
+  for (i = 0; i < Cards.length; i++) {
+      Cards[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  Cards[CardIndex-1].style.display = "block";
+  dots[CardIndex-1].className += " active";
+  captionText.innerHTML = dots[CardIndex-1].alt;
+  console.log("i = "+i);
+}
+</script>
+<script>
+document.onkeyup = function(e) {
+  if (e.which == 39) {
+	plusCards(1);
+  } else if (e.which == 37) {
+    plusCards(-1);
+  }
+};
+</script>
+
+<p id="demo"></p>
+<p id="array-demo"></p>
+
+<script>
+var myObj, x;
+myObj = {"name":"John", "age":30, "car":null};
+
+var text = '{"employees":[' +
+'{"firstName":"John","lastName":"Doe" },' +
+'{"firstName":"Anna","lastName":"Smith" },' +
+'{"firstName":"Peter","lastName":"Jones" }]}';
+
+var cards = '{"Nebulae":[' +
+'{"FrontImg":"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg","Name":"Hourglass Nebula","Distance":"8000ly","Identifier":"MyCn18","Magnitude":"13","Constellation":"Musca" },' +
+'{"firstName":"Anna","lastName":"Smith" },' +
+'{"firstName":"Peter","lastName":"Jones" }]}';
+
+obj = JSON.parse(cards);  //text);
+
+for (x in obj.employees) {
+  document.getElementById("demo").innerHTML += x + "<br>";
+}
+
+var i;
+for(i in obj.employees) {
+	document.getElementById("array-demo").innerHTML +=
+      "<div class=\"CardFront\">" + "<img class=\"FrontImg\" src=\"" + obj.Nebulae.FrontImg + "\" alt=\"Pillars of Creation\" style=\"width:100%;max-width:300px\">";
+    //   https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Eagle_nebula_pillars.jpg/300px-Eagle_nebula_pillars.jpg" alt="Pillars of Creation" style="width:100%;max-width:300px">
+    //   <span class="CardTitle">Pillars of Creation | M16, NGC6611</span>
+    //   <span class="CardClass">Planetary Nebula</span>
+    //   <span class="Dist">6,500ly</span>
+    //   <span class="Size">~60ly</span>
+    //   <span class="NumNotes">#18</span>
+    // </div>
+    // <div class="CardBack">
+    //   <img class="FrontImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Eagle_Nebula_from_ESO.jpg/600px-Eagle_Nebula_from_ESO.jpg" alt="Nebula" style="width:100%;max-width:300px">
+    // </div>
+	// obj.employees[i].firstName + " " + obj.employees[i].lastName + "<br>";
+}
+</script>
+    
+</body>
+</html> 
