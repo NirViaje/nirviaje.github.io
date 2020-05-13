@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - additive animation - skinning</title>
+		<title>BCoreBot go broad</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
@@ -23,8 +23,10 @@
 	<body>
 		<div id="container"></div>
 		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - Skeletal Additive Animation Blending
-			(model from <a href="https://www.mixamo.com/" target="_blank" rel="noopener">mixamo.com</a>)<br/>
+			<br>
+			BCoreBot go broad
+			<br>
+			Budget: $6,542,600 | 50 Rooms | Duration: 28h45min
 		</div>
 
 		<script type="module">
@@ -52,10 +54,10 @@
 				// folding: { weight: 0 }
 			};
 			const additiveActions = {
-				sneak_pose: { weight: 0 },
-				sad_pose: { weight: 0 },
-				agree: { weight: 0 },
-				headShake: { weight: 0 }
+				// sneak_pose: { weight: 0 },
+				// sad_pose: { weight: 0 },
+				// agree: { weight: 0 },
+				// headShake: { weight: 0 }
 			};
 			var panelSettings, numAnimations;
 
@@ -67,7 +69,7 @@
 				clock = new THREE.Clock();
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xa0a0a0 );
+				scene.background = new THREE.Color( 0x606060 );
 				scene.fog = new THREE.Fog( 0xa0a0a0, 10, 50 );
 
 				var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
@@ -75,7 +77,7 @@
 				scene.add( hemiLight );
 
 				var dirLight = new THREE.DirectionalLight( 0xffffff );
-				dirLight.position.set( - 3, 10, - 10 );
+				dirLight.position.set( - 20, 10, - 10 );
 				dirLight.castShadow = true;
 				dirLight.shadow.camera.top = 2;
 				dirLight.shadow.camera.bottom = - 2;
@@ -101,9 +103,52 @@
 
 					model.traverse( function ( object ) {
 
-						if ( object.isMesh ) object.castShadow = true;
+						if ( object.isMesh ) {
+							object.castShadow = true;
+						}
+					} );					
+					// model.clone();	//
+					// model.geometry;
+					// console.log(model.boundingBox);
+					
+					var modelClone = model.clone();
+					modelClone.position.set(4.25,0,0);
+					scene.add(modelClone);
+					// modelClone.castShadow = true;
 
+					modelClone.traverse( function ( object ) {
+
+						if ( object.isMesh ) 
+						{
+							object.castShadow = true;
+						}
 					} );
+					
+					var modelClone2 = model.clone();
+					modelClone2.position.set(8.5,0,0);
+					scene.add(modelClone2);
+					// modelClone2.castShadow = true;
+
+					modelClone2.traverse( function ( object ) {
+
+						if ( object.isMesh ) {
+							object.castShadow = true;
+						}
+					} );
+					
+					for(let i = 0; i < 50; i++) {
+
+						var modelClone2 = model.clone();
+						modelClone2.position.set(4.25*i,0,0);
+						scene.add(modelClone2);
+						// modelClone2.castShadow = true;
+
+						modelClone2.traverse( function ( object ) {
+							if ( object.isMesh ) {
+								object.castShadow = true;
+							}
+						} );
+					}
 
 					// skeleton = new THREE.SkeletonHelper( model );
 					// skeleton.visible = false;
@@ -124,6 +169,10 @@
 						if ( baseActions[ name ] ) {
 
 							const action = mixer.clipAction( clip );
+							
+							action.setLoop(THREE.LoopOnce, 1);
+							action.clampWhenFinished = true;
+
 							activateAction( action );
 							baseActions[ name ].action = action;
 							allActions.push( action );
@@ -167,13 +216,13 @@
 				camera.position.set( - 30, 2, 3 );
 
 				var controls = new OrbitControls( camera, renderer.domElement );
-				controls.enablePan = false;
-				controls.enableZoom = false;
+				// controls.enablePan = false;
+				// controls.enableZoom = false;
 				controls.target.set( 0, 1, 0 );
 				controls.update();
 
 				stats = new Stats();
-				container.appendChild( stats.dom );
+				// container.appendChild( stats.dom );
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
@@ -182,11 +231,13 @@
 			function createPanel() {
 
 				var panel = new GUI( { width: 310 } );
+				panel.close();
 
 				var folder1 = panel.addFolder( 'BCore mass' );
+				var folder2 = panel.addFolder( 'General Speed' );
+
 				// var folder1 = panel.addFolder( 'Base Actions' );
 				// var folder2 = panel.addFolder( 'Additive Action Weights' );
-				var folder2 = panel.addFolder( 'General Speed' );
 
 				panelSettings = {
 					'modify time scale': 1.0
@@ -403,7 +454,7 @@
 
 				for ( let i = 0; i !== numAnimations; ++ i ) {
 
-					const action = allActions[ i ];
+					// const action = allActions[ i ];
 					// const clip = action.getClip();
 					// const settings = baseActions[ clip.name ] || additiveActions[ clip.name ];
 					// settings.weight = action.getEffectiveWeight();

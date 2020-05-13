@@ -39,6 +39,7 @@ canvas {
 	user-select: none;
 	pointer-events: none;
 	z-index: 1; /* TODO Solve this in HTML */
+	font-family: sans-serif;
 }
 
 a, button, input, select {
