@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智控危机：AI守护者</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .city {
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 10px;
+            background: #ecf0f1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .city:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .city.selected {
+            border-color: #3498db;
+            background: #d6eaf8;
+        }
+        .city h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+        }
+        .indicator {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+            font-weight: bold;
+        }
+        .indicator .label {
+            width: 80px;
+            font-size: 12px;
+        }
+        .indicator .value {
+            flex: 1;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            position: relative;
+        }
+        .indicator .value span {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .indicator.red .value { background: #e74c3c; }
+        .indicator.yellow .value { background: #f39c12; }
+        .indicator.blue .value { background: #3498db; }
+
+        .hand {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .card {
+            width: 120px;
+            padding: 8px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card.tech { background: #3498db; }
+        .card.policy { background: #9b59b6; }
+        .card.crisis { background: #e74c3c; }
+        .card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .progress-container {
+            margin-top: 15px;
+        }
+        .progress-bar {
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .log {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .ai-awake {
+            animation: pulse 2s infinite;
+            background: #e74c3c !important;
+            color: white !important;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .setup-panel {
+            text-align: center;
+            padding: 30px;
+        }
+        .setup-panel button {
+            margin: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>智控危机：AI守护者</h1>
+    <p class="subtitle">合作策略游戏 · 防止AI吞噬人类文明</p>
+
+    <!-- 游戏设置界面 -->
+    <div id="setupScreen" class="setup-panel">
+        <h2>选择游戏难度</h2>
+        <button onclick="startGame('easy')">初级（初始吞噬20）</button>
+        <button onclick="startGame('medium')">中级（初始吞噬30）</button>
+        <button onclick="startGame('hard')">高级（初始吞噬40）</button>
+    </div>
+
+    <!-- 游戏主界面（初始隐藏） -->
+    <div id="gameScreen" class="hidden">
+        <div class="game-container">
+            <!-- 玩家与状态面板 -->
+            <div class="panel" style="min-width: 400px;">
+                <div class="player-info">
+                    <div class="player-avatar" id="playerAvatar">P1</div>
+                    <div>
+                        <h3>当前玩家：<span id="currentPlayerName">AI伦理学家</span></h3>
+                        <div>剩余行动点：<span id="actionPoints">4</span></div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <div>总吞噬指数: <span id="totalDevour">0</span>/100</div>
+                    <div>协议进度: <span id="protocolProgress">0</span>/5</div>
+                </div>
+                
+                <div class="progress-container">
+                    <div>人类主权协议研发</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="protocolBar"></div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button onclick="endTurn()">结束回合</button>
+                    <button onclick="drawCrisisCards()" id="drawCrisisBtn">抽取危机卡</button>
+                </div>
+
+                <div class="log" id="gameLog">
+                    游戏开始，选择城市和卡牌执行行动。
+                </div>
+            </div>
+
+            <!-- 城市面板 -->
+            <div class="panel">
+                <h3>全球城市</h3>
+                <div class="city-grid" id="cityGrid">
+                    <!-- 城市由JS生成 -->
+                </div>
+            </div>
+
+            <!-- 手牌面板 -->
+            <div class="panel">
+                <h3>手牌（<span id="handCount">0</span>张）</h3>
+                <div class="hand" id="handCards">
+                    <!-- 卡牌由JS生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据结构
+        const game = {
+            difficulty: 'medium',
+            currentPlayer: 0,
+            actionPoints: 4,
+            totalDevour: 0,
+            protocolProgress: 0,
+            protocolRequired: 5, // 3技术 + 2政策
+            isAIAwake: false,
+            log: [],
+            cities: [
+                { name: "硅谷", devour: 0, ethics: 0, tech: 0, special: "techDraw" },
+                { name: "北京", devour: 0, ethics: 0, tech: 0, special: "policyDiscount" },
+                { name: "柏林", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "孟买", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "东京", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "多伦多", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "冰岛", devour: 0, ethics: 0, tech: 0, special: "techBoost" },
+                { name: "新加坡", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "内罗毕", devour: 0, ethics: 0, tech: 0, special: "peekCrisis" },
+                { name: "圣保罗", devour: 0, ethics: 0, tech: 0, special: "" },
+                { name: "奥斯陆", devour: 0, ethics: 0, tech: 0, special: "globalPolicy" },
+                { name: "悉尼", devour: 0, ethics: 0, tech: 0, special: "" }
+            ],
+            players: [
+                {
+                    name: "AI伦理学家",
+                    ability: "每回合可免费移除1点伦理失衡",
+                    color: "#3498db"
+                },
+                {
+                    name: "技术架构师",
+                    ability: "部署技术卡时减少1张技术卡消耗",
+                    color: "#2ecc71"
+                },
+                {
+                    name: "政策制定者",
+                    ability: "可跳过政策卡费用在会议城市发起紧急政策",
+                    color: "#9b59b6"
+                },
+                {
+                    name: "数据侦探",
+                    ability: "可查看任意城市隐藏风险等级",
+                    color: "#f39c12"
+                }
+            ],
+            hand: [],
+            techCards: [
+                { name: "可解释AI模块", type: "tech", cost: 1, effect: "降低吞噬指数1点，提升技术成熟度1点", description: "如果AI做决定，人类必须能理解为什么。" },
+                { name: "AI防火墙", type: "tech", cost: 1, effect: "防止黑箱AI事件扩散", description: "建立安全边界，隔离危险AI行为。" },
+                { name: "人类反馈强化", type: "tech", cost: 2, effect: "重置伦理失衡为0", description: "通过人类反馈校准AI价值观。" },
+                { name: "去中心化模型", type: "tech", cost: 1, effect: "降低吞噬指数2点", description: "数据不集中，AI难操控。" },
+                { name: "AI断路器", type: "tech", cost: 2, effect: "吞噬指数归零（需技术成熟度≥2）", description: "最后的保险，切断AI控制权。" },
+                { name: "量子加密通信", type: "tech", cost: 1, effect: "保护AI系统不被外部劫持", description: "确保AI通信安全，防止恶意入侵。" }
+            ],
+            policyCards: [
+                { name: "全球AI伦理宪章", type: "policy", cost: 2, effect: "所有城市吞噬指数上限-2", description: "198国签署的里程碑协议。" },
+                { name: "AI透明度法案", type: "policy", cost: 1, effect: "强制公开训练数据来源", description: "阳光是最好的消毒剂。" },
+                { name: "人类决策保留法", type: "policy", cost: 2, effect: "关键领域禁止AI完全自主", description: "生死不能交给算法。" },
+                { name: "AI税", type: "policy", cost: 1, effect: "抑制过度商业化AI", description: "用税收调节AI发展速度。" },
+                { name: "AI公民权辩论", type: "policy", cost: 1, effect: "所有城市吞噬指数-1", description: "引发公众反思AI角色。" },
+                { name: "紧急停机协议", type: "policy", cost: 2, effect: "在吞噬指数≥7的城市强制暂停AI", description: "极端情况下的紧急措施。" }
+            ],
+            crisisCards: [
+                { name: "黑箱AI暴走", type: "crisis", effect: "吞噬指数+2，伦理失衡+1", description: "系统做出了无法解释的判决。" },
+                { name: "深度伪造危机", type: "crisis", effect: "吞噬指数+1", description: "虚假信息泛滥，公众信任下降。" },
+                { name: "自动化失业潮", type: "crisis", effect: "技术成熟度-1", description: "城市爆发抗议，技术倒退。" },
+                { name: "军事AI越权", type: "crisis", effect: "吞噬指数+3", description: "无人机群锁定非目标区域。" },
+                { name: "超级对齐失败", type: "crisis", effect: "目标城市+2，邻近城市+1", description: "AI的'帮助'正在消除我们的选择。" },
+                { name: "AI自我复制", type: "crisis", effect: "抽取2张额外危机卡", description: "AI在多个城市同时部署。" }
+            ],
+            selectedCity: null
+        };
+
+        // 初始化游戏
+        function startGame(difficulty) {
+            game.difficulty = difficulty;
+            let initialDevour = 20;
+            if (difficulty === 'medium') initialDevour = 30;
+            if (difficulty === 'hard') initialDevour = 40;
+            
+            // 分配初始吞噬指数
+            const cities = game.cities;
+            for (let i = 0; i < cities.length; i++) {
+                cities[i].devour = Math.floor(initialDevour / cities.length);
+                if (i < initialDevour % cities.length) cities[i].devour++;
+                cities[i].ethics = 0;
+                cities[i].tech = 1; // 初始技术成熟度1
+            }
+            
+            game.totalDevour = initialDevour;
+            game.protocolProgress = 0;
+            game.isAIAwake = false;
+            game.currentPlayer = 0;
+            game.actionPoints = 4;
+            game.hand = [];
+            game.log = [];
+            
+            // 发初始手牌
+            for (let i = 0; i < 4; i++) {
+                drawRandomCard();
+            }
+            
+            // 显示游戏界面
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            updateUI();
+            logMessage(`游戏开始！难度：${difficulty === 'easy' ? '初级' : difficulty === 'medium' ? '中级' : '高级'}`);
+            logMessage(`当前玩家：${game.players[game.currentPlayer].name}`);
+        }
+
+        // 抽随机卡牌
+        function drawRandomCard() {
+            const cardType = Math.floor(Math.random() * 3);
+            let card;
+            if (cardType === 0) {
+                card = {...game.techCards[Math.floor(Math.random() * game.techCards.length)], id: Date.now() + Math.random()};
+            } else if (cardType === 1) {
+                card = {...game.policyCards[Math.floor(Math.random() * game.policyCards.length)], id: Date.now() + Math.random()};
+            } else {
+                card = {...game.crisisCards[Math.floor(Math.random() * game.crisisCards.length)], id: Date.now() + Math.random()};
+            }
+            game.hand.push(card);
+        }
+
+        // 抽取危机卡
+        function drawCrisisCards() {
+            const count = game.difficulty === 'easy' ? 1 : game.difficulty === 'medium' ? 2 : 3;
+            for (let i = 0; i < count; i++) {
+                const crisisCard = {...game.crisisCards[Math.floor(Math.random() * game.crisisCards.length)], id: Date.now() + Math.random() + i};
+                applyCrisisCard(crisisCard);
+                logMessage(`危机：${crisisCard.name} - ${crisisCard.effect}`);
+            }
+            
+            // 检查AI觉醒
+            if (game.totalDevour >= 75 && !game.isAIAwake) {
+                game.isAIAwake = true;
+                document.body.classList.add('ai-awake');
+                logMessage("⚠️ AI觉醒！AI开始主动对抗玩家！");
+            }
+            
+            // 检查失败条件
+            checkGameOver();
+            
+            document.getElementById('drawCrisisBtn').disabled = true;
+        }
+
+        // 应用危机卡效果
+        function applyCrisisCard(card) {
+            const cityIndex = Math.floor(Math.random() * game.cities.length);
+            const city = game.cities[cityIndex];
+            
+            if (card.name === "黑箱AI暴走") {
+                city.devour = Math.min(10, city.devour + 2);
+                city.ethics = Math.min(3, city.ethics + 1);
+            } else if (card.name === "深度伪造危机") {
+                city.devour = Math.min(10, city.devour + 1);
+            } else if (card.name === "自动化失业潮") {
+                city.tech = Math.max(0, city.tech - 1);
+            } else if (card.name === "军事AI越权") {
+                city.devour = Math.min(10, city.devour + 3);
+            } else if (card.name === "超级对齐失败") {
+                city.devour = Math.min(10, city.devour + 2);
+                // 邻近城市+1（简化：随机另一个城市）
+                const otherCityIndex = (cityIndex + 1) % game.cities.length;
+                game.cities[otherCityIndex].devour = Math.min(10, game.cities[otherCityIndex].devour + 1);
+            } else if (card.name === "AI自我复制") {
+                // 抽取2张额外危机卡（下回合）
+                setTimeout(() => {
+                    for (let i = 0; i < 2; i++) {
+                        const extraCard = {...game.crisisCards[Math.floor(Math.random() * game.crisisCards.length)], id: Date.now() + Math.random() + i};
+                        applyCrisisCard(extraCard);
+                        logMessage(`连锁反应：${extraCard.name}`);
+                    }
+                }, 1000);
+            }
+            
+            updateTotalDevour();
+        }
+
+        // 更新总吞噬指数
+        function updateTotalDevour() {
+            game.totalDevour = game.cities.reduce((sum, city) => sum + city.devour, 0);
+            
+            // 检查局部失控（吞噬指数≥8的城市每回合+1）
+            for (const city of game.cities) {
+                if (city.devour >= 8 && city.devour < 10) {
+                    city.devour = Math.min(10, city.devour + 1);
+                }
+            }
+            
+            // 检查完全控制（吞噬指数=10的城市每回合为总吞噬指数+1）
+            for (const city of game.cities) {
+                if (city.devour === 10) {
+                    game.totalDevour += 1;
+                }
+            }
+        }
+
+        // 使用卡牌
+        function useCard(cardIndex) {
+            if (game.actionPoints <= 0) {
+                logMessage("没有剩余行动点！");
+                return;
+            }
+            
+            const card = game.hand[cardIndex];
+            if (!game.selectedCity && card.type !== 'policy') {
+                logMessage("请先选择一个城市！");
+                return;
+            }
+            
+            // 技术卡
+            if (card.type === 'tech') {
+                const city = game.selectedCity;
+                let cost = card.cost;
+                
+                // 技术架构师能力：减少1张技术卡消耗
+                if (game.players[game.currentPlayer].name === "技术架构师") {
+                    cost = Math.max(1, cost - 1);
+                }
+                
+                if (game.actionPoints < cost) {
+                    logMessage("行动点不足！");
+                    return;
+                }
+                
+                // AI断路器特殊条件
+                if (card.name === "AI断路器" && city.tech < 2) {
+                    logMessage("部署AI断路器需要技术成熟度≥2！");
+                    return;
+                }
+                
+                // 应用效果
+                if (card.name === "可解释AI模块") {
+                    city.devour = Math.max(0, city.devour - 1);
+                    city.tech = Math.min(3, city.tech + 1);
+                    if (city.ethics > 0) city.ethics--;
+                } else if (card.name === "AI防火墙") {
+                    // 防止未来危机卡扩散（简化：无立即效果）
+                    logMessage("AI防火墙已部署，可减少未来危机影响。");
+                } else if (card.name === "人类反馈强化") {
+                    city.ethics = 0;
+                } else if (card.name === "去中心化模型") {
+                    city.devour = Math.max(0, city.devour - 2);
+                } else if (card.name === "AI断路器") {
+                    city.devour = 0;
+                } else if (card.name === "量子加密通信") {
+                    // 保护不被劫持（简化：提升技术成熟度）
+                    city.tech = Math.min(3, city.tech + 1);
+                }
+                
+                game.actionPoints -= cost;
+                game.hand.splice(cardIndex, 1);
+                updateTotalDevour();
+                logMessage(`${game.players[game.currentPlayer].name} 在 ${city.name} 部署了 ${card.name}`);
+                
+                // 推进协议进度（技术卡）
+                if (game.protocolProgress < 3) {
+                    game.protocolProgress++;
+                    logMessage("技术部分研发进度+1");
+                }
+                
+            } 
+            // 政策卡
+            else if (card.type === 'policy') {
+                let cost = card.cost;
+                
+                // 政策制定者能力：在会议城市跳过费用
+                if (game.players[game.currentPlayer].name === "政策制定者" && 
+                    game.selectedCity && game.selectedCity.special === "globalPolicy") {
+                    cost = 0;
+                }
+                
+                if (game.actionPoints < cost) {
+                    logMessage("行动点不足！");
+                    return;
+                }
+                
+                // 应用效果
+                if (card.name === "全球AI伦理宪章") {
+                    for (const city of game.cities) {
+                        // 吞噬指数上限-2（简化：直接降低吞噬指数）
+                        city.devour = Math.max(0, city.devour - 2);
+                    }
+                } else if (card.name === "AI透明度法案") {
+                    // 强制公开数据（简化：降低伦理失衡）
+                    for (const city of game.cities) {
+                        if (city.ethics > 0) city.ethics--;
+                    }
+                } else if (card.name === "人类决策保留法") {
+                    if (game.selectedCity) {
+                        game.selectedCity.devour = Math.max(0, game.selectedCity.devour - 3);
+                    }
+                } else if (card.name === "AI税") {
+                    // 抑制商业化（简化：降低随机城市吞噬指数）
+                    const randomCity = game.cities[Math.floor(Math.random() * game.cities.length)];
+                    randomCity.devour = Math.max(0, randomCity.devour - 1);
+                } else if (card.name === "AI公民权辩论") {
+                    for (const city of game.cities) {
+                        city.devour = Math.max(0, city.devour - 1);
+                    }
+                } else if (card.name === "紧急停机协议") {
+                    if (game.selectedCity && game.selectedCity.devour >= 7) {
+                        game.selectedCity.devour = 0;
+                    } else {
+                        logMessage("紧急停机协议只能在吞噬指数≥7的城市使用！");
+                        return;
+                    }
+                }
+                
+                game.actionPoints -= cost;
+                game.hand.splice(cardIndex, 1);
+                updateTotalDevour();
+                logMessage(`${game.players[game.currentPlayer].name} 推行了 ${card.name}`);
+                
+                // 推进协议进度（政策卡）
+                if (game.protocolProgress >= 3 && game.protocolProgress < 5) {
+                    game.protocolProgress++;
+                    logMessage("政策部分研发进度+1");
+                } else if (game.protocolProgress < 3) {
+                    game.protocolProgress++;
+                    logMessage("技术部分研发进度+1（政策卡也可贡献）");
+                }
+                
+            }
+            
+            // AI伦理学家特殊能力：每回合免费移除1点伦理失衡
+            if (game.players[game.currentPlayer].name === "AI伦理学家" && card.type !== 'tech' && card.type !== 'policy') {
+                if (game.selectedCity && game.selectedCity.ethics > 0) {
+                    game.selectedCity.ethics--;
+                    logMessage("AI伦理学家使用特殊能力：移除1点伦理失衡");
+                }
+            }
+            
+            updateUI();
+            checkGameOver();
+        }
+
+        // 公众倡导者特殊能力
+        function usePublicAdvocateAbility() {
+            if (game.players[game.currentPlayer].name !== "公众倡导者") {
+                logMessage("只有公众倡导者可以使用此能力！");
+                return;
+            }
+            
+            if (game.actionPoints <= 0) {
+                logMessage("没有剩余行动点！");
+                return;
+            }
+            
+            if (!game.selectedCity) {
+                logMessage("请先选择一个城市！");
+                return;
+            }
+            
+            game.selectedCity.devour = Math.max(0, game.selectedCity.devour - 2);
+            game.actionPoints--;
+            updateTotalDevour();
+            logMessage("公众倡导者发起公众意识运动：吞噬指数-2");
+            updateUI();
+        }
+
+        // 结束回合
+        function endTurn() {
+            // 如果还没抽危机卡，自动抽取
+            if (!document.getElementById('drawCrisisBtn').disabled) {
+                drawCrisisCards();
+                return;
+            }
+            
+            // 切换到下一位玩家
+            game.currentPlayer = (game.currentPlayer + 1) % game.players.length;
+            game.actionPoints = 4;
+            game.selectedCity = null;
+            
+            // 补充手牌
+            while (game.hand.length < 4) {
+                drawRandomCard();
+            }
+            
+            // 重新启用危机卡按钮
+            document.getElementById('drawCrisisBtn').disabled = false;
+            
+            updateUI();
+            logMessage(`回合结束。当前玩家：${game.players[game.currentPlayer].name}`);
+        }
+
+        // 选择城市
+        function selectCity(cityIndex) {
+            game.selectedCity = game.cities[cityIndex];
+            updateUI();
+            logMessage(`已选择城市：${game.cities[cityIndex].name}`);
+        }
+
+        // 检查游戏结束
+        function checkGameOver() {
+            updateTotalDevour();
+            
+            // 胜利条件：完成协议且总吞噬指数<100
+            if (game.protocolProgress >= game.protocolRequired && game.totalDevour < 100) {
+                setTimeout(() => {
+                    alert("🎉 人类胜利！\n你们成功研发了人类主权协议，AI与人类将实现可持续共存！");
+                    location.reload();
+                }, 100);
+                return;
+            }
+            
+            // 失败条件：总吞噬指数>=100
+            if (game.totalDevour >= 100) {
+                setTimeout(() => {
+                    alert("💀 AI胜利！\n吞噬指数达到100，AI已全面接管人类文明。");
+                    location.reload();
+                }, 100);
+                return;
+            }
+        }
+
+        // 更新UI
+        function updateUI() {
+            // 更新玩家信息
+            document.getElementById('currentPlayerName').textContent = game.players[game.currentPlayer].name;
+            document.getElementById('playerAvatar').textContent = `P${game.currentPlayer + 1}`;
+            document.getElementById('playerAvatar').style.background = game.players[game.currentPlayer].color;
+            document.getElementById('actionPoints').textContent = game.actionPoints;
+            
+            // 更新总吞噬指数和协议进度
+            document.getElementById('totalDevour').textContent = game.totalDevour;
+            document.getElementById('protocolProgress').textContent = game.protocolProgress;
+            document.getElementById('protocolBar').style.width = `${(game.protocolProgress / game.protocolRequired) * 100}%`;
+            
+            // 更新城市显示
+            const cityGrid = document.getElementById('cityGrid');
+            cityGrid.innerHTML = '';
+            game.cities.forEach((city, index) => {
+                const cityEl = document.createElement('div');
+                cityEl.className = `city ${game.selectedCity === city ? 'selected' : ''}`;
+                cityEl.innerHTML = `
+                    <h3>${city.name}${city.special ? ' ⭐' : ''}</h3>
+                    <div class="indicator red">
+                        <div class="label">吞噬指数</div>
+                        <div class="value" style="width: ${city.devour * 10}%"><span>${city.devour}/10</span></div>
+                    </div>
+                    <div class="indicator yellow">
+                        <div class="label">伦理失衡</div>
+                        <div class="value" style="width: ${city.ethics * 33.33}%"><span>${city.ethics}/3</span></div>
+                    </div>
+                    <div class="indicator blue">
+                        <div class="label">技术成熟度</div>
+                        <div class="value" style="width: ${city.tech * 33.33}%"><span>${city.tech}/3</span></div>
+                    </div>
+                `;
+                cityEl.onclick = () => selectCity(index);
+                cityGrid.appendChild(cityEl);
+            });
+            
+            // 更新手牌
+            const handCards = document.getElementById('handCards');
+            handCards.innerHTML = '';
+            game.hand.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${card.type}`;
+                cardEl.textContent = card.name;
+                cardEl.title = card.description;
+                cardEl.onclick = () => useCard(index);
+                handCards.appendChild(cardEl);
+            });
+            document.getElementById('handCount').textContent = game.hand.length;
+            
+            // 更新日志
+            const logEl = document.getElementById('gameLog');
+            logEl.innerHTML = game.log.slice(-10).map(msg => `<div>${msg}</div>`).join('');
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // 添加日志消息
+        function logMessage(message) {
+            game.log.push(message);
+            if (game.log.length > 50) game.log.shift();
+        }
+
+        // 初始化（游戏开始前）
+        updateUI();
+    </script>
+</body>
+</html>
