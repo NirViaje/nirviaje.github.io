@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>MBTI × Big Five × RIASEC × O*NET 四体系整合框架</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-elevated: #151a2c;
+      --bg-card: #101628;
+      --accent: #7cc4ff;
+      --accent-soft: rgba(124, 196, 255, 0.15);
+      --text-main: #f5f7ff;
+      --text-muted: #a9b3d9;
+      --border-subtle: #272f4a;
+      --radius-lg: 18px;
+      --radius-xl: 26px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1e2640 0, #050814 55%, #02030a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .app-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      border-radius: 28px;
+      padding: 20px;
+      background: linear-gradient(
+          135deg,
+          rgba(124, 196, 255, 0.04),
+          rgba(255, 255, 255, 0.02)
+        ),
+        radial-gradient(circle at top left, rgba(86, 204, 242, 0.08), transparent 55%);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: var(--shadow-soft);
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .title-block h1 {
+      font-size: 1.7rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 196, 255, 0.6);
+      color: var(--accent);
+      background: rgba(17, 25, 48, 0.8);
+    }
+
+    .title-block p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .pill-toggle {
+      display: inline-flex;
+      background: rgba(8, 12, 30, 0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 3px;
+    }
+
+    .pill-option {
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background var(--transition-fast), color var(--transition-fast),
+        box-shadow var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .pill-option.active {
+      background: radial-gradient(circle at top, #7cc4ff, #4c9fff);
+      color: #050814;
+      box-shadow: 0 0 0 1px rgba(3, 11, 26, 0.7);
+      transform: translateY(-0.5px);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* 左侧：选择面板 */
+
+    .panel {
+      background: radial-gradient(circle at top left, #181e35, #0d1120);
+      border-radius: var(--radius-xl);
+      padding: 16px 14px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .facet-section {
+      margin-bottom: 14px;
+    }
+
+    .facet-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .facet-title span {
+      font-size: 0.68rem;
+      opacity: 0.8;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 196, 255, 0.25);
+      color: var(--text-muted);
+      background: rgba(12, 18, 36, 0.9);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        color var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      background: rgba(124, 196, 255, 0.12);
+      border-color: rgba(124, 196, 255, 0.6);
+      color: var(--text-main);
+      transform: translateY(-0.5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, #7cc4ff, #58a4ff);
+      color: #050814;
+      border-color: transparent;
+      box-shadow: 0 6px 16px rgba(23, 137, 255, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .legend {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.06);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .dot-mbti {
+      background: #90caf9;
+    }
+
+    .dot-bigfive {
+      background: #a5d6a7;
+    }
+
+    .dot-riasec {
+      background: #ffb6c1;
+    }
+
+    .dot-onet {
+      background: #ffcc80;
+    }
+
+    /* 右侧：结果面板 */
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .summary-card {
+      background: rgba(5, 9, 22, 0.9);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(124, 196, 255, 0.25);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .summary-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .summary-main h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-main p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .tag-pill {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      border: 1px solid rgba(124, 196, 255, 0.6);
+      color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1b2340, #0c101f);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px solid transparent;
+      background: linear-gradient(
+          135deg,
+          rgba(124, 196, 255, 0.45),
+          rgba(124, 196, 255, 0)
+        )
+        border-box;
+      mask: linear-gradient(#000 0 0) padding-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      pointer-events: none;
+    }
+
+    .card.highlight::before {
+      opacity: 0.9;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+    }
+
+    .card-body h3 {
+      font-size: 1.02rem;
+      margin-bottom: 3px;
+    }
+
+    .card-body p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .list {
+      list-style: none;
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .list li {
+      font-size: 0.8rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .list-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 6px;
+    }
+
+    .list-bullet-soft {
+      background: rgba(124, 196, 255, 0.7);
+    }
+
+    .list-bullet-green {
+      background: rgba(165, 214, 167, 0.9);
+    }
+
+    .list-bullet-pink {
+      background: rgba(255, 182, 193, 0.9);
+    }
+
+    .list-bullet-amber {
+      background: rgba(255, 204, 128, 0.9);
+    }
+
+    .token-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .token {
+      font-size: 0.75rem;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(5, 11, 26, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    .token[data-system] {
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .token[data-system]:hover {
+      background: rgba(124, 196, 255, 0.13);
+      border-color: rgba(124, 196, 255, 0.7);
+      transform: translateY(-0.5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      color: var(--text-main);
+    }
+
+    .token.matched {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(124, 196, 255, 0.7);
+    }
+
+    footer {
+      margin-top: 12px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="title-block">
+        <h1>
+          四体系整合
+          <span class="title-badge">MBTI × Big Five × RIASEC × O*NET</span>
+        </h1>
+        <p>点击任意一个维度 / 类型，即可查看在另外三个体系中的对应映射与解释。</p>
+      </div>
+      <div class="mode-toggle">
+        视角：
+        <div class="pill-toggle" id="lensToggle">
+          <button class="pill-option active" data-lens="mbti">从 MBTI 出发</button>
+          <button class="pill-option" data-lens="bigfive">从 Big Five 出发</button>
+          <button class="pill-option" data-lens="riasec">从 RIASEC 出发</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 左侧选择面板 -->
+      <aside class="panel" id="selectorPanel">
+        <h2>选择一个切入点</h2>
+
+        <!-- MBTI -->
+        <section class="facet-section" data-facet="mbti">
+          <div class="facet-title">
+            MBTI
+            <span>偏好风格</span>
+          </div>
+          <div class="chip-row">
+            <button class="chip" data-system="mbti" data-key="E/I">E / I</button>
+            <button class="chip" data-system="mbti" data-key="S/N">S / N</button>
+            <button class="chip" data-system="mbti" data-key="T/F">T / F</button>
+            <button class="chip" data-system="mbti" data-key="J/P">J / P</button>
+          </div>
+        </section>
+
+        <!-- Big Five -->
+        <section class="facet-section" data-facet="bigfive">
+          <div class="facet-title">
+            Big Five
+            <span>连续人格特质</span>
+          </div>
+          <div class="chip-row">
+            <button class="chip" data-system="bigfive" data-key="O">O：开放性</button>
+            <button class="chip" data-system="bigfive" data-key="C">C：尽责性</button>
+            <button class="chip" data-system="bigfive" data-key="E">E：外向性</button>
+            <button class="chip" data-system="bigfive" data-key="A">A：宜人性</button>
+            <button class="chip" data-system="bigfive" data-key="N">N：情绪稳定性↓</button>
+          </div>
+        </section>
+
+        <!-- RIASEC -->
+        <section class="facet-section" data-facet="riasec">
+          <div class="facet-title">
+            RIASEC
+            <span>职业兴趣</span>
+          </div>
+          <div class="chip-row">
+            <button class="chip" data-system="riasec" data-key="R">R：现实型</button>
+            <button class="chip" data-system="riasec" data-key="I">I：研究型</button>
+            <button class="chip" data-system="riasec" data-key="A">A：艺术型</button>
+            <button class="chip" data-system="riasec" data-key="S">S：社会型</button>
+            <button class="chip" data-system="riasec" data-key="E">E：企业型</button>
+            <button class="chip" data-system="riasec" data-key="C">C：传统型</button>
+          </div>
+        </section>
+
+        <div class="legend">
+          <span><span class="legend-dot dot-mbti"></span> MBTI：认知与行为偏好</span>
+          <span><span class="legend-dot dot-bigfive"></span> Big Five：连续人格特质</span>
+          <span><span class="legend-dot dot-riasec"></span> RIASEC：职业兴趣结构</span>
+          <span><span class="legend-dot dot-onet"></span> O*NET：任务、技能与工作风格</span>
+        </div>
+      </aside>
+
+      <!-- 右侧内容面板 -->
+      <section class="content">
+        <div class="summary-card">
+          <div class="summary-main">
+            <h2 id="summaryTitle">
+              点击左侧任意维度，查看四体系联动
+            </h2>
+            <p id="summarySubtitle">
+              示例：选择「E / I」，即可看到它在 Big Five 中对应外向性，在 RIASEC 中偏向 S/E，在 O*NET 中关联的工作风格。
+            </p>
+          </div>
+          <div class="tag-pill" id="summaryTag">未选择</div>
+        </div>
+
+        <div class="grid">
+          <!-- MBTI 卡片 -->
+          <article class="card" id="card-mbti">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="legend-dot dot-mbti"></span>
+                MBTI · 偏好
+              </div>
+              <span class="badge">输入 &amp; 风格视角</span>
+            </div>
+            <div class="card-body">
+              <h3 id="mbtiTitle">尚未选择</h3>
+              <p id="mbtiDesc">
+                MBTI 强调你「更习惯怎样处理信息与做决定」。选择左侧一个 MBTI 维度或从其他体系点击映射标签查看详细内容。
+              </p>
+              <ul class="list" id="mbtiList"></ul>
+              <div class="token-row" id="mbtiTokens"></div>
+            </div>
+          </article>
+
+          <!-- Big Five 卡片 -->
+          <article class="card" id="card-bigfive">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="legend-dot dot-bigfive"></span>
+                Big Five · 人格特质
+              </div>
+              <span class="badge">预测 &amp; 稳定性</span>
+            </div>
+            <div class="card-body">
+              <h3 id="bigfiveTitle">尚未选择</h3>
+              <p id="bigfiveDesc">
+                Big Five 提供行为倾向的连续刻度，是预测工作绩效、倦怠与稳定性的主流模型。
+              </p>
+              <ul class="list" id="bigfiveList"></ul>
+              <div class="token-row" id="bigfiveTokens"></div>
+            </div>
+          </article>
+
+          <!-- RIASEC 卡片 -->
+          <article class="card" id="card-riasec">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="legend-dot dot-riasec"></span>
+                RIASEC · 职业兴趣
+              </div>
+              <span class="badge">「愿意做什么」</span>
+            </div>
+            <div class="card-body">
+              <h3 id="riasecTitle">尚未选择</h3>
+              <p id="riasecDesc">
+                RIASEC 描述你喜欢的工作世界：更偏向动手操作、分析探索、创造表达，还是助人服务、说服领导、流程执行。
+              </p>
+              <ul class="list" id="riasecList"></ul>
+              <div class="token-row" id="riasecTokens"></div>
+            </div>
+          </article>
+
+          <!-- O*NET 卡片 -->
+          <article class="card" id="card-onet">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="legend-dot dot-onet"></span>
+                O*NET · 职业任务 &amp; 工作风格
+              </div>
+              <span class="badge">「岗位在要求什么」</span>
+            </div>
+            <div class="card-body">
+              <h3 id="onetTitle">尚未选择</h3>
+              <p id="onetDesc">
+                O*NET 以任务、技能、能力、工作风格与价值观来刻画职业，是连接「人」与「岗位」的数据桥梁。
+              </p>
+              <ul class="list" id="onetList"></ul>
+              <div class="token-row" id="onetTokens"></div>
+            </div>
+          </article>
+        </div>
+
+        <footer>
+          提示：所有映射均为统计与理论上的「倾向」，而非个体诊断或招聘决策依据。
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // 简化版四体系映射数据（可按需要自行扩展/调整）
+    const MODEL = {
+      // MBTI 维度作为入口
+      mbti: {
+        "E/I": {
+          label: "E / I（外向 – 内向）",
+          description:
+            "描述能量来源与注意力方向：外向更从外部世界与互动中获得能量，内向更从独处与内在加工获得能量。",
+          bullets: [
+            "E：偏好高频互动、表达与即时反馈。",
+            "I：偏好深度思考、书面表达与小范围交流。"
+          ],
+          tokens: ["E 倾向：ENTJ, ENTP, ENFJ, ESFP...", "I 倾向：INTJ, INTP, INFJ, ISFP..."],
+          bigfive: {
+            label: "Extraversion（外向性）",
+            description:
+              "外向性越高，越容易在社交、领导与销售型任务中获得能量；低外向性则更适合深度专注与分析型工作。",
+            bullets: [
+              "高外向：社交活跃、乐于表达、倾向主导场景。",
+              "低外向：深度思考、倾向观察与倾听。"
+            ],
+            tokens: ["社交活力", "自信表达", "寻求刺激"]
+          },
+          riasec: {
+            code: ["S", "E"],
+            label: "偏向 Social / Enterprising",
+            description:
+              "在兴趣上更容易被「助人、服务、沟通」与「说服、领导、商业」情境吸引。",
+            bullets: [
+              "Social（S）：教学、咨询、护理、HR 等「以人为中心」的工作。",
+              "Enterprising（E）：管理、销售、创业、商务拓展等。"
+            ],
+            tokens: ["教育/培训", "销售/谈判", "公共演讲"]
+          },
+          onet: {
+            label: "Work Styles：Social Orientation & Leadership",
+            description:
+              "在 O*NET 中，对高社交导向与领导需求的岗位（如销售经理、项目经理）外向性通常是优势资源。",
+            bullets: [
+              "典型工作活动：Coordinating the Work and Activities of Others。",
+              "典型工作风格：Social Orientation, Leadership, Initiative。"
+            ],
+            tokens: ["销售经理", "项目经理", "客户成功 / 客户关系"]
+          }
+        },
+        "S/N": {
+          label: "S / N（感觉 – 直觉）",
+          description:
+            "描述信息加工方式：S 更关注当下、细节与经验；N 更关注模式、抽象与未来可能性。",
+          bullets: [
+            "S：偏好实证、可见、可验证的信息。",
+            "N：偏好模式、隐含意义与长期愿景。"
+          ],
+          tokens: ["S 倾向：ISTJ, ESTJ, ISFJ...", "N 倾向：INTJ, ENTP, ENFP..."],
+          bigfive: {
+            label: "Openness（开放性）",
+            description:
+              "开放性与想象力、好奇心与认知灵活有关，是创新和研究型任务的重要特质。",
+            bullets: [
+              "高开放：喜欢新观点、抽象理论与跨学科。",
+              "低开放：偏好已验证方案、操作性细节与稳定结构。"
+            ],
+            tokens: ["概念思维", "创造力", "审美/想象"]
+          },
+          riasec: {
+            code: ["I", "A"],
+            label: "偏向 Investigative / Artistic",
+            description:
+              "更容易被探索、研究、创造类职业吸引，例如科研、数据分析、设计、写作等。",
+            bullets: [
+              "Investigative（I）：科学研究、数据、系统分析。",
+              "Artistic（A）：设计、艺术创作、内容生产。"
+            ],
+            tokens: ["研究/分析", "创意/设计", "策略规划"]
+          },
+          onet: {
+            label: "Work Activities：Problem Solving & Innovation",
+            description:
+              "高开放性与 N 倾向，例如在 O*NET 中常见于研发、产品、策略岗位。",
+            bullets: [
+              "典型任务：Analyzing Data or Information；Thinking Creatively。",
+              "工作风格：Analytical Thinking, Innovation, Independence。"
+            ],
+            tokens: ["数据科学家", "产品经理", "研究员/策略顾问"]
+          }
+        },
+        "T/F": {
+          label: "T / F（思考 – 情感）",
+          description:
+            "描述决策时主要依据：T 偏重逻辑一致性与客观原则；F 偏重人际影响与价值感受。",
+          bullets: [
+            "T：更看重标准、公平与逻辑结构。",
+            "F：更看重关怀、关系与价值一致。"
+          ],
+          tokens: ["T：分析/评估型决策", "F：关怀/体验型决策"],
+          bigfive: {
+            label: "Agreeableness（宜人性）",
+            description:
+              "宜人性越高，越倾向合作、共情与照顾他人；偏低宜人性的人更愿意做困难但必要的冲突与负面反馈。",
+            bullets: [
+              "高宜人：容易获得信任，适合助人/协调类工作。",
+              "低宜人：在需要客观裁决并承受不满的场景中更自在。"
+            ],
+            tokens: ["共情能力", "合作导向", "冲突敏感度"]
+          },
+          riasec: {
+            code: ["S"],
+            label: "偏向 Social",
+            description:
+              "F + 高宜人性组合在社会型职业中优势明显，例如心理咨询、护理、教育与HR。",
+            bullets: ["Social（S）：教学、咨询、护理、社会工作等。"],
+            tokens: ["心理/辅导", "护理/医护", "HR / 人才发展"]
+          },
+          onet: {
+            label: "Work Styles：Cooperation & Concern for Others",
+            description:
+              "O*NET 中对 Cooperation、Concern for Others、Service Orientation 要求高的岗位，更偏向 F / 高宜人性。",
+            bullets: [
+              "典型任务：Assisting and Caring for Others；Resolving Conflicts。",
+              "典型职业：Nursing, Counseling, Teaching, HR Specialist。"
+            ],
+            tokens: ["护士", "咨询师", "教师", "HR 专员"]
+          }
+        },
+        "J/P": {
+          label: "J / P（判断 – 感知）",
+          description:
+            "描述对结构与开放度的偏好：J 偏好计划与确定性；P 偏好灵活与开放选项。",
+          bullets: [
+            "J：爱计划、看重截止日期与已定结构。",
+            "P：爱探索、保留选项，适应变动场景。"
+          ],
+          tokens: ["J：项目管理/流程执行", "P：探索/创新/早期阶段"],
+          bigfive: {
+            label: "Conscientiousness（尽责性）",
+            description:
+              "尽责性与自律、目标聚焦与可靠性密切相关，是工作绩效最稳定的预测因子之一。",
+            bullets: [
+              "高尽责：守时、可靠、抗干扰，适合高责任岗位。",
+              "低尽责：更具自发性、适合需要灵光一现的创意型场域。"
+            ],
+            tokens: ["计划性", "执行力", "抗干扰能力"]
+          },
+          riasec: {
+            code: ["C"],
+            label: "偏向 Conventional（传统型）",
+            description:
+              "高尽责 + J 倾向常见于财务、法务、运营等需要流程稳定和精确性的领域。",
+            bullets: [
+              "Conventional（C）：会计、审计、行政、运营、数据录入等。"
+            ],
+            tokens: ["财务/会计", "合规/法务支持", "运营执行"]
+          },
+          onet: {
+            label: "Work Styles：Dependability & Attention to Detail",
+            description:
+              "在 O*NET 中，对 Dependability、Attention to Detail 要求高的岗位与高尽责+J 倾向高度重叠。",
+            bullets: [
+              "典型任务：Documenting/Recording Information；Monitoring Processes。",
+              "典型岗位：Accountant, Compliance Officer, Operations Analyst。"
+            ],
+            tokens: ["会计", "合规专员", "运营分析", "项目管理专员"]
+          }
+        }
+      },
+
+      // Big Five 作为入口（简单映射到已有 MBTI/RIASEC/O*NET）
+      bigfive: {
+        O: {
+          label: "Openness（开放性）",
+          description:
+            "与好奇心、想象力、认知复杂度相关，是创新与研究型任务的重要特质。",
+          mbtiKey: "S/N"
+        },
+        C: {
+          label: "Conscientiousness（尽责性）",
+          description:
+            "自律、计划性与可靠性，是跨岗位工作绩效最强的一般性预测因子。",
+          mbtiKey: "J/P"
+        },
+        E: {
+          label: "Extraversion（外向性）",
+          description:
+            "与社交活力、主导性与积极情绪相关，常见于销售、领导与公共沟通型职位。",
+          mbtiKey: "E/I"
+        },
+        A: {
+          label: "Agreeableness（宜人性）",
+          description:
+            "合作、共情、信任他人，适合高度「助人/服务」的职业环境。",
+          mbtiKey: "T/F"
+        },
+        N: {
+          label: "情绪稳定性（Neuroticism 反向）",
+          description:
+            "情绪稳定性越高，越容易在高压环境中保持表现稳定；越低则越容易体验焦虑与情绪波动。",
+          // 这里简单用 J/P 关联到「压力管理」相关 O*NET 工作风格，映射相对弱
+          mbtiKey: "J/P"
+        }
+      },
+
+      // RIASEC 入口（映射到最典型 MBTI 维度）
+      riasec: {
+        R: {
+          label: "R – Realistic（现实型）",
+          description:
+            "偏好动手、实作、操作设备与工具，喜欢具体而可见的结果。",
+          mbtiKey: "S/N"
+        },
+        I: {
+          label: "I – Investigative（研究型）",
+          description:
+            "偏好分析、探索、理论构建与系统性问题解决。",
+          mbtiKey: "S/N"
+        },
+        A: {
+          label: "A – Artistic（艺术型）",
+          description:
+            "偏好创造、表达、不受过多规范限制的工作环境。",
+          mbtiKey: "S/N"
+        },
+        S: {
+          label: "S – Social（社会型）",
+          description:
+            "偏好教学、辅导、照护与团队协作，对人敏感。",
+          mbtiKey: "T/F"
+        },
+        E: {
+          label: "E – Enterprising（企业型）",
+          description:
+            "偏好说服、领导、组织资源完成目标。",
+          mbtiKey: "E/I"
+        },
+        C: {
+          label: "C – Conventional（传统型）",
+          description:
+            "偏好结构化、有规则和清晰流程的工作。",
+          mbtiKey: "J/P"
+        }
+      }
+    };
+
+    const state = {
+      lens: "mbti",
+      activeSystem: null,
+      activeKey: null
+    };
+
+    const lensToggle = document.getElementById("lensToggle");
+    const chips = Array.from(document.querySelectorAll(".chip"));
+
+    const summaryTitle = document.getElementById("summaryTitle");
+    const summarySubtitle = document.getElementById("summarySubtitle");
+    const summaryTag = document.getElementById("summaryTag");
+
+    const mbtiTitle = document.getElementById("mbtiTitle");
+    const mbtiDesc = document.getElementById("mbtiDesc");
+    const mbtiList = document.getElementById("mbtiList");
+    const mbtiTokens = document.getElementById("mbtiTokens");
+
+    const bigfiveTitle = document.getElementById("bigfiveTitle");
+    const bigfiveDesc = document.getElementById("bigfiveDesc");
+    const bigfiveList = document.getElementById("bigfiveList");
+    const bigfiveTokens = document.getElementById("bigfiveTokens");
+
+    const riasecTitle = document.getElementById("riasecTitle");
+    const riasecDesc = document.getElementById("riasecDesc");
+    const riasecList = document.getElementById("riasecList");
+    const riasecTokens = document.getElementById("riasecTokens");
+
+    const onetTitle = document.getElementById("onetTitle");
+    const onetDesc = document.getElementById("onetDesc");
+    const onetList = document.getElementById("onetList");
+    const onetTokens = document.getElementById("onetTokens");
+
+    const cardMbti = document.getElementById("card-mbti");
+    const cardBigfive = document.getElementById("card-bigfive");
+    const cardRiasec = document.getElementById("card-riasec");
+    const cardOnet = document.getElementById("card-onet");
+
+    function clearList(el) {
+      while (el.firstChild) el.removeChild(el.firstChild);
+    }
+
+    function renderFromMbti(key) {
+      const node = MODEL.mbti[key];
+      if (!node) return;
+
+      state.activeSystem = "mbti";
+      state.activeKey = key;
+
+      // summary
+      summaryTitle.textContent = node.label;
+      summarySubtitle.textContent =
+        "从 MBTI 维度出发，查看它在 Big Five、RIASEC、O*NET 中对应的行为倾向与职业含义。";
+      summaryTag.textContent = "MBTI 维度";
+
+      // MBTI card
+      cardMbti.classList.add("highlight");
+      cardBigfive.classList.add("highlight");
+      cardRiasec.classList.add("highlight");
+      cardOnet.classList.add("highlight");
+
+      mbtiTitle.textContent = node.label;
+      mbtiDesc.textContent = node.description;
+      clearList(mbtiList);
+      node.bullets.forEach((b) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span");
+        dot.className = "list-bullet list-bullet-soft";
+        li.appendChild(dot);
+        const span = document.createElement("span");
+        span.textContent = b;
+        li.appendChild(span);
+        mbtiList.appendChild(li);
+      });
+      mbtiTokens.innerHTML = "";
+      node.tokens.forEach((t) => {
+        const tk = document.createElement("span");
+        tk.className = "token";
+        tk.textContent = t;
+        mbtiTokens.appendChild(tk);
+      });
+
+      // Big Five card
+      bigfiveTitle.textContent = node.bigfive.label;
+      bigfiveDesc.textContent = node.bigfive.description;
+      clearList(bigfiveList);
+      node.bigfive.bullets.forEach((b) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span");
+        dot.className = "list-bullet list-bullet-green";
+        li.appendChild(dot);
+        const span = document.createElement("span");
+        span.textContent = b;
+        li.appendChild(span);
+        bigfiveList.appendChild(li);
+      });
+      bigfiveTokens.innerHTML = "";
+      node.bigfive.tokens.forEach((t) => {
+        const tk = document.createElement("span");
+        tk.className = "token";
+        tk.textContent = t;
+        bigfiveTokens.appendChild(tk);
+      });
+
+      // RIASEC
+      riasecTitle.textContent = node.riasec.label;
+      riasecDesc.textContent = node.riasec.description;
+      clearList(riasecList);
+      node.riasec.bullets.forEach((b) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span");
+        dot.className = "list-bullet list-bullet-pink";
+        li.appendChild(dot);
+        const span = document.createElement("span");
+        span.textContent = b;
+        li.appendChild(span);
+        riasecList.appendChild(li);
+      });
+      riasecTokens.innerHTML = "";
+      node.riasec.tokens.forEach((t) => {
+        const tk = document.createElement("span");
+        tk.className = "token";
+        tk.textContent = t;
+        riasecTokens.appendChild(tk);
+      });
+
+      // O*NET
+      onetTitle.textContent = node.onet.label;
+      onetDesc.textContent = node.onet.description;
+      clearList(onetList);
+      node.onet.bullets.forEach((b) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span");
+        dot.className = "list-bullet list-bullet-amber";
+        li.appendChild(dot);
+        const span = document.createElement("span");
+        span.textContent = b;
+        li.appendChild(span);
+        onetList.appendChild(li);
+      });
+      onetTokens.innerHTML = "";
+      node.onet.tokens.forEach((t) => {
+        const tk = document.createElement("span");
+        tk.className = "token";
+        tk.textContent = t;
+        onetTokens.appendChild(tk);
+      });
+
+      markMatchedTokens();
+    }
+
+    function renderFromBigFive(traitKey) {
+      const trait = MODEL.bigfive[traitKey];
+      if (!trait) return;
+      const mbtiKey = trait.mbtiKey;
+      renderFromMbti(mbtiKey);
+
+      summaryTitle.textContent = trait.label;
+      summarySubtitle.textContent = trait.description;
+      summaryTag.textContent = "Big Five 特质";
+    }
+
+    function renderFromRIASEC(code) {
+      const node = MODEL.riasec[code];
+      if (!node) return;
+      const mbtiKey = node.mbtiKey;
+      renderFromMbti(mbtiKey);
+
+      summaryTitle.textContent = node.label;
+      summarySubtitle.textContent = node.description;
+      summaryTag.textContent = "RIASEC 兴趣类型";
+    }
+
+    function markMatchedTokens() {
+      document
+        .querySelectorAll(".token[data-system]")
+        .forEach((el) => el.classList.remove("matched"));
+    }
+
+    function handleChipClick(event) {
+      const chip = event.currentTarget;
+      const system = chip.getAttribute("data-system");
+      const key = chip.getAttribute("data-key");
+      if (!system || !key) return;
+
+      chips.forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+
+      [cardMbti, cardBigfive, cardRiasec, cardOnet].forEach((c) =>
+        c.classList.remove("highlight")
+      );
+
+      if (system === "mbti") {
+        renderFromMbti(key);
+      } else if (system === "bigfive") {
+        renderFromBigFive(key);
+      } else if (system === "riasec") {
+        renderFromRIASEC(key);
+      }
+    }
+
+    chips.forEach((chip) =>
+      chip.addEventListener("click", handleChipClick)
+    );
+
+    lensToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".pill-option");
+      if (!btn) return;
+      const lens = btn.getAttribute("data-lens");
+      if (!lens) return;
+      document
+        .querySelectorAll(".pill-option")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      state.lens = lens;
+
+      document
+        .querySelectorAll("[data-facet]")
+        .forEach((section) => {
+          section.style.opacity = "0.4";
+        });
+
+      if (lens === "mbti") {
+        document.querySelector('[data-facet="mbti"]').style.opacity = "1";
+      } else if (lens === "bigfive") {
+        document.querySelector('[data-facet="bigfive"]').style.opacity = "1";
+      } else if (lens === "riasec") {
+        document.querySelector('[data-facet="riasec"]').style.opacity = "1";
+      }
+    });
+
+    // 初始：强调 MBTI 区域
+    document.querySelector('[data-facet="mbti"]').style.opacity = "1";
+    document.querySelector('[data-facet="bigfive"]').style.opacity = "0.4";
+    document.querySelector('[data-facet="riasec"]').style.opacity = "0.4";
+  </script>
+</body>
+</html>
