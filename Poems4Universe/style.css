@@ -19,7 +19,7 @@ body {
   display: flex;
   flex-direction: column;
   /* make room for the fixed global player */
-  padding-bottom: 92px;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
 }
 
 header {
@@ -205,7 +205,7 @@ footer {
   grid-template-columns: auto auto auto auto 1fr minmax(240px, 500px) auto;
   gap: 10px;
   align-items: center;
-  padding: 10px 14px 14px;
+  padding: 10px 14px calc(14px + env(safe-area-inset-bottom));
   background: rgba(10, 12, 26, 0.92);
   border-top: 1px solid rgba(255,255,255,0.12);
   backdrop-filter: blur(6px);
@@ -266,11 +266,10 @@ footer {
 
 @media (max-width: 768px) {
   #global-player {
-    grid-template-columns: auto auto auto auto 1fr;
+    grid-template-columns: auto auto auto auto 1fr auto;
     grid-template-areas:
-      "prev play pause next title"
-      "seek seek seek seek seek"
-      "loop volume volume volume volume";
+      "prev play pause next title loop"
+      "seek seek seek seek seek seek";
   }
   #gp-prev { grid-area: prev; }
   #gp-play { grid-area: play; }
@@ -282,11 +281,28 @@ footer {
   .gp-btn { width: 44px; height: 44px; }
 }
 
+/* Compact layout for very small screens */
+@media (max-width: 480px) {
+  #global-player {
+    gap: 8px;
+    grid-template-columns: auto auto auto auto 1fr auto;
+    grid-template-areas:
+      "prev play pause next title loop"
+      "seek seek seek seek seek seek";
+  }
+  .gp-btn { width: 36px; height: 36px; }
+  .gp-icon { width: 18px; height: 18px; }
+  .gp-title { font-size: 0.95rem; }
+  .gp-seek { grid-template-columns: 40px 1fr 40px; }
+  /* hide less-used controls on narrow screens */
+  #gp-volume, #gp-loop { display: none; }
+}
+
 /* Lyrics panel */
 #gp-lyrics-panel {
   position: fixed;
   right: 12px;
-  bottom: 108px; /* sit above the player */
+  bottom: calc(108px + env(safe-area-inset-bottom)); /* sit above the player */
   width: min(680px, calc(100vw - 24px));
   max-height: min(50vh, 520px);
   background: rgba(10, 12, 26, 0.92);

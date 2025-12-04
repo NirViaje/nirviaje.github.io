@@ -470,7 +470,7 @@ function initGlobalPlayer() {
   function startTicker(){ cancelAnimationFrame(rafId); const tick=()=>{ syncLyrics(audio.currentTime, audio.duration); rafId = requestAnimationFrame(tick); }; rafId = requestAnimationFrame(tick); }
   function stopTicker(){ cancelAnimationFrame(rafId); rafId = 0; }
 
-  audio.addEventListener('play', () => { setPlayPauseUI(true); startTicker(); });
+  audio.addEventListener('play', () => { setPlayPauseUI(true); setLyricsVisible(true); startTicker(); });
   audio.addEventListener('pause', () => { setPlayPauseUI(false); stopTicker(); });
   audio.addEventListener('timeupdate', () => {
     if (isFinite(audio.duration) && audio.duration>0) {
@@ -663,7 +663,7 @@ function initGlobalPlayer() {
   }
 
   function syncLyrics(currentTime, duration){
-    if (!panel || panel.hidden) return;
+    if (!panel) return;
     if (lyrics.type === 'none') return;
     if (lyrics.type === 'md' && (!lyrics.stamps || lyrics.stamps.length !== lyrics.lines.length)) {
       ensureMdTiming(duration);
