@@ -209,48 +209,12 @@
         .hidden {
             display: none;
         }
-        /* AGI Impact: floating Home button */
-        .agi-home-link {
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 10000;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-decoration: none;
-            color: var(--text, var(--text-main, #e5e7eb));
-            background: rgba(2, 6, 23, 0.65);
-            border: 1px solid var(--border, var(--border-subtle, rgba(148, 163, 184, 0.35)));
-            border-radius: 999px;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .agi-home-link:hover {
-            background: rgba(2, 6, 23, 0.85);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-        }
-        .agi-home-link svg { width: 16px; height: 16px; opacity: 0.95; }
-        @media (max-width: 480px) {
-            .agi-home-link { top: 10px; left: 10px; padding: 6px 10px; }
-            .agi-home-link span { display: none; }
-        }
     </style>
+    <link rel="stylesheet" href="./shared.css">
+    <script defer src="./shared.js"></script>
 </head>
 <body>
-    <a href="./index.html" class="agi-home-link" aria-label="Back to AGI Impact home">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 10.5L12 3l9 7.5"/>
-            <path d="M5 12v8a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-8"/>
-        </svg>
-        <span>Home</span>
-    </a>
+    
     <h1>智控危机：AI守护者</h1>
     <p class="subtitle">合作策略游戏 · 防止AI吞噬人类文明</p>
 
