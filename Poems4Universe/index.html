@@ -6,89 +6,280 @@
   <title>献给宇宙的散文诗 — 互动专辑</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header>
-    <h1>献给宇宙的散文诗</h1>
-    <p class="subtitle">探索宇宙的诗篇，穿梭于光与声音的旅程</p>
-  </header>
-  <div class="container">
+  <body>
+    <header>
+      <h1>献给宇宙的散文诗</h1>
+      <p class="subtitle">探索宇宙的诗篇，穿梭于光与声音的旅程</p>
+    </header>
+    <!-- Intro content loaded from content.md (preface before Part 1) -->
+    <section id="intro" class="intro">
+      <div id="intro-content">
+        <p>天文学发现扩展了成百上千倍，卡尔·萨根这样的人却再也没有了。</p>
+        <p>未来天文纲要 · 未来天文纲要【一】 | 尺度</p>
+        <p>我一直认为，天文学对普通人最实际的用途是人文关怀。</p>
+      </div>
+    </section>
+    <div class="container">
     <!-- Navigation for the album parts -->
     <nav id="nav">
-      <ul>
-        <li data-target="part1" class="active">1. 自由而孤独</li>
-        <li data-target="part2">2. 星际摇篮里的故事</li>
-        <li data-target="part3">3. 碰撞、毁灭、与新生</li>
-        <li data-target="part4">4. 一切的一切</li>
-      </ul>
+      <div id="nav-groups"><!-- filled by script.js from static chapters --></div>
     </nav>
     <!-- Main area containing each part -->
     <main>
       <!-- Part 1 -->
-      <section id="part1" class="part active">
+      <section id="part1" class="part active" data-part="1">
         <h2>自由而孤独</h2>
-        <p>
-          银河系中有许多被潮汐撕裂的矮星系与球状星团，留下了优美的星流；
-          在星际中自由漂游的行星，孤独地穿越黑暗；先探之人奥陌陌，让我们第一次直面星际访客；
-          还有从地球飞向星际空间的旅行者号，静静诉说着人类的渺小与勇气。
-        </p>
-        <div class="media">
-          <img src="assets/images/stellar_streams.jpg" alt="银河系星流">
-          <!-- Video for this part -->
-          <video controls>
-            <source src="assets/audio/star_stream_tears.mp4" type="video/mp4">
-            您的浏览器不支持视频播放。
-          </video>
+        <div class="part-content" id="part1-content">
+          <details class="chapter" id="c-1-1">
+            <summary>1.1 银河系星流</summary>
+            <div class="content">
+              <p>想象一下，一小撮成百上千万颗流浪恒星，无声的亿年尺度为单位环绕着曾经的宿主星系旋转。像溪流，又像抛出星系的眼泪。</p>
+              <p>星流（英语：stellar streams）是沿着一条狭长轨道围绕星系运动，由众多恒星组成的链状结构，是球状星团或者矮星系受到较大星系引力的巨大潮汐作用而逐渐变形、瓦解、撕裂形成的。截至2007年，已经在银河系中发现了十余个星流，由几千到几亿颗恒星组成，跨度从数万光年到数百万光年不等。</p>
+              <div class="media">
+                <img src="assets/images/stellar_streams.jpg" alt="银河系星流">
+                <video controls preload="none">
+                  <source src="assets/audio/star_stream_tears.mp4" type="video/mp4">
+                  您的浏览器不支持视频播放。
+                </video>
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/List_of_stellar_streams" target="_blank" rel="noopener">List of stellar streams — Wikipedia</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-1-2">
+            <summary>1.2 流浪行星</summary>
+            <div class="content">
+              <p>这是人类首次可靠地观测到一颗地球大小的“流浪行星”，一个未被任何恒星束缚、自由漂浮在星际之间的天体。</p>
+              <p>星际行星（Interstellar planet），又称为流浪行星（Rogue planet）、游牧行星（nomad planet）、自由浮动行星、孤儿行星（Orphan planet）、孤独行星（Lonely planet），粗略地说是不绕任何恒星公转，却只具有行星质量的行星。它们可能是受到其他行星等天体的引力影响而被抛出原本绕着公转的行星系统的行星，或是在行星系统形成期间被弹射出来的原行星，以致流浪于星系或宇宙之中。2011年科学家利用重力微透镜法首度证实星际行星的存在，并推测银河系内木星大小的星际行星数量有恒星的两倍之多。</p>
+              <div class="media">
+                <img src="assets/images/Interstellar_planet.jpg" alt="流浪行星">
+              </div>
+              <p>File: Alone in Space - Astronomers Find New Kind of Planet.jpg - Wikimedia Commons</p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-1-3">
+            <summary>1.3 奥陌陌 星际天体</summary>
+            <div class="content">
+              <p>千光年到千万光年尺度的星际喷泉，星系比起来就好像山脚下的石头。</p>
+              <p>奥陌陌（ʻOumuamua，“先探之人”），原定名 1I/2017 U1，是已知第一颗经过太阳系的星际天体。它于2017年10月18日（UT）在距离地球约0.2 AU 处被泛星1号望远镜发现，并在极端双曲线的轨道上运行。起初它被认为是一颗彗星，但经过长时间观测研究后，发现其不具有彗发构造，也不是小行星。</p>
+              <div class="media">
+                <img src="assets/images/Oumuamua.png" alt="ʻOumuamua 奥陌陌">
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/1I/%CA%BBOumuamua" target="_blank" rel="noopener">1I/ʻOumuamua — Wikipedia</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-1-4">
+            <summary>1.4 旅行者</summary>
+            <div class="content">
+              <p>旅行者号探测器。</p>
+              <p>旅行者1号（Voyager 1）是美国国家航空航天局（NASA）研制的一艘无人外太阳系空间探测器，重825.5kg，于1977年9月5日发射，部分功能截至目前依然正常运作，并持续与NASA的深空网络通信。它是有史以来距离地球最远的人造飞行器，也是第一个离开太阳系的人造飞行器。受惠于几次的引力加速，旅行者1号的飞行速度比现有任何一个飞行器都要快些，这使得较它早两星期发射的姊妹船旅行者2号永远都不会超越它。它的主要任务在1979年经过木星系统、1980年经过土星系统之后，结束于1980年11月20日。它也是第一个提供了木星、土星以及其卫星详细照片的探测器。2012年8月25日，“旅行者1号”成为第一个穿越太阳圈并进入星际介质的宇宙飞船。截至2024年12月止，旅行者1号正处于离太阳约166.28 AU 的位置，是离地球最远的人造物体。</p>
+              <div class="media">
+                <img src="assets/images/Voyager.png" alt="旅行者1号">
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/Voyager_1" target="_blank" rel="noopener">Voyager 1 — Wikipedia</a></p>
+            </div>
+          </details>
         </div>
       </section>
       <!-- Part 2 -->
-      <section id="part2" class="part">
+      <section id="part2" class="part" data-part="2">
         <h2>星际摇篮里的故事</h2>
-        <p>
-          在创生之柱的深处，恒星像婴儿般从尘埃与气体中孕育；
-          旋转的原行星盘为未来的行星准备了原始的物质；
-          太阳内部诞生的光子要经过十几万年的随机散射才能抵达表面；
-          古代的哲人泰勒斯曾预言日食，昭示天体运行的规律；
-          极高速的天体物理喷流，在宇宙中形成了壮观的光柱。
-        </p>
-        <div class="media">
-          <img src="assets/images/Pillars-of-Creation.jpeg" alt="创生之柱">
-          <p class="coming">歌曲尚未上线，敬请期待……</p>
+        <div class="part-content" id="part2-content">
+          <details class="chapter" id="c-2-1">
+            <summary>2.1 创生之柱</summary>
+            <div class="content">
+              <p>目击星星们的摇篮。</p>
+              <p>恒星的诞生是一个极其复杂且漫长的过程。在“创生之柱”这样的恒星摇篮中，巨大的气体和尘埃云在引力的作用下逐渐聚集。当这些物质的密度达到一定程度时，核心区域开始发生核聚变反应，一颗恒星就此诞生。韦伯望远镜能够更清晰地捕捉到这些细节，让我们对恒星诞生的早期阶段有了更深入的了解。例如，我们可以看到气体和尘埃云的具体形态和分布，以及它们在引力作用下的运动轨迹。这些信息对于我们研究恒星的形成机制具有重要的意义。</p>
+              <div class="media">
+                <img src="assets/images/Pillars-of-Creation.jpeg" alt="创生之柱">
+              </div>
+              <p>
+                <a href="https://esahubble.org/images/heic1501c/" target="_blank" rel="noopener">ESA/Hubble 图像</a> ·
+                <a href="https://chandra.harvard.edu/blog/node/922" target="_blank" rel="noopener">Chandra 博客</a>
+              </p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-2-2">
+            <summary>2.2 原行星盘</summary>
+            <div class="content">
+              <p>目击另一个太阳系的起源。</p>
+              <p>原行星盘（protoplanetary disc）是在新形成的年轻恒星外围绕的浓密气体，可视为一种吸积盘。太阳系形成的星云假说描述原行星盘如何发展成行星系统：尘埃粒子在静电与引力作用下成长为星子；原行星盘半径可达千天文单位，温度并不高，内侧约 1000K，并常伴随喷流。</p>
+              <div class="media">
+                <img src="assets/images/protoplanetary_disc.png" alt="原行星盘">
+                <img src="assets/images/Warp-Spiral-Structure-Protoplanetary-Disc.gif" alt="扭曲与螺旋结构的原行星盘">
+              </div>
+              <p>
+                <a href="https://en.wikipedia.org/wiki/Protoplanetary_disk" target="_blank" rel="noopener">Protoplanetary disk — Wikipedia</a> ·
+                <a href="https://scitechdaily.com/warps-drive-disruptions-in-planet-formation-through-gravitational-instability-in-young-solar-systems/" target="_blank" rel="noopener">SciTechDaily: Warps & planet formation</a>
+              </p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-2-3">
+            <summary>2.3 跨过17万年离开太阳核心</summary>
+            <div class="content">
+              <p>光子从核心到辐射区外缘的扩散时间约为 17 万年，而光子离开太阳飞越亿万公里到达地球的时间不到八分半钟（地日距离约 1.5 亿公里）。</p>
+              <p>聚变反应释放的高能光子（伽马射线）在辐射区中经历自由电子的随机散射，扩散至外缘约需 17 万年；此后进入对流区，热量以对流更快地向外输运。</p>
+              <div class="media">
+                <img src="assets/images/Solar_core.jpeg" alt="太阳核心示意">
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/Solar_core" target="_blank" rel="noopener">Solar core — Wikipedia</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-2-4">
+            <summary>2.4 泰勒斯的日食</summary>
+            <div class="content">
+              <p>泰勒斯日食是公元前 6 世纪初发生的一次日食，据希罗多德记载，米利都的泰勒斯准确预言了这次日食，被称为“科学的诞生”。</p>
+              <div class="media">
+                <img src="assets/images/Eclipse-of-Thales.jpeg" alt="泰勒斯的日食">
+              </div>
+              <p><a href="https://zh.wikipedia.org/wiki/File:Crab_Nebula.jpg" target="_blank" rel="noopener">相关条目</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-2-5">
+            <summary>2.5 星际喷流</summary>
+            <div class="content">
+              <p>千光年到千万光年尺度的星际喷泉，星系比起来就好像山脚下的石头。</p>
+              <p>天体物理喷流是一种天文现象：电离物质以高速从天体喷出，形成与自转轴对齐的窄流；当接近光速时呈现相对论效应。喷流通常与黑洞、中子星、脉冲星等高能源相关，可能由吸积盘与磁场共同作用驱动。</p>
+              <div class="media">
+                <img src="assets/images/Astrophysical_jet_Opo0113i.jpg" alt="天体物理喷流">
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/Astrophysical_jet#/media/File:Opo0113i.jpg" target="_blank" rel="noopener">Astrophysical jet — Image</a></p>
+            </div>
+          </details>
         </div>
       </section>
       <!-- Part 3 -->
-      <section id="part3" class="part">
+      <section id="part3" class="part" data-part="3">
         <h2>碰撞、毁灭、与新生</h2>
-        <p>
-          超新星爆发创造了宇宙中许多重元素；
-          双星系统中物质的吸积与爆发，像一支注定爆发的协奏曲；
-          中子星对撞释放出惊人的能量，为宇宙中的黄金提供来源；
-          远在39亿年后的未来，仙女座星系或许会与银河系相遇；
-          一千年前的天关客星，在历史中留下了短暂而耀眼的踪影。
-        </p>
-        <div class="media">
-          <img src="assets/images/Keplers_supernova.jpg" alt="超新星">
-        </div>
-        <!-- 音频播放器单独置于图片下方，确保始终可见 -->
-        <div class="audio-container">
-          <audio controls src="assets/audio/double_star_concerto.mp3">
-            您的浏览器不支持音频播放。
-          </audio>
+        <div class="part-content" id="part3-content">
+          <details class="chapter" id="c-3-1">
+            <summary>3.1 超新星核合成</summary>
+            <div class="content">
+              <p>“我们来自星辰。” 超新星核合成主要发生在爆炸过程中的氧燃烧与硅燃烧，抛出硅、硫、钙与铁峰顶元素等，使星际介质中重元素丰度逐渐增加；更重的元素多由 r-过程等机制形成。</p>
+              <div class="media">
+                <img src="assets/images/Keplers_supernova.jpg" alt="开普勒超新星">
+              </div>
+              <p><a href="https://en.wikipedia.org/wiki/File:Keplers_supernova.jpg" target="_blank" rel="noopener">Kepler's Supernova — Wikipedia</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-3-2">
+            <summary>3.2 吸积双星</summary>
+            <div class="content">
+              <p>一对双星的缓慢吸积，以坠落与燃烧写下隐喻：一切亲密皆由给予开始，而一切光芒皆因承受而生。Ia 超新星。</p>
+              <div class="media">
+                <img src="assets/images/accreting-binary.png" alt="吸积双星">
+              </div>
+              <div class="audio-container">
+                <audio controls preload="none">
+                  <source src="assets/audio/double_star_concerto.mp3" type="audio/mpeg">
+                  您的浏览器不支持音频播放。
+                </audio>
+              </div>
+              <p>
+                <a href="http://www.wuli.ac.cn/cn/article/pdf/preview/10.7693/wl20231008.pdf" target="_blank" rel="noopener">物理 — 吸积盘综述</a> ·
+                <a href="https://zh.wikipedia.org/zh-cn/%E5%90%B8%E7%A7%AF%E7%9B%98#%E5%90%B8%E7%A7%AF%E7%9B%98%E7%89%A9%E7%90%86%E5%AD%A6" target="_blank" rel="noopener">维基百科：吸积盘物理学</a>
+              </p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-3-3">
+            <summary>3.3 中子星对撞</summary>
+            <div class="content">
+              <p>Carl Sagan: “We are made of star stuff.” 卡尔·萨根：“我们来自星辰。” 一部分理论认为地球的黄金几乎完全起源于中子星对撞。</p>
+              <p>在地球早期，含金小行星不断撞击原始地球；地质过程让分散的金元素逐渐聚集，形成矿藏。金的化学性质不活泼，几乎不与其它元素反应。</p>
+              <p>罗伯特·哈岑（Robert Hazen）：“这是一种分馏过程，这是行星产生的作用。”</p>
+              <p><a href="https://www.nytimes.com/2017/10/16/science/ligo-neutron-stars-collision.html" target="_blank" rel="noopener">NYTimes: LIGO 中子星对撞</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-3-4">
+            <summary>3.4 仙女座星系-银河系对撞</summary>
+            <div class="content">
+              <p>39亿年后，如果我们仍在，或许每晚最喜欢的事是欣赏天空中绚烂的宇宙焰火。仙女座正以每秒约 120 公里的速度朝银河系运动，其横向速度难以测量，未来可能相撞或擦肩。</p>
+              <p><a href="https://fiveable.me/cosmology/unit-11/cosmic-web-filaments-sheets-voids/study-guide/CA7WRdC8wacJZZ8b" target="_blank" rel="noopener">Cosmic Web — Fiveable</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-3-5">
+            <summary>3.5 天关客星</summary>
+            <div class="content">
+              <p>人类的历史陪伴着这颗超新星的爆发和蟹状星云的成长。SN 1054 在 23 天的时间内白天可见，夜晚可见的时间持续了一年十个月；其遗骸为蟹状星云（M1）。</p>
+              <p><a href="https://zh.wikipedia.org/wiki/File:Crab_Nebula.jpg" target="_blank" rel="noopener">蟹状星云 — Wikipedia</a></p>
+            </div>
+          </details>
         </div>
       </section>
       <!-- Part 4 -->
-      <section id="part4" class="part">
+      <section id="part4" class="part" data-part="4">
         <h2>一切的一切</h2>
-        <p>
-          人类自古仰望星空，赋予星辰无尽的故事；
-          “唐怀瑟之门”的独白让我们思考时间与记忆的意义；
-          赫罗图描绘了恒星的一生；
-          宇宙网连接着星系的丝线；
-          离开地球这个摇篮是智者的梦想；
-          OBAFGKM，七个字母串起了恒星的谱型。
-        </p>
-        <div class="media">
-          <img src="assets/images/Astrophysical_jet_Opo0113i.jpg" alt="宇宙网">
-          <p class="coming">歌曲尚未上线，敬请期待……</p>
+        <div class="part-content" id="part4-content">
+          <details class="chapter" id="c-4-1">
+            <summary>4.1 史前的天空</summary>
+            <div class="content">
+              <p>自人类以来 / Ever since human being / Humans endow the stars with stories. 人类将故事赋予群星。</p>
+              <p>从地球窥见宇宙一角。</p>
+              <ul>
+                <li><a href="https://www.oars.com/blog/constellations-every-stargazer-should-know/" target="_blank" rel="noopener">Constellations every stargazer should know</a></li>
+                <li><a href="https://starwalk.space/en/news/zodiac-constellations" target="_blank" rel="noopener">Zodiac constellations — StarWalk</a></li>
+                <li><a href="https://www.skyatnightmagazine.com/advice/zodiac-constellations" target="_blank" rel="noopener">Sky at Night — Zodiac constellations</a></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-4-2">
+            <summary>4.2 唐怀瑟之门</summary>
+            <div class="content">
+              <p>我曾见过那些你们人类不会置信的事……所有这些瞬间都会消逝在时间之中，一如眼泪消失在雨中。</p>
+              <p>《泪洒雨中》为《银翼杀手》经典独白，被誉为电影史上最动人的死亡独白之一。</p>
+              <p>I've seen things you people wouldn't believe... like tears in rain... Time to die.</p>
+              <p>
+                <a href="https://en.wikipedia.org/wiki/Tears_in_rain_monologue" target="_blank" rel="noopener">Wikipedia</a> ·
+                <a href="https://www.acmi.net.au/stories-and-ideas/blade-runner-ive-seen-things/" target="_blank" rel="noopener">ACMI</a> ·
+                <a href="https://madebyabvh.tumblr.com/post/112153610087/blade-runner" target="_blank" rel="noopener">GIF</a>
+              </p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-4-3">
+            <summary>4.3 赫罗图</summary>
+            <div class="content">
+              <p>几乎所有恒星的一生。</p>
+              <p><a href="https://chandra.harvard.edu/edu/formal/variable_stars/HR_student.html" target="_blank" rel="noopener">HR Diagram — Chandra</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-4-4">
+            <summary>4.4 宇宙网</summary>
+            <div class="content">
+              <p>这是人类首次可靠地观测到一颗地球大小的“流浪行星”，一个未被任何恒星束缚、自由漂浮在星际之间的天体。</p>
+              <p><a href="https://fiveable.me/cosmology/unit-11/cosmic-web-filaments-sheets-voids/study-guide/CA7WRdC8wacJZZ8b" target="_blank" rel="noopener">Cosmic Web — Fiveable</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-4-5">
+            <summary>4.5 离开摇篮</summary>
+            <div class="content">
+              <p>“地球是人类的摇篮，但人类不会永远待在摇篮里。” —— 康斯坦丁·齐奥尔科夫斯基</p>
+              <p>硅基智能与碳基生命共同创造的下一个文明纪元。</p>
+              <p><a href="https://www.youtube.com/watch?v=e8RH_YhQ6Ag" target="_blank" rel="noopener">YouTube: e8RH_YhQ6Ag</a></p>
+            </div>
+          </details>
+
+          <details class="chapter" id="c-4-6">
+            <summary>4.6 OBAFGKM</summary>
+            <div class="content">
+              <p>在天文学中，恒星分类依据光谱特征。现今多按摩根-基南 (MK) 系统分为 O、B、A、F、G、K、M，从最热到最冷。</p>
+              <p><a href="http://www.davidfathi.com/obafgkm.php" target="_blank" rel="noopener">OBAFGKM — David Fathi</a> · <a href="https://www.youtube.com/watch?v=e8RH_YhQ6Ag" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.youtube.com/watch?v=GToL7pe-saI" target="_blank" rel="noopener">YouTube: GToL7pe-saI</a></p>
+              <p>Final. 每个环都存在理想，至少平凡理想总是有的。</p>
+            </div>
+          </details>
         </div>
       </section>
     </main>
