@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AGI Impact · Interactive Visualizations Index</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --muted: #94a3b8;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(148, 163, 184, 0.22);
+      --radius-lg: 18px;
+      --shadow: 0 18px 45px rgba(0,0,0,0.45);
+      --accent1: #7dd3fc;
+      --accent2: #a5b4fc;
+      --accent3: #4ade80;
+      --accent4: #fb923c;
+      --accent5: #38bdf8;
+      --accent6: #f472b6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 60%, #000 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", PingFang SC, sans-serif;
+      color: var(--fg);
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 18px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 6px;
+      background: linear-gradient(120deg, #7dd3fc, #a5b4fc, #4ade80);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      padding: 18px 18px 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      transition: transform .15s ease, box-shadow .15s ease;
+      text-decoration: none;
+      color: var(--fg);
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.65);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .emoji {
+      font-size: 20px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <h1>AGI Impact · Visualization Index</h1>
+      <div class="subtitle">
+        包含 LessWrong、AI Safety、DeepMind、人格 × AGI 等系列交互可视化的统一索引。
+      </div>
+    </header>
+
+    <section class="grid">
+
+      <!-- 1 -->
+      <a class="card" href="agi-impact.html">
+        <div class="card-title"><span class="emoji">🧬</span> Personality Diversity × AGI（宏观框架）</div>
+        <div class="card-desc">
+          Micro–Meso–Macro 框架、NAES/NHUR/ILAV 等指标可视化。
+        </div>
+      </a>
+
+      <!-- 2 -->
+      <a class="card" href="deepmind-responsibility-safety-timeline.html">
+        <div class="card-title"><span class="emoji">🏢</span> DeepMind Responsibility & Safety Timeline</div>
+        <div class="card-desc">
+          2018–2025 深度责任与安全工作全景时间线，可按年份/类别筛选。
+        </div>
+      </a>
+
+      <!-- 3 -->
+      <a class="card" href="four-frameworks.html">
+        <div class="card-title"><span class="emoji">🧩</span> MBTI × Big Five × RIASEC × O*NET 整合框架</div>
+        <div class="card-desc">
+          四体系交互式人格/职业映射，实时联动解释。
+        </div>
+      </a>
+
+      <!-- 4 -->
+      <a class="card" href="lesswrong-in-ai-risk.html">
+        <div class="card-title"><span class="emoji">📚</span> LessWrong 在 AI 安全研究史的角色（详细纵向时间线）</div>
+        <div class="card-desc">
+          精准引用 + 学术/政策事件 + 社区演化的纵向可视化。
+        </div>
+      </a>
+
+      <!-- 5 -->
+      <a class="card" href="lw_ai_safety_causal_graph.html">
+        <div class="card-title"><span class="emoji">🔗</span> LessWrong → 认知共同体 → 机构 → 治理（结构因果图）</div>
+        <div class="card-desc">
+          展示思想如何穿过社区、机构、资助链路进入政府治理议程。
+        </div>
+      </a>
+
+      <!-- 6 -->
+      <a class="card" href="Planecrash×Rationality×AI-aligment.html">
+        <div class="card-title"><span class="emoji">🛫</span> 《Planecrash》 × 理性主义 × AI 对齐：三体系跨模型</div>
+        <div class="card-desc">
+          把叙事/理性主义/对齐三体系放在同一矩阵上的主题性对照表。
+        </div>
+      </a>
+
+      <!-- 7 -->
+      <a class="card" href="board_game_prototype.html">
+        <div class="card-title"><span class="emoji">🛫</span> AI Risk Board Game Prototype</div>
+        <div class="card-desc">
+          把叙事/理性主义/对齐三体系放在同一矩阵上的主题性对照表。
+        </div>
+      </a>
+    </section>
+
+    <footer>
+      AGI Impact Project · Interactive Visualization Hub
+      <br><br>
+      Files cited:
+      :contentReference[oaicite:0]{index=0}
+      :contentReference[oaicite:1]{index=1}
+      :contentReference[oaicite:2]{index=2}
+      :contentReference[oaicite:3]{index=3}
+      :contentReference[oaicite:4]{index=4}
+      :contentReference[oaicite:5]{index=5}
+      :contentReference[oaicite:6]{index=6}
+    </footer>
+
+  </div>
+</body>
+</html>

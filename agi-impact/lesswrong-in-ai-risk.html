@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI 安全研究史中 LessWrong 的角色（纵向交互式时间线）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --bg-panel: #020617;
+      --accent-lesswrong: #22c55e;
+      --accent-academic: #38bdf8;
+      --accent-org: #f97316;
+      --accent-policy: #e5e7eb;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 40px rgba(0,0,0,0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 50%, #000 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0 0 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827 0, #020617 55%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 16px 16px 18px;
+      backdrop-filter: blur(24px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .legend-dot.lesswrong {
+      background: var(--accent-lesswrong);
+    }
+
+    .legend-dot.academic {
+      background: var(--accent-academic);
+    }
+
+    .legend-dot.org {
+      background: var(--accent-org);
+    }
+
+    .legend-dot.policy {
+      background: var(--accent-policy);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      user-select: none;
+    }
+
+    .filter-chip input {
+      display: none;
+    }
+
+    .filter-chip span.checkbox {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      border: 1px solid #4b5563;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .filter-chip.active {
+      border-color: #e5e7eb;
+      background: rgba(148, 163, 184, 0.15);
+      color: #e5e7eb;
+    }
+
+    .filter-chip.active .checkbox::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 3px;
+      background: #e5e7eb;
+    }
+
+    .year-range {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .year-range label {
+      font-size: 11px;
+    }
+
+    .year-range span {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .year-range input {
+      accent-color: #e5e7eb;
+      width: 150px;
+    }
+
+    /* 纵向时间轴 */
+    .timeline-shell {
+      margin-top: 6px;
+      border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at top, #020617 0, #020617 45%, #000 100%);
+      position: relative;
+      height: 640px;
+      overflow-y: auto;
+      padding: 20px 10px 20px 20px;
+    }
+
+    .timeline-shell::-webkit-scrollbar {
+      width: 6px;
+    }
+    .timeline-shell::-webkit-scrollbar-track {
+      background: rgba(15,23,42,0.4);
+    }
+    .timeline-shell::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,0.7);
+      border-radius: 999px;
+    }
+
+    .timeline-vertical {
+      position: relative;
+      height: 1200px; /* 纵向可用空间，按年份映射 */
+      margin-left: 30px;
+      margin-right: 4px;
+    }
+
+    .timeline-line-vertical {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(
+        180deg,
+        rgba(148, 163, 184, 0.1),
+        rgba(148, 163, 184, 0.7),
+        rgba(148, 163, 184, 0.1)
+      );
+    }
+
+    .timeline-year-labels-vertical {
+      position: absolute;
+      left: -26px;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timeline-year-labels-vertical span {
+      transform: translateY(50%);
+    }
+
+    .timeline-event-vertical {
+      position: absolute;
+      left: 0;
+      transform: translateX(12px) translateY(-50%);
+      cursor: pointer;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        background 0.12s ease-out,
+        border-color 0.12s ease-out;
+      padding: 7px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.94);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 90%;
+      backdrop-filter: blur(20px);
+    }
+
+    .timeline-event-vertical[data-category="lesswrong"] {
+      border-color: rgba(34, 197, 94, 0.8);
+    }
+    .timeline-event-vertical[data-category="academic"] {
+      border-color: rgba(56, 189, 248, 0.8);
+    }
+    .timeline-event-vertical[data-category="org"] {
+      border-color: rgba(249, 115, 22, 0.9);
+    }
+    .timeline-event-vertical[data-category="policy"] {
+      border-color: rgba(229, 231, 235, 0.85);
+    }
+
+    .timeline-event-vertical:hover {
+      transform: translateX(14px) translateY(-50%) scale(1.02);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .timeline-event-vertical.active {
+      transform: translateX(16px) translateY(-50%) scale(1.03);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8);
+      border-width: 1.4px;
+    }
+
+    .timeline-event-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .timeline-event-dot.lesswrong {
+      background: var(--accent-lesswrong);
+    }
+    .timeline-event-dot.academic {
+      background: var(--accent-academic);
+    }
+    .timeline-event-dot.org {
+      background: var(--accent-org);
+    }
+    .timeline-event-dot.policy {
+      background: var(--accent-policy);
+    }
+
+    .timeline-event-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .timeline-event-header {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .timeline-event-year {
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      min-width: 44px;
+    }
+
+    .timeline-event-title {
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .timeline-event-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 260px;
+    }
+
+    .timeline-empty {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 18px 0;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hint-badge {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* 右侧详情 */
+    .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-year {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .detail-title {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .tag-pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .tag-pill-dot.lesswrong {
+      background: var(--accent-lesswrong);
+    }
+    .tag-pill-dot.academic {
+      background: var(--accent-academic);
+    }
+    .tag-pill-dot.org {
+      background: var(--accent-org);
+    }
+    .tag-pill-dot.policy {
+      background: var(--accent-policy);
+    }
+
+    .detail-body {
+      font-size: 13px;
+      line-height: 1.75;
+      color: #d1d5db;
+      margin-top: 2px;
+    }
+
+    .detail-body p {
+      margin: 0 0 8px;
+    }
+
+    .detail-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    .refs-block {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148,163,184,0.5);
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.85);
+    }
+
+    .refs-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .refs-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .refs-list li {
+      margin-bottom: 4px;
+    }
+
+    .refs-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .refs-badge {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      margin-right: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .refs-link a {
+      color: #e5e7eb;
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(229,231,235,0.6);
+    }
+
+    .refs-link a:hover {
+      opacity: 0.9;
+    }
+
+    .detail-footer-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>AI 安全研究史中 LessWrong 的角色</h1>
+      <div class="subtitle">
+        纵向时间线从 2000s 早期的网络理性主义讨论开始，到 AI 安全进入主流实验室与政策议程。
+        每个节点给出简要说明与可直接点击的 LessWrong / 论文 / 报告链接，方便你在论文或白皮书中引用。
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- 左侧：纵向时间线 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            纵向时间线 · Timeline
+            <span class="pill">
+              <span class="pill-dot"></span>
+              Interactive
+            </span>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot lesswrong"></span> LessWrong / OB 社区事件
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot academic"></span> 学术研究与理论
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot org"></span> 研究机构 / 实验室
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot policy"></span> 政策 / 大众议题
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="filters">
+            <label class="filter-chip active" data-category="lesswrong">
+              <span class="checkbox"></span>
+              <span>LessWrong / OB</span>
+            </label>
+            <label class="filter-chip active" data-category="academic">
+              <span class="checkbox"></span>
+              <span>学术</span>
+            </label>
+            <label class="filter-chip active" data-category="org">
+              <span class="checkbox"></span>
+              <span>机构</span>
+            </label>
+            <label class="filter-chip active" data-category="policy">
+              <span class="checkbox"></span>
+              <span>政策 / 大众</span>
+            </label>
+          </div>
+          <div class="year-range">
+            <label>显示到年份（上限）</label>
+            <span id="yearRangeLabel">2005–2024</span>
+            <input id="yearRangeInput" type="range" min="2005" max="2024" value="2024" />
+          </div>
+        </div>
+
+        <div class="timeline-shell">
+          <div id="timelineVertical" class="timeline-vertical">
+            <!-- JS 注入 -->
+          </div>
+        </div>
+
+        <div class="hint">
+          <span class="hint-badge">?</span>
+          纵向轴为时间，点击左侧节点查看右侧详情与引用链接；上方可按类型和时间范围筛选。
+        </div>
+      </section>
+
+      <!-- 右侧：事件详情 + 引用 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">事件详情 · 语境与引用</div>
+        </div>
+        <div id="detail" class="detail">
+          <!-- JS 注入 -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // === 1. 时间线数据：更细致 + 附带 LessWrong / 学术引用信息 ===
+    const events = [
+      {
+        id: "pre-foom-2005",
+        year: 2005,
+        title: "Yudkowsky 早期“FOOM”与友好 AI 文章",
+        category: "lesswrong",
+        tagline: "在 Overcoming Bias 前，已开始系统论述超级智能与对齐问题。",
+        impact:
+          "提出超级智能“快速起飞”（FOOM）与友好 AI 概念，为后续网络讨论与 MIRI 议程打下理论基底。",
+        summary:
+          "2000s 早期，Yudkowsky 在个人网站与邮件列表上撰写关于 AI 奇点、智能爆炸和 Friendly AI 的文章，初步构建出“目标对齐 + 能力放大”的风险框架。",
+        role:
+          "这些内容后来被 LessWrong 社区系统吸收，成为理性主义者理解 AGI 风险的早期语境。",
+        refs: [
+          {
+            type: "web",
+            label: "“Creating Friendly AI” (2001)",
+            source: "Yudkowsky, e.g. Singularity Institute papers",
+            url: "https://intelligence.org/files/CFAI.pdf"
+          }
+        ]
+      },
+      {
+        id: "ob-2006",
+        year: 2006,
+        title: "Overcoming Bias 博客启动",
+        category: "lesswrong",
+        tagline: "理性主义与未来议题博客，LessWrong 的直接前身。",
+        impact:
+          "以博客形式汇集 Hanson 与 Yudkowsky 等作者，讨论认知偏误、预测与未来技术风险，吸引了第一批对 AI 风险感兴趣的读者。",
+        summary:
+          "OB 将“偏见”“贝叶斯更新”“未来技术”放在同一叙事框架，形成了一个兼具理性训练与前沿议题的公众空间。",
+        role:
+          "为 2009 年 LessWrong 的启动提供了成熟的读者社群与内容模板。",
+        refs: [
+          {
+            type: "blog",
+            label: "Overcoming Bias 主站",
+            source: "overcomingbias.com",
+            url: "https://www.overcomingbias.com/"
+          }
+        ]
+      },
+      {
+        id: "lw-2009",
+        year: 2009,
+        title: "LessWrong 正式建立 & Sequences 迁移",
+        category: "lesswrong",
+        tagline: "将理性训练与 AGI 对齐合并为系统性写作项目。",
+        impact:
+          "LessWrong 将分散在 OB 的写作重构为结构化“Sequences”，以系列文章形式系统铺陈贝叶斯理性与 AI 安全相关理念。",
+        summary:
+          "网站结构鼓励长篇连载与评论区辩论，形成“开放推理实验室”，使 AI 安全问题与日常推理训练紧密联结。",
+        role:
+          "成为大量未来 AI 安全研究者的入口；社区成员后来进入 MIRI、FHI、CHAI、DeepMind 等机构。",
+        refs: [
+          {
+            type: "lw",
+            label: "LessWrong 主站",
+            source: "lesswrong.com",
+            url: "https://www.lesswrong.com/"
+          },
+          {
+            type: "lw",
+            label: "The Sequences 总入口",
+            source: "LessWrong",
+            url: "https://www.lesswrong.com/rationality"
+          }
+        ]
+      },
+      {
+        id: "seq-tech-2010",
+        year: 2010,
+        title: "Sequences 中关于“对齐、价值装载”的集中讨论",
+        category: "lesswrong",
+        tagline: "用认知与理性语言向非专业读者讲解 AI 对齐难题。",
+        impact:
+          "通过故事化与类比方式，把“价值装载”“orthogonality thesis”等抽象内容变成可阅读的长文，降低 AI 安全的入门门槛。",
+        summary:
+          "例如《The Hidden Complexity of Wishes》《Value is Fragile》等文章，强调价值定义与目标指定的脆弱性，为后续学界讨论提供了直观例子。",
+        role:
+          "在学术论文出现前，社区层面已经形成对对齐难度与价值不确定性的共同语言。",
+        refs: [
+          {
+            type: "lw",
+            label: "The Hidden Complexity of Wishes",
+            source: "LessWrong Sequences",
+            url: "https://www.lesswrong.com/s/the-hidden-complexity-of-wishes"
+          },
+          {
+            type: "lw",
+            label: "Value is Fragile",
+            source: "LessWrong",
+            url: "https://www.lesswrong.com/posts/FJ6vmfPcM9hH9rJkB/value-is-fragile"
+          }
+        ]
+      },
+      {
+        id: "miri-2010",
+        year: 2010,
+        title: "SIAI→MIRI：明确聚焦“Friendly AI”研究",
+        category: "org",
+        tagline: "将社区讨论的对齐问题，固化为独立研究议程。",
+        impact:
+          "Singularity Institute 逐步重组为 MIRI，集中资源研究形式化决策理论、逻辑不确定性与对齐理论。",
+        summary:
+          "研究议程与 LessWrong 上的思想高度耦合，人员重叠明显，形成“社区—研究机构”的互相反馈链路。",
+        role:
+          "为学界之外提供一个“新理论快速实验场”，大量不易发表的理论工作在此沉淀。",
+        refs: [
+          {
+            type: "org",
+            label: "MIRI 研究议程",
+            source: "Machine Intelligence Research Institute",
+            url: "https://intelligence.org/research/"
+          }
+        ]
+      },
+      {
+        id: "dt-2010",
+        year: 2010,
+        title: "Timeless / Updateless Decision Theory 的提出与讨论",
+        category: "academic",
+        tagline: "社区内发展出的“非标准决策理论”影响哲学与博弈论。",
+        impact:
+          "TDT/UDT/FDT 等决策理论在 LessWrong 上被反复讨论，为学界探讨逻辑代理与多世界决策提供案例。",
+        summary:
+          "这些理论在新奇问题（Newcomb's problem、twin prisoner 等）上给出了不同于经典期望效用理论的答案，引发哲学期刊与预印本中的回应。",
+        role:
+          "展示了 LessWrong 不仅是“传播者”，也能生成被学者关注的原创理论。",
+        refs: [
+          {
+            type: "lw",
+            label: "Timeless Decision Theory 讨论合集",
+            source: "LessWrong",
+            url: "https://www.lesswrong.com/tag/timeless-decision-theory"
+          },
+          {
+            type: "paper",
+            label: "Functional Decision Theory (FDT) 论文",
+            source: "Everett et al., 2018",
+            url: "https://arxiv.org/abs/1710.05060"
+          }
+        ]
+      },
+      {
+        id: "bostrom-2014",
+        year: 2014,
+        title: "《Superintelligence》出版",
+        category: "academic",
+        tagline: "AGI 风险首次以学术专著形式系统呈现。",
+        impact:
+          "Bostrom 将 many LessWrong/MIRI 圈的核心论点整理为可被大学课程和政府报告引用的正式文本。",
+        summary:
+          "书中关于情景、收敛动机与对齐难题的阐述，使 AGI 风险从“网民话题”跃迁为哲学与政策圈的严肃议题。",
+        role:
+          "在时间线上起到“学术化里程碑”的作用，将 LessWrong 话语引入更广泛的学术生态。",
+        refs: [
+          {
+            type: "book",
+            label: "Superintelligence: Paths, Dangers, Strategies",
+            source: "Oxford University Press, 2014",
+            url: "https://global.oup.com/academic/product/superintelligence-9780198739838"
+          }
+        ]
+      },
+      {
+        id: "fli-2015",
+        year: 2015,
+        title: "FLI AI 安全公开信与研究议程",
+        category: "policy",
+        tagline: "汇集学术界与产业界签名，将 AI 安全推向公众视野。",
+        impact:
+          "未来生命研究所发起公开信与研究议程，众多 AI 领军人物参与签名和合作。",
+        summary:
+          "LessWrong / EA 圈大量成员在背后推动议程设计与宣传，使得 AI 安全获得主要基金会与媒体关注。",
+        role:
+          "标志着 AI 安全从“思想圈”进入“资助与政策圈”。",
+        refs: [
+          {
+            type: "policy",
+            label: "FLI Open Letter on AI",
+            source: "Future of Life Institute",
+            url: "https://futureoflife.org/open-letter/ai-open-letter/"
+          }
+        ]
+      },
+      {
+        id: "concrete-2016",
+        year: 2016,
+        title: "《Concrete Problems in AI Safety》发表",
+        category: "academic",
+        tagline: "安全主题正式进入顶会与工业实验室研究议程。",
+        impact:
+          "DeepMind/OpenAI 等研究者提出可操作的强化学习安全问题，如奖励误设、负面副作用等。",
+        summary:
+          "论文将 LessWrong 等社区上关于“奖励误设”“对齐失败模式”的抽象讨论，翻译为清晰可测的技术任务。",
+        role:
+          "开辟了“可发表的 AI 安全问题”路线，为学术界提供了切入点。",
+        refs: [
+          {
+            type: "paper",
+            label: "Concrete Problems in AI Safety",
+            source: "Amodei et al., 2016",
+            url: "https://arxiv.org/abs/1606.06565"
+          }
+        ]
+      },
+      {
+        id: "ea-2017",
+        year: 2017,
+        title: "EA 社区将“长期主义 + AI 风险”置于核心",
+        category: "policy",
+        tagline: "资源与人才从全球健康逐步转向 AI 安全。",
+        impact:
+          "在 EA 会议与报告中，AI 风险被系统论证为优先级极高的长期议题。",
+        summary:
+          "许多 EA 核心人物起源于 LessWrong，与 Bostrom/FHI 等机构紧密合作，使资源能够比较顺畅地流向对齐研究。",
+        role:
+          "将 LessWrong 的思想影响转化为可量化的赞助与研究岗位。",
+        refs: [
+          {
+            type: "ea",
+            label: "Effective Altruism & AI Safety 相关资源",
+            source: "CEA & EA community",
+            url: "https://www.effectivealtruism.org/articles/ai-safety-syllabus"
+          }
+        ]
+      },
+      {
+        id: "af-2018",
+        year: 2018,
+        title: "Alignment Forum 建立，与 LessWrong 形成分层结构",
+        category: "lesswrong",
+        tagline: "为更“学术化”的对齐讨论提供一个高信号空间。",
+        impact:
+          "AF 采用邀请制和更严格的内容筛选机制，聚集已经从事专业工作的 AI 安全研究者。",
+        summary:
+          "LessWrong 继续承担教育与大众讨论功能，AF 则作为“技术草稿 + 论文前置平台”，随后再流入 arXiv 等渠道。",
+        role:
+          "形成“LessWrong（开放）— AF（研究者）— 实验室/机构（实施）”的知识流动路径。",
+        refs: [
+          {
+            type: "lw",
+            label: "Alignment Forum 主站",
+            source: "alignmentforum.org",
+            url: "https://www.alignmentforum.org/"
+          }
+        ]
+      },
+      {
+        id: "mesa-2019",
+        year: 2019,
+        title: "Mesa-Optimization 等对齐难题在 AF / arXiv 中成形",
+        category: "academic",
+        tagline: "从 LessWrong 概念，到技术论文与研究计划。",
+        impact:
+          "“Mesa-optimizers”“inner alignment”等概念在 AF 上大量讨论后，被写入系统论文，对深度学习模型的内在目标提出新担忧。",
+        summary:
+          "这些概念与 LessWrong 上早期关于“内部搜索器”“代理内部化”的直觉高度一致，为现代大模型时代的对齐研究提供了话语。",
+        role:
+          "展示了一个完整链路：社区概念 → AF 高密度讨论 → 技术论文 → 实验研究。",
+        refs: [
+          {
+            type: "paper",
+            label: "Risks from Learned Optimization in Advanced ML Systems",
+            source: "Hubinger et al., 2019",
+            url: "https://arxiv.org/abs/1906.01820"
+          }
+        ]
+      },
+      {
+        id: "labs-2020",
+        year: 2020,
+        title: "主流实验室扩展 Alignment / Safety 团队",
+        category: "org",
+        tagline: "AI 实验室内部将对齐列为正式研究方向。",
+        impact:
+          "OpenAI、DeepMind、Anthropic 等机构中，安全与对齐团队快速扩张，发表大量技术报告与博客。",
+        summary:
+          "团队成员不少直接来自 LessWrong/AF/EA 圈，带着相似的概念与风险框架进入工业界研究环境。",
+        role:
+          "使 LessWrong 发源的思想体系被嵌入前沿实验室的日常工程与科研决策中。",
+        refs: [
+          {
+            type: "org",
+            label: "OpenAI alignment resources（示例）",
+            source: "OpenAI",
+            url: "https://openai.com/safety"
+          }
+        ]
+      },
+      {
+        id: "policy-2023",
+        year: 2023,
+        title: "AI 安全进入政府与国际治理议程",
+        category: "policy",
+        tagline: "英美等国发布 AI 安全报告，多边组织开始跟进。",
+        impact:
+          "各国政府在白皮书与政策文件中采用了“对齐”“长期风险”等概念，需要专家将技术对齐论述翻译为治理框架。",
+        summary:
+          "许多政策顾问与报告撰写者与 LessWrong/EA/AF 社区有深厚联系，使早期社区语言转化为政策术语成为可能。",
+        role:
+          "时间线上的“上层结构”转折：从科研问题，过渡为公共治理问题。",
+        refs: [
+          {
+            type: "policy",
+            label: "示例：UK AI Safety Summit 材料",
+            source: "UK Government",
+            url: "https://www.gov.uk/government/collections/ai-safety-summit-2023"
+          }
+        ]
+      },
+      {
+        id: "ongoing-2024",
+        year: 2024,
+        title: "大模型时代的对齐讨论与 LessWrong 的持续角色",
+        category: "lesswrong",
+        tagline: "围绕 frontier models 的对齐与治理讨论持续在 LW/AF 发生。",
+        impact:
+          "随着 frontier models 能力迅速提升，大量关于可解释性、对齐评估、模型治理的想法首先在 LessWrong/AF 上试水。",
+        summary:
+          "社区继续扮演“高风险新议题的早期讨论空间”，技术论文和政策文件往往在几年后才跟进。",
+        role:
+          "在 AI 安全研究史上，LessWrong 已经从“理论奇点”演变为一种常设基础设施。",
+        refs: [
+          {
+            type: "lw",
+            label: "LessWrong: AI Alignment 标签页",
+            source: "LessWrong",
+            url: "https://www.lesswrong.com/tag/ai-alignment"
+          }
+        ]
+      }
+    ];
+
+    // === 2. 状态与工具函数 ===
+    const activeCategories = new Set(["lesswrong", "academic", "org", "policy"]);
+    let maxYearFilter = 2024;
+
+    const minYear = Math.min(...events.map(e => e.year));
+    const maxYear = Math.max(...events.map(e => e.year));
+
+    const timelineVerticalEl = document.getElementById("timelineVertical");
+    const detailEl = document.getElementById("detail");
+    const yearRangeInput = document.getElementById("yearRangeInput");
+    const yearRangeLabel = document.getElementById("yearRangeLabel");
+
+    function updateYearLabel() {
+      yearRangeLabel.textContent = `${minYear}–${maxYearFilter}`;
+    }
+
+    function getFilteredEvents() {
+      return events
+        .filter(e => activeCategories.has(e.category) && e.year <= maxYearFilter)
+        .sort((a, b) => a.year - b.year);
+    }
+
+    function yearToPercent(year) {
+      if (maxYear === minYear) return 50;
+      const clamped = Math.max(minYear, Math.min(maxYearFilter, year));
+      return ((clamped - minYear) / (maxYear - minYear)) * 100;
+    }
+
+    let currentActiveId = null;
+
+    // === 3. 渲染纵向时间轴 ===
+    function renderTimelineVertical() {
+      const filtered = getFilteredEvents();
+      timelineVerticalEl.innerHTML = "";
+
+      if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "timeline-empty";
+        empty.textContent = "当前筛选条件下没有事件，请调整类型或时间范围。";
+        timelineVerticalEl.appendChild(empty);
+        detailEl.innerHTML =
+          '<div class="detail-body"><p>当前没有匹配的事件，请在左侧调整筛选条件。</p></div>';
+        return;
+      }
+
+      const line = document.createElement("div");
+      line.className = "timeline-line-vertical";
+      timelineVerticalEl.appendChild(line);
+
+      const labelsWrap = document.createElement("div");
+      labelsWrap.className = "timeline-year-labels-vertical";
+
+      const topLabel = document.createElement("span");
+      topLabel.textContent = String(maxYearFilter);
+      const bottomLabel = document.createElement("span");
+      bottomLabel.textContent = String(minYear);
+
+      labelsWrap.appendChild(topLabel);
+      labelsWrap.appendChild(bottomLabel);
+      timelineVerticalEl.appendChild(labelsWrap);
+
+      filtered.forEach((event, index) => {
+        const ev = document.createElement("div");
+        ev.className = "timeline-event-vertical";
+        ev.dataset.id = event.id;
+        ev.dataset.category = event.category;
+
+        // 顶部在容器中的百分比位置
+        const percent = 100 - yearToPercent(event.year);
+        const slightOffset = (index % 2 === 0 ? -2 : 2);
+
+        ev.style.top = `calc(${percent}% + ${slightOffset}px)`;
+
+        const dot = document.createElement("div");
+        dot.className = `timeline-event-dot ${event.category}`;
+        ev.appendChild(dot);
+
+        const content = document.createElement("div");
+        content.className = "timeline-event-content";
+
+        const header = document.createElement("div");
+        header.className = "timeline-event-header";
+
+        const yearSpan = document.createElement("span");
+        yearSpan.className = "timeline-event-year";
+        yearSpan.textContent = event.year;
+
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "timeline-event-title";
+        titleSpan.textContent = event.title;
+
+        header.appendChild(yearSpan);
+        header.appendChild(titleSpan);
+
+        const tagline = document.createElement("div");
+        tagline.className = "timeline-event-tagline";
+        tagline.textContent = event.tagline || "";
+
+        content.appendChild(header);
+        content.appendChild(tagline);
+
+        ev.appendChild(content);
+
+        ev.addEventListener("click", () => setActiveEvent(event.id));
+
+        timelineVerticalEl.appendChild(ev);
+      });
+
+      // 默认选中逻辑
+      const stillValid = filtered.find(e => e.id === currentActiveId);
+      if (!stillValid) {
+        setActiveEvent(filtered[filtered.length - 1].id);
+      } else {
+        setActiveEvent(currentActiveId);
+      }
+    }
+
+    // === 4. 渲染右侧详情 + 引用 ===
+    function setActiveEvent(id) {
+      currentActiveId = id;
+      const filtered = getFilteredEvents();
+      const event = filtered.find(e => e.id === id) || filtered[filtered.length - 1];
+
+      document
+        .querySelectorAll(".timeline-event-vertical")
+        .forEach(node => node.classList.toggle("active", node.dataset.id === event.id));
+
+      detailEl.innerHTML = "";
+
+      const year = document.createElement("div");
+      year.className = "detail-year";
+      year.textContent = event.year;
+
+      const title = document.createElement("div");
+      title.className = "detail-title";
+      title.textContent = event.title;
+
+      const tags = document.createElement("div");
+      tags.className = "detail-tags";
+
+      const tagMap = {
+        lesswrong: "LessWrong / OB 社区事件",
+        academic: "学术研究 / 理论",
+        org: "研究机构 / 实验室",
+        policy: "政策 / 大众议题"
+      };
+
+      const tag = document.createElement("span");
+      tag.className = "tag-pill";
+      const tagDot = document.createElement("span");
+      tagDot.className = `tag-pill-dot ${event.category}`;
+      tag.appendChild(tagDot);
+      const tagText = document.createElement("span");
+      tagText.textContent = tagMap[event.category] || event.category;
+      tag.appendChild(tagText);
+      tags.appendChild(tag);
+
+      const body = document.createElement("div");
+      body.className = "detail-body";
+      body.innerHTML = `
+        <p><strong>直接影响：</strong>${event.impact}</p>
+        <p>${event.summary}</p>
+        <p><strong>在“AI 安全研究史”中的角色：</strong>${event.role}</p>
+      `;
+
+      const meta = document.createElement("div");
+      meta.className = "detail-meta";
+      meta.innerHTML =
+        "提示：你可以把这一节点改写为论文 / 白皮书中的时间线说明，并将下方引用链接按 APA / MLA 格式整理。";
+
+      detailEl.appendChild(year);
+      detailEl.appendChild(title);
+      detailEl.appendChild(tags);
+      detailEl.appendChild(body);
+      detailEl.appendChild(meta);
+
+      // 引用信息块
+      if (event.refs && event.refs.length) {
+        const refsBlock = document.createElement("div");
+        refsBlock.className = "refs-block";
+
+        const title = document.createElement("div");
+        title.className = "refs-title";
+        title.textContent = "相关引用与链接";
+
+        const list = document.createElement("ul");
+        list.className = "refs-list";
+
+        event.refs.forEach(ref => {
+          const li = document.createElement("li");
+          const badge = document.createElement("span");
+          badge.className = "refs-badge";
+          badge.textContent = ref.type;
+          const textSpan = document.createElement("span");
+          textSpan.textContent = ref.label + " — " + ref.source + " ";
+          const linkSpan = document.createElement("span");
+          linkSpan.className = "refs-link";
+          linkSpan.innerHTML = `<a href="${ref.url}" target="_blank" rel="noopener noreferrer">${ref.url}</a>`;
+
+          li.appendChild(badge);
+          li.appendChild(textSpan);
+          li.appendChild(linkSpan);
+          list.appendChild(li);
+        });
+
+        refsBlock.appendChild(title);
+        refsBlock.appendChild(list);
+        detailEl.appendChild(refsBlock);
+      }
+
+      const footerNote = document.createElement("div");
+      footerNote.className = "detail-footer-note";
+      footerNote.textContent =
+        "说明：LessWrong / Overcoming Bias 链接可作为“原始社区讨论”引用来源；论文和书籍可在正式参考文献部分列出。";
+      detailEl.appendChild(footerNote);
+    }
+
+    // === 5. 绑定筛选 ===
+    document.querySelectorAll(".filter-chip").forEach(chip => {
+      const cat = chip.dataset.category;
+      chip.addEventListener("click", () => {
+        if (activeCategories.has(cat)) {
+          activeCategories.delete(cat);
+          chip.classList.remove("active");
+        } else {
+          activeCategories.add(cat);
+          chip.classList.add("active");
+        }
+        renderTimelineVertical();
+      });
+    });
+
+    yearRangeInput.addEventListener("input", e => {
+      maxYearFilter = Number(e.target.value);
+      updateYearLabel();
+      renderTimelineVertical();
+    });
+
+    // === 6. 初始化 ===
+    maxYearFilter = maxYear;
+    yearRangeInput.value = maxYear;
+    updateYearLabel();
+    renderTimelineVertical();
+  </script>
+</body>
+</html>

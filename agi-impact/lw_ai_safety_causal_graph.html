@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>LessWrong → AI 安全 → 治理：结构因果图（交互版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --accent-community: #22c55e;
+      --accent-epistemic: #38bdf8;
+      --accent-institution: #f97316;
+      --accent-governance: #e5e7eb;
+      --edge-talent: #a855f7;
+      --edge-concept: #facc15;
+      --edge-funding: #fb923c;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 40px rgba(0,0,0,0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 50%, #000 100%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0 0 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827 0, #020617 55%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px;
+      backdrop-filter: blur(24px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .legend-dot.community {
+      background: var(--accent-community);
+    }
+
+    .legend-dot.epistemic {
+      background: var(--accent-epistemic);
+    }
+
+    .legend-dot.institution {
+      background: var(--accent-institution);
+    }
+
+    .legend-dot.governance {
+      background: var(--accent-governance);
+    }
+
+    .legend-line {
+      width: 16px;
+      height: 2px;
+      border-radius: 999px;
+    }
+    .legend-line.talent { background: var(--edge-talent); }
+    .legend-line.concept { background: var(--edge-concept); }
+    .legend-line.funding { background: var(--edge-funding); }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .edge-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .edge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .edge-chip input {
+      display: none;
+    }
+
+    .edge-chip.active {
+      border-color: #e5e7eb;
+      background: rgba(148, 163, 184, 0.18);
+      color: #e5e7eb;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* 图区域 */
+    .graph-shell {
+      border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at top, #020617 0, #020617 45%, #000 100%);
+      height: 520px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .graph-layer-label {
+      font-size: 10px;
+      fill: rgba(148, 163, 184, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .graph-node {
+      cursor: pointer;
+      transition: transform 0.12s ease-out;
+    }
+
+    .graph-node circle {
+      stroke-width: 1.5;
+    }
+
+    .graph-node rect {
+      stroke-width: 1.4;
+    }
+
+    .graph-node-label {
+      font-size: 11px;
+      fill: #e5e7eb;
+      pointer-events: none;
+    }
+
+    .graph-node-sub {
+      font-size: 9.5px;
+      fill: #9ca3af;
+      pointer-events: none;
+    }
+
+    .graph-edge {
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      opacity: 0.4;
+      transition: opacity 0.12s ease-out, stroke-width 0.12s ease-out;
+    }
+
+    .graph-edge.talent { stroke: var(--edge-talent); }
+    .graph-edge.concept { stroke: var(--edge-concept); }
+    .graph-edge.funding { stroke: var(--edge-funding); }
+
+    .graph-edge.hidden-by-filter {
+      opacity: 0.05;
+    }
+
+    .graph-node.hovered circle,
+    .graph-node.hovered rect {
+      filter: drop-shadow(0 0 10px rgba(248, 250, 252, 0.35));
+    }
+
+    .graph-node.selected circle,
+    .graph-node.selected rect {
+      stroke-width: 2;
+    }
+
+    .graph-edge.highlighted {
+      opacity: 0.9;
+      stroke-width: 2.1;
+    }
+
+    .graph-node.hovered {
+      transform: scale(1.03);
+    }
+
+    /* 右侧详情 */
+    .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .detail-year {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .detail-title {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .detail-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      width: fit-content;
+    }
+
+    .detail-type-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .detail-type-dot.community {
+      background: var(--accent-community);
+    }
+
+    .detail-type-dot.epistemic {
+      background: var(--accent-epistemic);
+    }
+
+    .detail-type-dot.institution {
+      background: var(--accent-institution);
+    }
+
+    .detail-type-dot.governance {
+      background: var(--accent-governance);
+    }
+
+    .detail-body {
+      font-size: 13px;
+      line-height: 1.75;
+      color: #d1d5db;
+    }
+
+    .detail-body p {
+      margin: 0 0 6px;
+    }
+
+    .detail-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-list {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #e5e7eb;
+      padding-left: 14px;
+    }
+
+    .detail-list li {
+      margin-bottom: 4px;
+    }
+
+    .detail-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .detail-edges {
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .detail-edges-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .detail-edges-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .detail-edges-list li {
+      margin-bottom: 3px;
+    }
+
+    .badge-edge {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 999px;
+      margin-right: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #020617;
+    }
+
+    .badge-edge.talent { background: var(--edge-talent); }
+    .badge-edge.concept { background: var(--edge-concept); }
+    .badge-edge.funding { background: var(--edge-funding); }
+
+    .initial-tip {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .initial-tip strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>LessWrong → AI 安全认知共同体 → 治理议程</h1>
+      <div class="subtitle">
+        这张结构因果图用 <strong>四层节点</strong> 展示：LessWrong/Alignment Forum 等社区如何通过
+        “认知共同体 → 研究机构 / 实验室 / 资助者” 最终影响政府与国际治理议程。
+        可根据“人才管道 / 概念与话语 / 资金与制度”三种路径高亮边。
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- 左：图 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            结构因果图 · Structural Causal Graph
+            <span class="pill">
+              <span class="pill-dot"></span>
+              Interactive
+            </span>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot community"></span> 社区 / 论坛（LessWrong / AF）
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot epistemic"></span> 认知共同体 / Norms
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot institution"></span> 机构（实验室 / 智库 / 资助者）
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot governance"></span> 政府 / 国际治理
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="edge-filters">
+            <label class="edge-chip active" data-edge-type="talent">
+              <span class="legend-line talent"></span>
+              人才管道 / 人脉
+            </label>
+            <label class="edge-chip active" data-edge-type="concept">
+              <span class="legend-line concept"></span>
+              概念与话语
+            </label>
+            <label class="edge-chip active" data-edge-type="funding">
+              <span class="legend-line funding"></span>
+              资金与制度
+            </label>
+          </div>
+        </div>
+
+        <div class="graph-shell">
+          <svg id="graph" viewBox="0 0 820 520">
+            <!-- 图层标签 -->
+            <text x="60" y="30" class="graph-layer-label">社区 / FORUM</text>
+            <text x="250" y="30" class="graph-layer-label">认知共同体</text>
+            <text x="480" y="30" class="graph-layer-label">机构与实验室</text>
+            <text x="700" y="30" class="graph-layer-label">治理与政策</text>
+            <!-- JS 注入节点和边 -->
+          </svg>
+        </div>
+        <div class="hint">
+          提示：鼠标悬停节点可高亮其因果邻域，点击节点查看右侧详情；上方可切换不同类型的路径高亮。
+        </div>
+      </section>
+
+      <!-- 右：详情 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">节点详情 · 节点在因果结构中的角色</div>
+        </div>
+        <div id="detail" class="detail">
+          <div class="initial-tip">
+            点击左侧图中的任意节点（例如 <strong>LessWrong / Alignment Forum</strong>），
+            这里会展示：
+            <ul class="detail-list">
+              <li>该节点的功能与在 AI 安全研究史中的角色</li>
+              <li>它与前后节点之间的三种路径：人才管道 / 概念与话语 / 资金与制度</li>
+              <li>适合写入论文 / 白皮书的简短说明文本</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ========== 1. 图数据：节点与有向边 ==========
+    // type: community / epistemic / institution / governance
+    const nodes = [
+      {
+        id: "lw",
+        label: "LessWrong / AF",
+        sub: "理性主义与 AI 安全讨论主社区",
+        type: "community",
+        x: 80,
+        y: 160,
+        shape: "circle",
+        desc: [
+          "作为在线理性主义与 AI 安全讨论的核心论坛，聚集对 AGI 风险、对齐问题感兴趣的跨学科人群。",
+          "形成共享的语言、思维风格与问题框架，为后续 AI 安全“认知共同体”提供认知与文化基础。"
+        ]
+      },
+      {
+        id: "ea",
+        label: "EA 社区（AI 分支）",
+        sub: "有效利他主义中的 AI 风险方向",
+        type: "community",
+        x: 80,
+        y: 260,
+        shape: "circle",
+        desc: [
+          "吸收 LessWrong 的长期主义与存在性风险框架，系统化讨论“资源如何配置到 AI 安全”。",
+          "成为大量研究者、资助者与政策顾问进入 AI 安全议题的组织化入口。"
+        ]
+      },
+      {
+        id: "seq",
+        label: "Sequences 叙事",
+        sub: "对齐与理性训练的“非正式教材”",
+        type: "community",
+        x: 80,
+        y: 360,
+        shape: "circle",
+        desc: [
+          "通过长篇连载解释贝叶斯理性、价值对齐、对齐难度等问题，降低 AI 安全的入门门槛。",
+          "在正式学术论文出现之前，对整整一代研究者产生预先的认知塑形。"
+        ]
+      },
+
+      {
+        id: "epi_core",
+        label: "AI 安全认知共同体",
+        sub: "共享风险图景与方法的专家网络",
+        type: "epistemic",
+        x: 280,
+        y: 210,
+        shape: "rect",
+        desc: [
+          "由技术研究者、哲学家、政策分析者等构成的跨机构网络，以 AI 安全为核心议题。",
+          "成员在 LessWrong / AF / 会议中形成共同的概念库、优先级判断与方法论。"
+        ]
+      },
+      {
+        id: "epi_norms",
+        label: "认知与规范（epistemic norms）",
+        sub: "如何讨论证据、风险与不确定性",
+        type: "epistemic",
+        x: 280,
+        y: 320,
+        shape: "rect",
+        desc: [
+          "强调清晰推理、显式不确定性、预测与后验更新的讨论规范。",
+          "这些规范迁移到学术论文写作与政策报告中，影响外界对 AI 安全的“严肃程度”判断。"
+        ]
+      },
+
+      {
+        id: "miri",
+        label: "MIRI / 理论对齐",
+        sub: "Friendly AI / 决策理论等基础研究",
+        type: "institution",
+        x: 500,
+        y: 130,
+        shape: "rect",
+        desc: [
+          "将 LessWrong 中的许多思想（决策理论、价值对齐）形式化为技术研究议程。",
+          "虽然不直接做政策，但其工作经由其他机构被政策与治理讨论引用。"
+        ]
+      },
+      {
+        id: "fhi",
+        label: "Oxford FHI",
+        sub: "存在性风险与长期未来研究",
+        type: "institution",
+        x: 500,
+        y: 210,
+        shape: "rect",
+        desc: [
+          "系统研究 AI 等技术带来的长期风险，将 LW/EA 的长期主义话语带入学术哲学与政策分析。",
+          "参与多边机构、政府部门的风险评估研究。"
+        ]
+      },
+      {
+        id: "govai",
+        label: "GovAI / 政策智库",
+        sub: "frontier AI 治理方案与法规设计",
+        type: "institution",
+        x: 500,
+        y: 290,
+        shape: "rect",
+        desc: [
+          "直接面向政府与国际组织，撰写 frontier AI 风险与监管方案论文。",
+          "研究人员大多来自 LW/EA/FHI/实验室，将社区概念翻译为政策语言。"
+        ]
+      },
+      {
+        id: "labs",
+        label: "实验室安全团队",
+        sub: "OpenAI / DeepMind / Anthropic 等",
+        type: "institution",
+        x: 500,
+        y: 370,
+        shape: "rect",
+        desc: [
+          "在大型模型开发机构内部设立的 safety / alignment 团队。",
+          "大量成员来自 LW/AF/EA 社群，将理论对齐问题转化为工程与评估方案。"
+        ]
+      },
+      {
+        id: "funders",
+        label: "Open Phil 等资助者",
+        sub: "大规模配置资源到 AI 安全",
+        type: "institution",
+        x: 500,
+        y: 450,
+        shape: "rect",
+        desc: [
+          "根据 LW/EA 形成的风险评估框架，把资金投向 MIRI、FHI、GovAI、实验室安全团队等。",
+          "在全球范围内塑造了“AI 安全研究是一条清晰职业路径”的客观条件。"
+        ]
+      },
+
+      {
+        id: "gov_nat",
+        label: "国家政府",
+        sub: "UK / US / EU 等 AI 政策制定者",
+        type: "governance",
+        x: 720,
+        y: 220,
+        shape: "rect",
+        desc: [
+          "通过咨询委员会、智库报告、实验室合作等方式吸收 AI 安全共同体的观点。",
+          "在白皮书、法规草案和峰会文件中采用“frontier AI”“对齐”“长期风险”等话语。"
+        ]
+      },
+      {
+        id: "io",
+        label: "国际组织 / 峰会",
+        sub: "OECD / UN / Bletchley 等",
+        type: "governance",
+        x: 720,
+        y: 320,
+        shape: "rect",
+        desc: [
+          "在全球层面协调 AI 安全与治理议程，引用来自 FHI/GovAI/实验室的研究。",
+          "将原本起源于 LW/AF 的概念包装为多边共识性的政策语言。"
+        ]
+      }
+    ];
+
+    // edges: from -> to, type: talent / concept / funding
+    const edges = [
+      // 社区 → 认知共同体
+      { id: "e1", from: "lw", to: "epi_core", type: "talent",
+        desc: "大量未来的 AI 安全研究者与政策顾问最初在 LessWrong/AF 参与讨论与写作。" },
+      { id: "e2", from: "ea", to: "epi_core", type: "talent",
+        desc: "EA 社区把关心长期风险的人组织起来，形成更制度化的 AI 安全子领域。" },
+      { id: "e3", from: "seq", to: "epi_norms", type: "concept",
+        desc: "Sequences 为 AI 安全共同体提供了共享的隐喻、例子与推理风格（例如对齐难度、价值装载）。" },
+      { id: "e4", from: "lw", to: "epi_norms", type: "concept",
+        desc: "LessWrong 上的讨论塑造了对证据、预测与不确定性处理的规范（epistemic norms）。" },
+
+      // 认知共同体 → 机构
+      { id: "e5", from: "epi_core", to: "miri", type: "talent",
+        desc: "MIRI 的研究人员与其议程大量来源于 LW/AF 的核心参与者。" },
+      { id: "e6", from: "epi_core", to: "fhi", type: "talent",
+        desc: "FHI 吸收了来自 LW/EA 的研究者，将他们纳入学术环境。" },
+      { id: "e7", from: "epi_core", to: "labs", type: "talent",
+        desc: "OpenAI / DeepMind / Anthropic 的安全团队招募了许多 LW/AF 活跃成员。" },
+      { id: "e8", from: "epi_core", to: "govai", type: "talent",
+        desc: "GovAI 研究团队成员普遍出自 LW/EA/FHI/实验室的交叉网络。" },
+
+      { id: "e9", from: "epi_norms", to: "miri", type: "concept",
+        desc: "对严谨推理与形式化的偏好影响了 MIRI 的研究风格与选题。" },
+      { id: "e10", from: "epi_norms", to: "fhi", type: "concept",
+        desc: "对长期风险与不确定性的严肃对待成为 FHI 工作的重要背景。" },
+      { id: "e11", from: "epi_norms", to: "govai", type: "concept",
+        desc: "风险优先级、对齐难题等框架被 GovAI 翻译为政策可用的语言。" },
+      { id: "e12", from: "epi_norms", to: "labs", type: "concept",
+        desc: "实验室安全团队使用“对齐”“评估”“失控”等概念来组织内部工作。 " },
+
+      // 机构内部与资助
+      { id: "e13", from: "funders", to: "miri", type: "funding",
+        desc: "资助者为 MIRI 提供长期基础研究经费，使高风险高不确定性的研究成为可能。" },
+      { id: "e14", from: "funders", to: "fhi", type: "funding",
+        desc: "长期主义与存在性风险框架支持 FHI 的宏观研究计划。" },
+      { id: "e15", from: "funders", to: "govai", type: "funding",
+        desc: "支持专门面向治理与政策的 AI 安全智库运作。"},
+      { id: "e16", from: "funders", to: "labs", type: "funding",
+        desc: "通过对实验室或合作项目的资助，引导更多资源投入安全/对齐方向。" },
+
+      // 机构 → 治理
+      { id: "e17", from: "govai", to: "gov_nat", type: "concept",
+        desc: "GovAI 的 frontier AI 监管论文被 UK/US 等国政策文件广泛引用。"},
+      { id: "e18", from: "govai", to: "io", type: "concept",
+        desc: "GovAI 参与多边组织的研究项目，帮助塑造国际话语。"},
+      { id: "e19", from: "fhi", to: "gov_nat", type: "talent",
+        desc: "FHI 研究者担任政府顾问或委员会成员，参与起草风险评估。"},
+      { id: "e20", from: "fhi", to: "io", type: "concept",
+        desc: "FHI 的长期风险框架被联合国、WHO 等机构的报告引用。"},
+      { id: "e21", from: "labs", to: "gov_nat", type: "concept",
+        desc: "实验室发布的安全报告和评估方法被政策制定者视为关键技术输入。"},
+      { id: "e22", from: "labs", to: "io", type: "concept",
+        desc: "实验室在国际峰会上展示风险与对策，影响多边共识。"},
+      { id: "e23", from: "funders", to: "gov_nat", type: "talent",
+        desc: "资助机构派出的专家与董事会成员常常受邀参与政府的咨询与评审。"}
+    ];
+
+    // ========== 2. 绘制图形 ==========
+    const svgEl = document.getElementById("graph");
+    const detailEl = document.getElementById("detail");
+    const activeEdgeTypes = new Set(["talent", "concept", "funding"]);
+
+    // 帮助函数：找节点坐标
+    function getNodeById(id) {
+      return nodes.find(n => n.id === id);
+    }
+
+    // 绘制边
+    edges.forEach(edge => {
+      const from = getNodeById(edge.from);
+      const to = getNodeById(edge.to);
+      if (!from || !to) return;
+
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const offset = 28; // 为避免与节点重叠，缩短两端
+      const ux = dx / len;
+      const uy = dy / len;
+
+      const x1 = from.x + ux * offset;
+      const y1 = from.y + uy * offset;
+      const x2 = to.x - ux * offset;
+      const y2 = to.y - uy * offset;
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      path.setAttribute("x1", x1);
+      path.setAttribute("y1", y1);
+      path.setAttribute("x2", x2);
+      path.setAttribute("y2", y2);
+      path.setAttribute("class", `graph-edge ${edge.type}`);
+      path.dataset.id = edge.id;
+      path.dataset.from = edge.from;
+      path.dataset.to = edge.to;
+      path.dataset.type = edge.type;
+
+      svgEl.appendChild(path);
+    });
+
+    // 绘制节点
+    nodes.forEach(node => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("class", "graph-node");
+      g.dataset.id = node.id;
+      g.dataset.type = node.type;
+
+      if (node.shape === "circle") {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", node.x);
+        circle.setAttribute("cy", node.y);
+        circle.setAttribute("r", 30);
+        circle.setAttribute("fill", "rgba(15,23,42,0.96)");
+
+        let strokeColor = "#e5e7eb";
+        if (node.type === "community") strokeColor = "var(--accent-community)";
+        else if (node.type === "epistemic") strokeColor = "var(--accent-epistemic)";
+        else if (node.type === "institution") strokeColor = "var(--accent-institution)";
+        else if (node.type === "governance") strokeColor = "var(--accent-governance)";
+        circle.setAttribute("stroke", strokeColor);
+
+        g.appendChild(circle);
+      } else {
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const w = 150;
+        const h = 56;
+        rect.setAttribute("x", node.x - w / 2);
+        rect.setAttribute("y", node.y - h / 2);
+        rect.setAttribute("width", w);
+        rect.setAttribute("height", h);
+        rect.setAttribute("rx", 12);
+        rect.setAttribute("fill", "rgba(15,23,42,0.96)");
+
+        let strokeColor = "#e5e7eb";
+        if (node.type === "community") strokeColor = "var(--accent-community)";
+        else if (node.type === "epistemic") strokeColor = "var(--accent-epistemic)";
+        else if (node.type === "institution") strokeColor = "var(--accent-institution)";
+        else if (node.type === "governance") strokeColor = "var(--accent-governance)";
+        rect.setAttribute("stroke", strokeColor);
+
+        g.appendChild(rect);
+      }
+
+      // label
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", node.x);
+      label.setAttribute("y", node.y - 2);
+      label.setAttribute("text-anchor", "middle");
+      label.setAttribute("class", "graph-node-label");
+      label.textContent = node.label;
+      g.appendChild(label);
+
+      if (node.sub) {
+        const sub = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        sub.setAttribute("x", node.x);
+        sub.setAttribute("y", node.y + 12);
+        sub.setAttribute("text-anchor", "middle");
+        sub.setAttribute("class", "graph-node-sub");
+        sub.textContent = node.sub;
+        g.appendChild(sub);
+      }
+
+      svgEl.appendChild(g);
+    });
+
+    // ========= 3. 交互逻辑 =========
+    let selectedNodeId = null;
+
+    function updateEdgeVisibilityByType() {
+      document.querySelectorAll(".graph-edge").forEach(edge => {
+        const type = edge.dataset.type;
+        if (activeEdgeTypes.has(type)) {
+          edge.classList.remove("hidden-by-filter");
+        } else {
+          edge.classList.add("hidden-by-filter");
+        }
+      });
+    }
+
+    function highlightNodeNeighborhood(nodeId, isHover) {
+      const nodesEls = document.querySelectorAll(".graph-node");
+      const edgesEls = document.querySelectorAll(".graph-edge");
+
+      if (isHover) {
+        // 高亮相关边
+        edgesEls.forEach(edge => {
+          const from = edge.dataset.from;
+          const to = edge.dataset.to;
+          const connected = (from === nodeId || to === nodeId);
+          edge.classList.toggle("highlighted", connected && activeEdgeTypes.has(edge.dataset.type));
+        });
+        // 高亮相邻节点
+        const neighborIds = new Set();
+        edgesEls.forEach(edge => {
+          if (edge.dataset.from === nodeId && activeEdgeTypes.has(edge.dataset.type)) {
+            neighborIds.add(edge.dataset.to);
+          }
+          if (edge.dataset.to === nodeId && activeEdgeTypes.has(edge.dataset.type)) {
+            neighborIds.add(edge.dataset.from);
+          }
+        });
+        nodesEls.forEach(nodeEl => {
+          const id = nodeEl.dataset.id;
+          if (id === nodeId || neighborIds.has(id)) {
+            nodeEl.classList.add("hovered");
+          } else {
+            nodeEl.classList.remove("hovered");
+          }
+        });
+      } else {
+        edgesEls.forEach(edge => edge.classList.remove("highlighted"));
+        nodesEls.forEach(nodeEl => nodeEl.classList.remove("hovered"));
+      }
+    }
+
+    function setSelectedNode(nodeId) {
+      selectedNodeId = nodeId;
+      const node = nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      // 更新节点选择状态
+      document.querySelectorAll(".graph-node").forEach(el => {
+        el.classList.toggle("selected", el.dataset.id === nodeId);
+      });
+
+      // 在右侧渲染详情
+      renderDetail(nodeId);
+    }
+
+    function renderDetail(nodeId) {
+      const node = nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      const typeMap = {
+        community: "社区 / 论坛（Community / Forum）",
+        epistemic: "认知共同体 / 规范（Epistemic Community）",
+        institution: "机构 / 实验室 / 资助者（Institution）",
+        governance: "政府 / 国际治理（Governance）"
+      };
+
+      const typeClass = node.type;
+
+      // 找到与该节点相连的边
+      const connectedEdges = edges.filter(e => e.from === nodeId || e.to === nodeId);
+
+      detailEl.innerHTML = "";
+
+      const title = document.createElement("div");
+      title.className = "detail-title";
+      title.textContent = node.label;
+
+      const typeBadge = document.createElement("div");
+      typeBadge.className = "detail-type";
+      const dot = document.createElement("span");
+      dot.className = `detail-type-dot ${typeClass}`;
+      const typeText = document.createElement("span");
+      typeText.textContent = typeMap[node.type] || node.type;
+      typeBadge.appendChild(dot);
+      typeBadge.appendChild(typeText);
+
+      const body = document.createElement("div");
+      body.className = "detail-body";
+      const paragraphs = node.desc || [];
+      body.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join("");
+
+      const note = document.createElement("div");
+      note.className = "detail-note";
+      note.textContent =
+        "参考写作用法：可以把以上描述压缩为 2–3 句，写入“AI 安全研究史 / 治理路径”的结构因果分析段落中。";
+
+      detailEl.appendChild(title);
+      detailEl.appendChild(typeBadge);
+      detailEl.appendChild(body);
+
+      // 边详情区
+      if (connectedEdges.length) {
+        const edgesBlock = document.createElement("div");
+        edgesBlock.className = "detail-edges";
+
+        const titleEdge = document.createElement("div");
+        titleEdge.className = "detail-edges-title";
+        titleEdge.textContent = "与该节点相关的路径（边）";
+
+        const list = document.createElement("ul");
+        list.className = "detail-edges-list";
+
+        const edgeTypeLabel = {
+          talent: "人才 / 人脉",
+          concept: "概念 / 话语",
+          funding: "资金 / 制度"
+        };
+
+        connectedEdges.forEach(e => {
+          const li = document.createElement("li");
+          const badge = document.createElement("span");
+          badge.className = `badge-edge ${e.type}`;
+          badge.textContent = edgeTypeLabel[e.type] || e.type;
+
+          const otherId = e.from === nodeId ? e.to : e.from;
+          const otherNode = nodes.find(n => n.id === otherId);
+          const otherLabel = otherNode ? otherNode.label : otherId;
+
+          const text = document.createElement("span");
+          text.textContent = ` ↔ ${otherLabel}：${e.desc}`;
+
+          li.appendChild(badge);
+          li.appendChild(text);
+          list.appendChild(li);
+        });
+
+        edgesBlock.appendChild(titleEdge);
+        edgesBlock.appendChild(list);
+        detailEl.appendChild(edgesBlock);
+      }
+
+      detailEl.appendChild(note);
+    }
+
+    // 绑定节点事件（hover + click）
+    document.querySelectorAll(".graph-node").forEach(nodeEl => {
+      const id = nodeEl.dataset.id;
+      nodeEl.addEventListener("mouseenter", () => highlightNodeNeighborhood(id, true));
+      nodeEl.addEventListener("mouseleave", () => highlightNodeNeighborhood(id, false));
+      nodeEl.addEventListener("click", () => setSelectedNode(id));
+    });
+
+    // 默认选中 LessWrong 节点
+    setSelectedNode("lw");
+
+    // 边类型过滤
+    document.querySelectorAll(".edge-chip").forEach(chip => {
+      const type = chip.dataset.edgeType;
+      chip.addEventListener("click", () => {
+        if (activeEdgeTypes.has(type)) {
+          if (activeEdgeTypes.size === 1) {
+            // 保证至少有一种类型可见
+            return;
+          }
+          activeEdgeTypes.delete(type);
+          chip.classList.remove("active");
+        } else {
+          activeEdgeTypes.add(type);
+          chip.classList.add("active");
+        }
+        updateEdgeVisibilityByType();
+      });
+    });
+
+    updateEdgeVisibilityByType();
+  </script>
+</body>
+</html>

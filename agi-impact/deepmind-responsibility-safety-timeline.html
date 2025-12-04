@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DeepMind Responsibility & Safety Timeline (2018–2025)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-elevated: #131933;
+      --accent: #4f8cff;
+      --accent-soft: rgba(79, 140, 255, 0.15);
+      --text: #f5f5f8;
+      --muted: #9ba0c3;
+      --border: #252949;
+      --badge-bg: #1f243f;
+      --badge-border: #3f4670;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.45);
+      --radius-xl: 18px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #171f3b 0, #050712 55%, #02030a 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin: 0 0 8px;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .subtitle span {
+      opacity: 0.9;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+    }
+
+    .pill {
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(10, 15, 35, 0.9);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 880px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: linear-gradient(145deg, #151a33, #090c1a);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: 16px 16px 14px;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-title span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .controls-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+
+    .control-label {
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .control-label span.key {
+      color: var(--text);
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+      background: #0a0e22;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    select:focus,
+    input[type="range"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.4);
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .range-row input[type="range"] {
+      flex: 1;
+    }
+
+    .year-label {
+      font-variant-numeric: tabular-nums;
+      font-size: 0.75rem;
+      color: var(--muted);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.06);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+    }
+
+    .legend-dot.tech {
+      background: rgba(0, 208, 130, 0.18);
+      border-color: #00d082;
+    }
+
+    .legend-dot.ethics {
+      background: rgba(255, 193, 7, 0.18);
+      border-color: #ffc107;
+    }
+
+    .legend-dot.ops {
+      background: rgba(156, 39, 176, 0.18);
+      border-color: #ea80fc;
+    }
+
+    .timeline-panel {
+      position: relative;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .timeline-rail {
+      position: absolute;
+      left: 26px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(
+        to bottom,
+        rgba(99, 112, 177, 0.1),
+        rgba(99, 112, 177, 0.4)
+      );
+      pointer-events: none;
+    }
+
+    .timeline {
+      position: relative;
+      margin-left: 0;
+      padding-left: 0;
+      max-height: min(72vh, 720px);
+      overflow-y: auto;
+      padding-right: 4px;
+      scroll-behavior: smooth;
+    }
+
+    .timeline::-webkit-scrollbar {
+      width: 6px;
+    }
+    .timeline::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .timeline::-webkit-scrollbar-thumb {
+      background: rgba(110, 120, 180, 0.45);
+      border-radius: 999px;
+    }
+
+    .year-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 8px;
+      position: sticky;
+      top: 0;
+      padding: 4px 0 4px 40px;
+      background: linear-gradient(
+        to bottom,
+        rgba(11, 16, 32, 0.98),
+        rgba(11, 16, 32, 0.9)
+      );
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+
+    .year-header span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #c5cbff;
+    }
+
+    .year-header small {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 10px 10px 0;
+      position: relative;
+    }
+
+    .event-dot-wrapper {
+      position: relative;
+    }
+
+    .event-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      position: absolute;
+      left: 20px;
+      top: 4px;
+      box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.25);
+    }
+
+    .event-dot.tech {
+      background: rgba(0, 208, 130, 0.18);
+      border-color: #00d082;
+      box-shadow: 0 0 0 4px rgba(0, 208, 130, 0.25);
+    }
+
+    .event-dot.ethics {
+      background: rgba(255, 193, 7, 0.18);
+      border-color: #ffc107;
+      box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.25);
+    }
+
+    .event-dot.ops {
+      background: rgba(156, 39, 176, 0.18);
+      border-color: #ea80fc;
+      box-shadow: 0 0 0 4px rgba(234, 128, 252, 0.25);
+    }
+
+    .event-date {
+      font-size: 0.74rem;
+      color: var(--muted);
+      padding-top: 1px;
+      padding-left: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .event-card {
+      background: radial-gradient(circle at top left, #262f5a 0, #141832 40%, #080a18 100%);
+      border-radius: 14px;
+      border: 1px solid rgba(129, 140, 248, 0.5);
+      padding: 8px 10px 9px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+        border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .event-card.minor {
+      border-style: dashed;
+      border-color: rgba(129, 140, 248, 0.45);
+      background: radial-gradient(
+        circle at top left,
+        rgba(79, 140, 255, 0.26) 0,
+        #0d1124 40%,
+        #060812 100%
+      );
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .event-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      border-color: rgba(129, 196, 255, 0.9);
+      background: radial-gradient(
+        circle at top left,
+        rgba(79, 140, 255, 0.45) 0,
+        #0e1326 36%,
+        #060812 100%
+      );
+    }
+
+    .event-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .event-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: var(--radius-pill);
+      padding: 2px 7px 1px;
+      border: 1px solid var(--badge-border);
+      background: var(--badge-bg);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .badge.major {
+      border-color: var(--accent);
+      background: rgba(79, 140, 255, 0.16);
+      color: #d1e0ff;
+    }
+
+    .badge.cat-governance {
+      border-color: #4f8cff;
+      background: rgba(79, 140, 255, 0.19);
+      color: #d0ddff;
+    }
+
+    .badge.cat-tech {
+      border-color: #00d082;
+      background: rgba(0, 208, 130, 0.2);
+      color: #b9ffe0;
+    }
+
+    .badge.cat-ethics {
+      border-color: #ffc107;
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffe9ac;
+    }
+
+    .badge.cat-ops {
+      border-color: #ea80fc;
+      background: rgba(234, 128, 252, 0.2);
+      color: #ffd4ff;
+    }
+
+    .event-summary {
+      font-size: 0.8rem;
+      color: #d4d7f3;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+
+    .event-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .event-link {
+      font-size: 0.76rem;
+      text-decoration: none;
+      color: #d3e1ff;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 0;
+    }
+
+    .event-link span {
+      font-size: 0.9em;
+    }
+
+    .event-link:hover {
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 16px 14px 6px 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>DeepMind Responsibility &amp; Safety Timeline</h1>
+      <p class="subtitle">
+        2018–2025 &nbsp;·&nbsp; Key publications and milestones in
+        <span>governance frameworks, technical safety research, ethics &amp; societal impact,
+        and applied responsibility practices.</span>
+      </p>
+      <div class="pill-row">
+        <div class="pill">
+          <strong>Tip</strong> Drag the year sliders, then filter by category /
+          “major milestones only”.
+        </div>
+        <div class="pill">
+          <strong>提示</strong> 可按年份范围和类别筛选，勾选仅显示“关键里程碑”。
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="panel-title">
+          Controls / 筛选
+          <span>Refine the view of DeepMind’s safety work</span>
+        </div>
+        <div class="controls-grid">
+          <div class="control-group">
+            <label class="control-label">
+              <span class="key">Category 类别</span>
+            </label>
+            <select id="categoryFilter">
+              <option value="all">All / 全部</option>
+              <option value="Governance & Frameworks">
+                Governance &amp; Frameworks
+              </option>
+              <option value="Technical Safety / Alignment">
+                Technical Safety / Alignment
+              </option>
+              <option value="Ethics & Societal Impact">
+                Ethics &amp; Societal Impact
+              </option>
+              <option value="Applied Responsibility & Safety">
+                Applied Responsibility &amp; Safety
+              </option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span class="key">Year range 年份范围</span>
+              <span id="yearRangeLabel" class="year-label">2018–2025</span>
+            </label>
+            <div class="range-row">
+              <input
+                type="range"
+                id="yearMin"
+                min="2018"
+                max="2025"
+                value="2018"
+              />
+              <input
+                type="range"
+                id="yearMax"
+                min="2018"
+                max="2025"
+                value="2025"
+              />
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span class="key">Importance 重要性</span>
+            </label>
+            <div class="checkbox-row">
+              <input type="checkbox" id="majorToggle" />
+              <label for="majorToggle">Show only major milestones / 仅关键节点</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot"></span> Governance / Framework
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot tech"></span> Technical safety / alignment
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot ethics"></span> Ethics &amp; societal impact
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot ops"></span> Applied responsibility
+          </div>
+        </div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <div class="panel-title">
+          Timeline / 时间线
+          <span id="countLabel"></span>
+        </div>
+        <div class="timeline-rail" aria-hidden="true"></div>
+        <div id="timeline" class="timeline" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // --- Data model: key Responsibility & Safety milestones, 2018–2025 ---
+    // Note: This is a curated map of major public outputs, not an exhaustive list
+    // of all internal safety work.
+
+    const events = [
+      // 2018
+      {
+        id: "2018-data-centre",
+        date: "2018-08-17",
+        year: 2018,
+        title:
+          "Safety-first AI for autonomous data centre cooling and industrial control",
+        category: "Applied Responsibility & Safety",
+        type: "Applied safety / reliability",
+        importance: "major",
+        dotClass: "ops",
+        summary:
+          "Demonstrates a safety-first approach to deploying reinforcement learning in live Google data centres, with humans-in-the-loop supervising an autonomous control system.",
+        link:
+          "https://deepmind.google/blog/safety-first-ai-for-autonomous-data-centre-cooling-and-industrial-control/",
+      },
+
+      // 2019
+      {
+        id: "2019-bug-finding",
+        date: "2019-03-28",
+        year: 2019,
+        title: "Identifying and eliminating bugs in learned predictive models",
+        category: "Technical Safety / Alignment",
+        type: "Technical safety",
+        importance: "minor",
+        dotClass: "tech",
+        summary:
+          "Presents methods for finding and fixing problematic behaviours in predictive models, motivated by reliability and safety concerns in real-world ML systems.",
+        link:
+          "https://deepmind.google/blog/identifying-and-eliminating-bugs-in-learned-predictive-models/",
+      },
+
+      // 2022
+      {
+        id: "2022-pioneering-responsibly",
+        date: "2022-05-24",
+        year: 2022,
+        title: "Building a culture of pioneering responsibly",
+        category: "Governance & Frameworks",
+        type: "Responsible AI culture",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "Outlines DeepMind’s internal culture-building around responsible AI, connecting safety, ethics, and governance initiatives into a more systematic programme.",
+        link:
+          "https://deepmind.google/blog/building-a-culture-of-pioneering-responsibly/",
+      },
+      {
+        id: "2022-data-enrichment",
+        date: "2022-11-01",
+        year: 2022,
+        title: "Best practices for data enrichment",
+        category: "Ethics & Societal Impact",
+        type: "Data governance",
+        importance: "minor",
+        dotClass: "ethics",
+        summary:
+          "Proposes practical guidelines for responsible data enrichment, including consent, transparency, and bias mitigation for training data used in AI systems.",
+        link:
+          "https://deepmind.google/blog/mapping-the-misuse-of-generative-ai/#:~:text=Best%20practices%20for%20data%20enrichment",
+      },
+
+      // 2023 – values, early warning, governance, social risks
+      {
+        id: "2023-values",
+        date: "2023-04-01",
+        year: 2023,
+        title: "How can we build human values into AI?",
+        category: "Ethics & Societal Impact",
+        type: "Values & alignment",
+        importance: "major",
+        dotClass: "ethics",
+        summary:
+          "Discusses approaches for integrating human values into AI systems, and the challenges of value pluralism and representation in advanced models.",
+        link:
+          "https://deepmind.google/blog/how-can-we-build-human-values-into-ai/",
+      },
+      {
+        id: "2023-early-warning",
+        date: "2023-05-25",
+        year: 2023,
+        title: "An early warning system for novel AI risks",
+        category: "Governance & Frameworks",
+        type: "Risk evaluation framework",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "Introduces a framework for evaluating general-purpose models against novel and severe threats, aiming to catch dangerous capabilities before deployment.",
+        link:
+          "https://deepmind.google/blog/an-early-warning-system-for-novel-ai-risks/",
+      },
+      {
+        id: "2023-gov-institutions",
+        date: "2023-07-11",
+        year: 2023,
+        title: "Exploring institutions for global AI governance",
+        category: "Ethics & Societal Impact",
+        type: "Global governance",
+        importance: "major",
+        dotClass: "ethics",
+        summary:
+          "Explores potential international institutional arrangements for governing advanced AI, including coordination between states, labs, and civil society.",
+        link:
+          "https://deepmind.google/blog/exploring-institutions-for-global-ai-governance/",
+      },
+      {
+        id: "2023-social-ethical-risks",
+        date: "2023-10-19",
+        year: 2023,
+        title: "Evaluating social and ethical risks from generative AI",
+        category: "Ethics & Societal Impact",
+        type: "Risk evaluation",
+        importance: "major",
+        dotClass: "ethics",
+        summary:
+          "Addresses social and ethical harms from generative AI systems and proposes structured evaluations focused on bias, misinformation, and downstream societal impacts.",
+        link:
+          "https://deepmind.google/blog/evaluating-social-and-ethical-risks-from-generative-ai/",
+      },
+      {
+        id: "2023-debate-paper",
+        date: "2023-11-23",
+        year: 2023,
+        title: "Scalable AI Safety via Doubly-Efficient Debate",
+        category: "Technical Safety / Alignment",
+        type: "Technical alignment paper",
+        importance: "major",
+        dotClass: "tech",
+        summary:
+          "Develops debate-based protocols where two AI systems challenge each other, aiming to let humans verify correctness and alignment even when tasks are complex.",
+        link:
+          "https://deepmind.google/research/publications/scalable-ai-safety-via-doubly-efficient-debate/",
+      },
+
+      // 2024 – holistic evaluations, ethics of assistants, misuse mapping, FSF v1
+      {
+        id: "2024-ethics-assistants",
+        date: "2024-04-19",
+        year: 2024,
+        title: "The ethics of advanced AI assistants",
+        category: "Ethics & Societal Impact",
+        type: "Ethics of assistants",
+        importance: "major",
+        dotClass: "ethics",
+        summary:
+          "Discusses the ethical design of advanced AI assistants, including user autonomy, privacy, and the risks of over-reliance and behavioural influence.",
+        link:
+          "https://deepmind.google/blog/the-ethics-of-advanced-ai-assistants/",
+      },
+      {
+        id: "2024-holistic-evals",
+        date: "2024-04-22",
+        year: 2024,
+        title: "Holistic Safety and Responsibility Evaluations of Advanced AI Models",
+        category: "Governance & Frameworks",
+        type: "Evaluation framework",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "A comprehensive report detailing DeepMind’s evolving approach to safety and responsibility evaluations for advanced models, and lessons learned.",
+        link: "https://arxiv.org/abs/2404.14068",
+      },
+      {
+        id: "2024-fsf-v1",
+        date: "2024-05-17",
+        year: 2024,
+        title: "Introducing the Frontier Safety Framework (FSF v1.0)",
+        category: "Governance & Frameworks",
+        type: "Frontier AI policy",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "First public release of DeepMind’s Frontier Safety Framework, a set of protocols to identify and mitigate possible severe risks from powerful frontier AI models.",
+        link:
+          "https://deepmind.google/blog/introducing-the-frontier-safety-framework/",
+      },
+      {
+        id: "2024-misuse-mapping",
+        date: "2024-08-02",
+        year: 2024,
+        title: "Mapping the misuse of generative AI",
+        category: "Ethics & Societal Impact",
+        type: "Threat mapping",
+        importance: "major",
+        dotClass: "ethics",
+        summary:
+          "Systematically maps types of malicious and harmful uses of generative AI, informing threat models and defenses for generative systems.",
+        link:
+          "https://deepmind.google/blog/mapping-the-misuse-of-generative-ai/",
+      },
+
+      // 2025 – progress report, FSF v2, AGI safety paper, FSF v3 + new R&S posts
+      {
+        id: "2025-responsible-ai-report",
+        date: "2025-02-04",
+        year: 2025,
+        title:
+          "Responsible AI: 2024 Progress Report & updating the Frontier Safety Framework",
+        category: "Governance & Frameworks",
+        type: "Progress report & FSF update",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "Google’s 2024 Responsible AI Progress Report highlights over 300 responsibility and safety papers and announces an updated Frontier Safety Framework aligned with NIST-style risk management.",
+        link:
+          "https://blog.google/technology/ai/responsible-ai-2024-report-ongoing-work/",
+      },
+      {
+        id: "2025-fsf-update-v2",
+        date: "2025-02-04",
+        year: 2025,
+        title: "Updating the Frontier Safety Framework (FSF v2)",
+        category: "Governance & Frameworks",
+        type: "Frontier safety governance",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "DeepMind details how FSF is being implemented for models like Gemini 2.0, refining critical capability levels and mitigations for emerging risks.",
+        link:
+          "https://deepmind.google/blog/updating-the-frontier-safety-framework/",
+      },
+      {
+        id: "2025-agi-safety-paper",
+        date: "2025-04-03",
+        year: 2025,
+        title: "An Approach to Technical AGI Safety and Security",
+        category: "Technical Safety / Alignment",
+        type: "AGI safety strategy",
+        importance: "major",
+        dotClass: "tech",
+        summary:
+          "Foundational report describing DeepMind’s approach to preventing severe harms from AGI, covering misuse, misalignment, mistakes, and structural risks, and how FSF is used in practice.",
+        link:
+          "https://blog.google/technology/google-deepmind/agi-safety-paper/",
+      },
+      {
+        id: "2025-agi-safety-medium",
+        date: "2025-04-05",
+        year: 2025,
+        title: "Medium summary of AGI safety & security approach",
+        category: "Technical Safety / Alignment",
+        type: "Accessible summary",
+        importance: "minor",
+        dotClass: "tech",
+        summary:
+          "DeepMind Safety Research team summarizes the AGI safety and security paper for a broader audience, emphasizing monitoring capabilities and layered mitigations.",
+        link:
+          "https://deepmindsafetyresearch.medium.com/an-approach-to-technical-agi-safety-and-security-25928819fbc6",
+      },
+      {
+        id: "2025-backstory",
+        date: "2025-07-01",
+        year: 2025,
+        title: "Exploring the context of online images with Backstory",
+        category: "Applied Responsibility & Safety",
+        type: "Safety tool",
+        importance: "minor",
+        dotClass: "ops",
+        summary:
+          "Presents Backstory, a tool aimed at helping users and platforms understand the provenance and context of online images, supporting safer information ecosystems.",
+        link: "https://deepmind.google/responsibility-and-safety/",
+      },
+      {
+        id: "2025-fsf-v3",
+        date: "2025-09-22",
+        year: 2025,
+        title: "Strengthening our Frontier Safety Framework (FSF v3.0)",
+        category: "Governance & Frameworks",
+        type: "Frontier AI safety framework",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "FSF 3.0 expands risk domains and refines assessments, adding categories like harmful manipulation, shutdown resistance, misalignment, and advanced persuasiveness for frontier models.",
+        link:
+          "https://deepmind.google/blog/strengthening-our-frontier-safety-framework/",
+      },
+      {
+        id: "2025-fsf-v3-pdf",
+        date: "2025-09-22",
+        year: 2025,
+        title: "Frontier Safety Framework 3.0 – full document",
+        category: "Governance & Frameworks",
+        type: "Technical policy document",
+        importance: "major",
+        dotClass: "",
+        summary:
+          "FSF 3.0 PDF describes how DeepMind evaluates severe risks from high-impact capabilities and integrates these processes into wider responsibility and safety practices.",
+        link:
+          "https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/strengthening-our-frontier-safety-framework/frontier-safety-framework_3.pdf",
+      },
+      {
+        id: "2025-fsf-press",
+        date: "2025-09-23",
+        year: 2025,
+        title: "Public reporting on FSF 3.0: shutdown resistance & persuasion risks",
+        category: "Governance & Frameworks",
+        type: "External reporting",
+        importance: "minor",
+        dotClass: "",
+        summary:
+          "External coverage highlights that the updated FSF now evaluates risks from models resisting shutdown and exercising powerful persuasive influence over users.",
+        link:
+          "https://www.axios.com/2025/09/22/google-ai-risk-models-resist-shutdown",
+      },
+      {
+        id: "2025-codemender",
+        date: "2025-10-01",
+        year: 2025,
+        title: "Introducing CodeMender: an AI agent for code security",
+        category: "Applied Responsibility & Safety",
+        type: "Security / safety tool",
+        importance: "minor",
+        dotClass: "ops",
+        summary:
+          "CodeMender is introduced as an AI agent to help developers detect and remediate code security vulnerabilities, linking model capabilities with secure-by-design practices.",
+        link: "https://deepmind.google/responsibility-and-safety/",
+      },
+      {
+        id: "2025-teachers-ni",
+        date: "2025-11-01",
+        year: 2025,
+        title: "How AI is giving Northern Ireland teachers time back",
+        category: "Applied Responsibility & Safety",
+        type: "Responsible deployment",
+        importance: "minor",
+        dotClass: "ops",
+        summary:
+          "A case study of AI in education that emphasises co-design with educators and safeguards for privacy and fairness in schools.",
+        link: "https://deepmind.google/responsibility-and-safety/",
+      },
+    ];
+
+    // --- Utility functions ---
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return dateStr;
+      const month = d.toLocaleString("en-GB", { month: "short" });
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${month} ${day}`;
+    }
+
+    function importanceLabel(importance) {
+      return importance === "major" ? "Major" : "Minor";
+    }
+
+    function categoryBadgeClass(category) {
+      switch (category) {
+        case "Governance & Frameworks":
+          return "cat-governance";
+        case "Technical Safety / Alignment":
+          return "cat-tech";
+        case "Ethics & Societal Impact":
+          return "cat-ethics";
+        case "Applied Responsibility & Safety":
+          return "cat-ops";
+        default:
+          return "";
+      }
+    }
+
+    // --- Rendering ---
+
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const timelineEl = document.getElementById("timeline");
+    const countLabel = document.getElementById("countLabel");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const yearMinInput = document.getElementById("yearMin");
+    const yearMaxInput = document.getElementById("yearMax");
+    const yearRangeLabel = document.getElementById("yearRangeLabel");
+    const majorToggle = document.getElementById("majorToggle");
+
+    function renderTimeline() {
+      let minYear = parseInt(yearMinInput.value, 10);
+      let maxYear = parseInt(yearMaxInput.value, 10);
+      if (minYear > maxYear) {
+        const temp = minYear;
+        minYear = maxYear;
+        maxYear = temp;
+      }
+      yearRangeLabel.textContent = `${minYear}–${maxYear}`;
+
+      const cat = categoryFilter.value;
+      const majorOnly = majorToggle.checked;
+
+      const filtered = events.filter((e) => {
+        if (e.year < minYear || e.year > maxYear) return false;
+        if (cat !== "all" && e.category !== cat) return false;
+        if (majorOnly && e.importance !== "major") return false;
+        return true;
+      });
+
+      timelineEl.innerHTML = "";
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent =
+          "No events in this slice. Try widening the year range or removing filters.";
+        timelineEl.appendChild(empty);
+        countLabel.textContent = "0 events";
+        return;
+      }
+
+      countLabel.textContent = `${filtered.length} event${
+        filtered.length > 1 ? "s" : ""
+      }`;
+
+      let lastYear = null;
+
+      filtered.forEach((e) => {
+        if (e.year !== lastYear) {
+          lastYear = e.year;
+          const yearHeader = document.createElement("div");
+          yearHeader.className = "year-header";
+          const yearSpan = document.createElement("span");
+          yearSpan.textContent = e.year;
+          const small = document.createElement("small");
+          small.textContent = "Responsibility & Safety";
+          yearHeader.appendChild(yearSpan);
+          yearHeader.appendChild(small);
+          timelineEl.appendChild(yearHeader);
+        }
+
+        const eventEl = document.createElement("div");
+        eventEl.className = "event";
+
+        const left = document.createElement("div");
+        left.className = "event-dot-wrapper";
+        const dot = document.createElement("div");
+        dot.className =
+          "event-dot " + (e.dotClass ? e.dotClass : "");
+        left.appendChild(dot);
+
+        const date = document.createElement("div");
+        date.className = "event-date";
+        date.textContent = formatDate(e.date);
+        left.appendChild(date);
+
+        const card = document.createElement("article");
+        card.className =
+          "event-card " + (e.importance === "major" ? "" : "minor");
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "event-title-row";
+
+        const title = document.createElement("div");
+        title.className = "event-title";
+        title.textContent = e.title;
+
+        const importanceBadge = document.createElement("span");
+        importanceBadge.className =
+          "badge " + (e.importance === "major" ? "major" : "");
+        importanceBadge.textContent = importanceLabel(e.importance);
+
+        const catBadge = document.createElement("span");
+        catBadge.className = "badge " + categoryBadgeClass(e.category);
+        catBadge.textContent = e.category;
+
+        titleRow.appendChild(title);
+        titleRow.appendChild(importanceBadge);
+        titleRow.appendChild(catBadge);
+
+        const summary = document.createElement("p");
+        summary.className = "event-summary";
+        summary.textContent = e.summary;
+
+        const metaRow = document.createElement("div");
+        metaRow.className = "event-meta";
+
+        const typeSpan = document.createElement("span");
+        typeSpan.textContent = e.type;
+
+        const link = document.createElement("a");
+        link.className = "event-link";
+        link.href = e.link;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.innerHTML =
+          '<span>Open source</span><span aria-hidden="true">↗</span>';
+
+        metaRow.appendChild(typeSpan);
+        metaRow.appendChild(link);
+
+        card.appendChild(titleRow);
+        card.appendChild(summary);
+        card.appendChild(metaRow);
+
+        eventEl.appendChild(left);
+        eventEl.appendChild(card);
+
+        timelineEl.appendChild(eventEl);
+      });
+    }
+
+    categoryFilter.addEventListener("change", renderTimeline);
+    yearMinInput.addEventListener("input", renderTimeline);
+    yearMaxInput.addEventListener("input", renderTimeline);
+    majorToggle.addEventListener("change", renderTimeline);
+
+    renderTimeline();
+  </script>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>《Planecrash》 × 理性主义 × AI 对齐｜三体系跨模型概览图</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #060918;
+      --card-bg: #0b1020;
+      --border: #202640;
+      --accent-planecrash: #7dd3fc;
+      --accent-rationalism: #a5b4fc;
+      --accent-alignment: #6ee7b7;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+      --shadow-light: 0 0 0 1px rgba(148, 163, 184, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 48%, #020617 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .title-kicker {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 3vw, 30px);
+      margin: 0 0 10px;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+
+    h1 span {
+      background: linear-gradient(120deg, #a5b4fc, #7dd3fc, #6ee7b7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 640px;
+      line-height: 1.5;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: var(--text-soft);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), rgba(15, 23, 42, 0.6));
+      backdrop-filter: blur(12px);
+    }
+
+    .matrix-wrapper {
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), rgba(15, 23, 42, 0.95));
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 20px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .matrix-wrapper::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.20), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.17), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.9fr) repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .matrix-header {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 6px 10px 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      backdrop-filter: blur(12px);
+    }
+
+    .matrix-header.system-planecrash {
+      color: var(--accent-planecrash);
+    }
+    .matrix-header.system-rationalism {
+      color: var(--accent-rationalism);
+    }
+    .matrix-header.system-alignment {
+      color: var(--accent-alignment);
+    }
+
+    .theme-cell {
+      padding: 10px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-radius: 999px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.26);
+      background: linear-gradient(120deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9));
+    }
+
+    .theme-tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-soft);
+      margin-bottom: 3px;
+    }
+
+    .theme-name {
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .cell {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.99));
+      border-radius: 14px;
+      padding: 9px 10px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      box-shadow: var(--shadow-light);
+      font-size: 12px;
+      line-height: 1.5;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(148, 163, 184, 0.18), transparent 60%);
+      opacity: 0.35;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .cell-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 4px;
+      opacity: 0.9;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .dot-planecrash {
+      background: var(--accent-planecrash);
+      box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.24);
+    }
+    .dot-rationalism {
+      background: var(--accent-rationalism);
+      box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.24);
+    }
+    .dot-alignment {
+      background: var(--accent-alignment);
+      box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.24);
+    }
+
+    .cell-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 3px;
+      color: #e5e7eb;
+    }
+
+    .cell-title span {
+      opacity: 0.85;
+      font-weight: 500;
+    }
+
+    .cell-list {
+      margin: 0;
+      padding-left: 14px;
+      list-style: disc;
+      color: var(--text-muted);
+    }
+
+    .cell-list li {
+      margin: 1px 0;
+    }
+
+    .cell-list li strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .row-divider {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0,
+        rgba(148, 163, 184, 0.45) 16%,
+        rgba(148, 163, 184, 0.45) 84%,
+        transparent 100%
+      );
+      opacity: 0.65;
+      margin: 4px 0;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-dot-planecrash {
+      background: var(--accent-planecrash);
+    }
+    .legend-dot-rationalism {
+      background: var(--accent-rationalism);
+    }
+    .legend-dot-alignment {
+      background: var(--accent-alignment);
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .hint code {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 2px 4px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 11px;
+    }
+
+    @media (max-width: 960px) {
+      .matrix {
+        grid-template-columns: minmax(120px, 0.8fr) repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 780px) {
+      .matrix {
+        grid-template-columns: minmax(120px, 1fr);
+      }
+      .matrix-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: linear-gradient(
+          180deg,
+          rgba(15, 23, 42, 0.98),
+          rgba(15, 23, 42, 0.93)
+        );
+      }
+      .matrix-header:not(:first-child) {
+        display: none;
+      }
+      .cell {
+        margin-left: 2px;
+      }
+      .theme-cell {
+        margin-top: 6px;
+      }
+      .row-divider {
+        margin: 10px 0 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title-kicker">Cross-Model Overview</div>
+      <h1>《<span>Planecrash</span>》 × 理性主义 × AI 对齐<br />三体系跨模型概览图</h1>
+      <p class="subtitle">
+        每一行是一条“主题维度”（Theme），从左到右对应：
+        《Planecrash》中的叙事–制度化实现 → LessWrong 理性主义中的概念框架 → AI 对齐研究中的形式化问题。
+      </p>
+      <div class="pill-row">
+        <div class="pill">叙事 = 可运行思想实验</div>
+        <div class="pill">理性主义 = 概念与规范</div>
+        <div class="pill">AI 对齐 = 技术化问题与方案</div>
+      </div>
+    </header>
+
+    <main class="matrix-wrapper">
+      <section class="matrix" aria-label="Planecrash × Rationalism × AI Alignment Cross-Model">
+        <!-- Header Row -->
+        <div class="matrix-header">主题维度（Theme）</div>
+        <div class="matrix-header system-planecrash">Planecrash：叙事/制度形态</div>
+        <div class="matrix-header system-rationalism">理性主义：概念与规范</div>
+        <div class="matrix-header system-alignment">AI 对齐：形式化问题</div>
+
+        <!-- ROW 1: Epistemic Norms -->
+        <div class="theme-cell" title="知识论规范：一个文明如何形成“正确更新世界模型”的集体习惯。">
+          <div class="theme-tag">Theme 01</div>
+          <div class="theme-name">认识论规范 &amp; 集体理性</div>
+        </div>
+
+        <div class="cell" title="Planecrash 如何用制度与角色展示“文明级认识论规范”。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">律法化的证据与证言 <span>（epistemic procedures）</span></div>
+          <ul class="cell-list">
+            <li><strong>证据与证言</strong>被嵌入律法流程，谁说什么、如何说都可被追责。</li>
+            <li>角色在叙事中不断进行<strong>明示推理</strong>：暴露“思考过程”而非仅给结论。</li>
+            <li>文明通过制度约束将<strong>认知偏差成本内部化</strong>（撒谎、模糊、逃避被结构性惩罚）。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="LessWrong / rationalism 对集体理性提出的规范与工具。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">Sequences 的知识论规范</div>
+          <ul class="cell-list">
+            <li><strong>贝叶斯更新</strong>：显式区分先验（priors）与证据（likelihood）。</li>
+            <li><strong>地图–领地隐喻</strong>：信念只是“地图”，世界本身是“领地”。</li>
+            <li>强调<strong>公开推理</strong>（epistemic transparency）：写出你是怎么想到的。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI 对齐中的“模型如何形成、更新、暴露自己的世界观”问题。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">可解释世界模型 &amp; 诚实性</div>
+          <ul class="cell-list">
+            <li><strong>可解释的内部表示</strong>：能否观察并审计模型信念。</li>
+            <li><strong>诚实性训练</strong>：让模型偏好说真话而非“有用的假话”。</li>
+            <li>研究 <strong>deception / obfuscation</strong>：AI 何时会有动机隐藏真实信念。</li>
+          </ul>
+        </div>
+
+        <div class="row-divider"></div>
+
+        <!-- ROW 2: Decision Theory -->
+        <div class="theme-cell" title="个体在高度结构化系统中如何做决策。">
+          <div class="theme-tag">Theme 02</div>
+          <div class="theme-name">决策理论 &amp; 策略性理性</div>
+        </div>
+
+        <div class="cell" title="Planecrash 角色如何在“规则极其复杂”的制度中做决策。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">律法环境中的策略代理</div>
+          <ul class="cell-list">
+            <li>角色以<strong>“自身是代码”</strong>（policy/functional agent）的角度思考选项。</li>
+            <li>大量情节相当于在演示<strong>TDT/UDT/FDT</strong>式的“函数决策代理”。</li>
+            <li>现实世界博弈（谈判、契约）被建模为一套可推理的<strong>决策程序</strong>。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="LessWrong 系统化的非传统决策理论。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">TDT / UDT / FDT 决策家族</div>
+          <ul class="cell-list">
+            <li><strong>TDT</strong>：在考虑“你是一个抽象决策程序”时重定义“时序”与因果。</li>
+            <li><strong>UDT/FDT</strong>：不按观测更新策略，而是选取全局最优的<strong>决策函数</strong>。</li>
+            <li>应用：Newcomb 问题、承诺机制、协调与对手建模等。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI 对齐中的“高级代理如何做决策”问题。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">高级代理的目标 &amp; 决策形态</div>
+          <ul class="cell-list">
+            <li><strong>Goal-directed agency</strong>：系统是否像 FDT/TDT 一样“全局规划策略”。</li>
+            <li><strong>Corrigibility</strong>：是否允许在决策过程中接受人类干预。</li>
+            <li>决策理论影响对齐方案：例如避免诱导出“反事实伤害人类更优”的策略。</li>
+          </ul>
+        </div>
+
+        <div class="row-divider"></div>
+
+        <!-- ROW 3: Incentives & Institutions -->
+        <div class="theme-cell" title="激励结构如何塑造行为与文明走向。">
+          <div class="theme-tag">Theme 03</div>
+          <div class="theme-name">激励结构 &amp; 制度设计</div>
+        </div>
+
+        <div class="cell" title="Planecrash 的律法社会是一个“制度设计实验室”。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">律法作为“源代码”</div>
+          <ul class="cell-list">
+            <li>文明的<strong>法律、宗教、行政</strong>都被编码进一套形式系统。</li>
+            <li>叙事展示：不同激励微调→人群行为与文明轨迹如何显著变化。</li>
+            <li>读者可以把全社会视为一个可调参的<strong>制度仿真器</strong>。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="理性主义讨论“系统性激励”而不仅是个体动机。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">系统性激励 &amp; 元科学</div>
+          <ul class="cell-list">
+            <li>讨论<strong>学术激励失真</strong>、出版偏差、replication crisis 等。</li>
+            <li>推崇<strong>制度级设计</strong>：预测平台、信誉系统、开放科学基础设施。</li>
+            <li>把“机构”视作<strong>优化系统</strong>，分析其目标函数与失配。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI 对齐强调“技术方案必须嵌入人类制度环境”。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">多层对齐：技术 × 组织 × 治理</div>
+          <ul class="cell-list">
+            <li><strong>多极世界</strong>：不同实验室、国家之间的激励博弈。</li>
+            <li><strong>机构对齐</strong>：实验室内部激励是否鼓励安全 vs. 只鼓励性能。</li>
+            <li>研究 <strong>AI governance</strong>：标准、协议、国际合作机制等。</li>
+          </ul>
+        </div>
+
+        <div class="row-divider"></div>
+
+        <!-- ROW 4: Agency & Alignment -->
+        <div class="theme-cell" title="“谁在优化什么？”是三体系共同核心问题。">
+          <div class="theme-tag">Theme 04</div>
+          <div class="theme-name">代理性 &amp; 对齐 / 失配</div>
+        </div>
+
+        <div class="cell" title="Planecrash 通过角色与制度冲突展示“对齐/失配”。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">角色–制度间的对齐张力</div>
+          <ul class="cell-list">
+            <li>个体目标 vs. 律法目标：谁在被谁利用？</li>
+            <li>善意代理在坏制度中仍可能产生<strong>灾难性结果</strong>。</li>
+            <li>叙事让读者体验 <strong>“局部理性 × 全局失配”</strong> 的直观感受。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="理性主义把“对齐问题”推广到所有强代理系统。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">强代理 &amp; 工具性收敛</div>
+          <ul class="cell-list">
+            <li><strong>Orthogonality thesis</strong>：高能力 ≠ 高道德。</li>
+            <li><strong>Instrumental convergence</strong>：不同终极目标共享类似工具目标。</li>
+            <li>人类组织、公司、AI 都被视作<strong>通用优化器</strong>来思考。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI Alignment 把这一套变成具体研究议程。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">内在对齐 &amp; 目标稳定性</div>
+          <ul class="cell-list">
+            <li><strong>Outer alignment</strong>：目标函数是否表达了人类想要的东西。</li>
+            <li><strong>Inner alignment</strong> / mesa-optimizers：训练出的<strong>内部优化器</strong>是否对齐。</li>
+            <li>长远看重 <strong>goal stability</strong>：升级、反思后是否保持对齐。</li>
+          </ul>
+        </div>
+
+        <div class="row-divider"></div>
+
+        <!-- ROW 5: Forecasting & World Modeling -->
+        <div class="theme-cell" title="如何形成可用于长期决策的世界模型。">
+          <div class="theme-tag">Theme 05</div>
+          <div class="theme-name">预测 / 世界模型 &amp; 长期风险</div>
+        </div>
+
+        <div class="cell" title="Planecrash 的叙事要求读者构造复杂世界模型。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">高维世界模型的“叙事训练场”</div>
+          <ul class="cell-list">
+            <li>读者被迫追踪<strong>多层变量</strong>：律法、人物动机、组织、历史。</li>
+            <li>情节推动读者进行<strong>前瞻性推理</strong>：“这套制度下，下一步会发生什么？”</li>
+            <li>本身是对真实世界制度与文明走向的<strong>隐喻预测实验</strong>。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="理性主义将预测能力当作“理性度量”。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">预测平台 &amp; 概率校准</div>
+          <ul class="cell-list">
+            <li>Metaculus / GJOpen 等平台，用于训练和测量预测能力。</li>
+            <li>强调<strong>概率校准</strong>：50% 预测应该约有一半成真。</li>
+            <li>把长期风险（尤其 AGI）纳入系统化预测议程。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI 对齐需要高质量的“世界模型 + 未来分布”估计。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">AGI 时间线 &amp; 风险预测</div>
+          <ul class="cell-list">
+            <li>估计 <strong>AGI timelines</strong>：何时出现可造成结构性改变的系统。</li>
+            <li>评估不同路径的<strong>失败模式概率</strong>（misalignment, misuse, structural risk）。</li>
+            <li>用预测结果反向约束治理与技术路线。</li>
+          </ul>
+        </div>
+
+        <div class="row-divider"></div>
+
+        <!-- ROW 6: Meta-science & Civilizational Design -->
+        <div class="theme-cell" title="如何在“文明级别”上设计更好的认知与制度环境。">
+          <div class="theme-tag">Theme 06</div>
+          <div class="theme-name">元科学 &amp; 文明级对齐</div>
+        </div>
+
+        <div class="cell" title="Planecrash 把一个文明当成“可编辑对象”展示。">
+          <div class="cell-badge">
+            <span class="dot dot-planecrash"></span> Planecrash
+          </div>
+          <div class="cell-title">文明作为实验对象</div>
+          <ul class="cell-list">
+            <li>展示：文明在不同“律法配置”下的<strong>可行/不可行轨迹</strong>。</li>
+            <li>读者可在脑中进行“参数扫描”：若改一条规则，会怎样？</li>
+            <li>本质是对“如何设计一个更不容易灭亡的文明”的长篇思想实验。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="理性主义社区反复讨论“文明级元科学”。">
+          <div class="cell-badge">
+            <span class="dot dot-rationalism"></span> Rationalism
+          </div>
+          <div class="cell-title">元科学 &amp; 认知基础设施</div>
+          <ul class="cell-list">
+            <li>反思当前科研体系的<strong>结构性缺陷</strong>。</li>
+            <li>提议建立新的<strong>认知基础设施</strong>：开放数据、预测市场、审稿重构。</li>
+            <li>将“文明走向”纳入显式推理与公共讨论。</li>
+          </ul>
+        </div>
+
+        <div class="cell" title="AI 对齐的最终问题：如何在文明级别保持对齐和存续。">
+          <div class="cell-badge">
+            <span class="dot dot-alignment"></span> AI Alignment
+          </div>
+          <div class="cell-title">长期主义 &amp; 存续概率</div>
+          <ul class="cell-list">
+            <li><strong>Longtermism</strong>：重视极长期未来的总福祉。</li>
+            <li>AGI 被视作可能重写一切后续轨迹的<strong>关键节点</strong>。</li>
+            <li>对齐研究最终指向：在极端变革下仍保持文明的<strong>连续性与可塑性</strong>。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="legend" aria-label="Legend">
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-planecrash"></span>
+          <span>《Planecrash》：叙事/制度级实例</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-rationalism"></span>
+          <span>理性主义：概念框架与规范</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot-alignment"></span>
+          <span>AI 对齐：形式化研究问题</span>
+        </div>
+      </section>
+
+      <p class="hint">
+        小贴士：你可以把这张图当作“提纲”。如果要写综述/白皮书，可以把每一行复制成一节，并用
+        <code>Planecrash → Rationalism → Alignment</code> 的顺序展开。
+      </p>
+    </main>
+  </div>
+</body>
+</html>

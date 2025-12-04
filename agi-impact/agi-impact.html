@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personality Diversity & AGI – Macro Framework Visualization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --fg: #222;
+      --accent: #1f4f82;
+      --accent-soft: #e3edf8;
+      --card-bg: #ffffff;
+      --border-soft: #d7e0ec;
+      --muted: #666;
+      --highlight: #c0392b;
+      --shadow-soft: 0 10px 25px rgba(15, 35, 80, 0.06);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #edf3ff 0, #f7f9fc 40%, #fdfefe 100%);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 16px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    header h1 {
+      font-size: 2.6rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    header h2 {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 16px;
+    }
+
+    header .tagline {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: #43639a;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    section {
+      margin-bottom: 32px;
+    }
+
+    h3.section-title {
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3.section-title::before {
+      content: "";
+      width: 4px;
+      height: 18px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #1f4f82, #3b98d6);
+    }
+
+    .lead-card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      border: 1px solid var(--border-soft);
+      font-size: 0.98rem;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .lead-card strong {
+      color: var(--accent);
+    }
+
+    .lead-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Micro–Meso–Macro diagram */
+    .mmm-wrapper {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 20px 20px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .mmm-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: stretch;
+      margin-top: 8px;
+    }
+
+    .mmm-block {
+      flex: 1;
+      min-width: 240px;
+      border-radius: var(--radius-md);
+      background: var(--accent-soft);
+      padding: 12px 14px 14px;
+      position: relative;
+      border: 1px solid #d0dff3;
+    }
+
+    .mmm-block h4 {
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .mmm-block ul {
+      margin-left: 16px;
+      font-size: 0.85rem;
+      color: #333;
+    }
+
+    .mmm-arrow {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 4px 0;
+    }
+
+    .mmm-arrow span {
+      font-size: 1.1rem;
+      margin: 0 8px;
+    }
+
+    /* Indices box */
+    .indices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .index-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 4px 12px rgba(10, 30, 70, 0.03);
+      font-size: 0.85rem;
+    }
+
+    .index-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .index-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .index-desc {
+      color: var(--muted);
+    }
+
+    .index-formula {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.78rem;
+      background: #f2f5fa;
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+      margin-top: 4px;
+      display: inline-block;
+      color: #444;
+    }
+
+    /* Core insights grid */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .insight-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+      padding: 10px 12px 12px;
+      box-shadow: 0 8px 18px rgba(10, 30, 60, 0.03);
+      font-size: 0.9rem;
+    }
+
+    .insight-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 3px;
+    }
+
+    .insight-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #222;
+      font-size: 0.94rem;
+    }
+
+    .insight-body {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    /* Application band */
+    .apps-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .app-card {
+      background: linear-gradient(135deg, #fdfefe, #f1f6ff);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      box-shadow: 0 4px 12px rgba(30, 60, 110, 0.05);
+    }
+
+    .app-card h4 {
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+
+    .app-card ul {
+      margin-left: 16px;
+      color: var(--muted);
+    }
+
+    /* Closing */
+    .closing {
+      background: #0a2540;
+      color: #ecf4ff;
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-top: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      font-size: 0.94rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .closing::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+      top: -80px;
+      right: -80px;
+    }
+
+    .closing-quote {
+      font-style: italic;
+      margin-top: 6px;
+      color: #dfe9ff;
+    }
+
+    .closing small {
+      display: block;
+      margin-top: 6px;
+      color: #b5c8e6;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      .lead-card {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <!-- Header -->
+  <header>
+    <h1>Personality Diversity & AGI</h1>
+    <h2>From Micro Traits to Macro Resilience: A Multi-Level Framework for Human–AI Complementarity</h2>
+    <div class="tagline">Research Visualization · MBTI / Big Five × AGI × Macro Structure</div>
+  </header>
+
+  <!-- Intro -->
+  <section>
+    <h3 class="section-title">Overview</h3>
+    <div class="lead-card">
+      <div class="lead-icon">🧠</div>
+      <div>
+        <p>
+          In the AGI era, <strong>personality diversity</strong> is not a side topic of psychology but a 
+          <strong>strategic macro resource</strong>. It shapes how tasks are distributed, how industries evolve, 
+          and how nations absorb technology shocks. This visualization summarizes a research framework that links:
+        </p>
+        <p style="margin-top:4px;">
+          <strong>Personality → Tasks → Industries → National Resilience → AGI Governance</strong>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Micro–Meso–Macro -->
+  <section>
+    <h3 class="section-title">Micro–Meso–Macro Framework</h3>
+    <div class="mmm-wrapper">
+      <p style="font-size:0.9rem;color:#444;">
+        The core idea: AGI does not hit a country directly. It hits <em>tasks</em> performed by individuals with specific 
+        <em>personality profiles</em>, aggregated into <em>industries</em>, embedded in a <em>national structure</em>.
+      </p>
+      <div class="mmm-layout">
+        <div class="mmm-block">
+          <h4>Micro · Individual</h4>
+          <ul>
+            <li>Big Five &amp; MBTI-style personality profiles</li>
+            <li>Task types: analytical / creative / procedural / social</li>
+            <li><code>AGI_Impact</code> ∈ [0,1] · replacement risk</li>
+            <li><code>Future_Uniqueness</code> ∈ [0,1] · human uniqueness</li>
+          </ul>
+        </div>
+        <div class="mmm-block">
+          <h4>Meso · Industry</h4>
+          <ul>
+            <li>Task portfolios aggregated by sector</li>
+            <li><strong>ILAV</strong>: Industry-Level AGI Vulnerability</li>
+            <li><strong>ILUR</strong>: Industry Human Uniqueness Reserve</li>
+            <li>Personality concentration by industry</li>
+          </ul>
+        </div>
+        <div class="mmm-block">
+          <h4>Macro · Nation</h4>
+          <ul>
+            <li><strong>NAES</strong>: National AGI Exposure Score</li>
+            <li><strong>NHUR</strong>: National Human Uniqueness Reserve</li>
+            <li><strong>PSR</strong>: Personality-Systemic Risk</li>
+            <li>Personality as cognitive infrastructure</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mmm-arrow">
+        Micro <span>→</span> Meso <span>→</span> Macro <span>→</span> Policy &amp; Governance
+      </div>
+    </div>
+  </section>
+
+  <!-- Indices -->
+  <section>
+    <h3 class="section-title">Key Indices: Exposure, Uniqueness, Systemic Risk</h3>
+    <p style="font-size:0.9rem;color:#444;margin-bottom:6px;">
+      To make human–AI complementarity governable, the framework defines a set of indices that are computationally 
+      tractable and policy-relevant.
+    </p>
+    <div class="indices-grid">
+      <div class="index-card">
+        <div class="index-label">Industry</div>
+        <div class="index-name">ILAV<sub>j</sub></div>
+        <div class="index-desc">Average AGI vulnerability of tasks in industry <em>j</em>.</div>
+        <div class="index-formula">ILAV<sub>j</sub> = Σ<sub>t∈j</sub> w<sub>t,j</sub> · AGI_Impact<sub>t</sub></div>
+      </div>
+      <div class="index-card">
+        <div class="index-label">Industry</div>
+        <div class="index-name">ILUR<sub>j</sub></div>
+        <div class="index-desc">How much uniquely human work remains in industry <em>j</em>.</div>
+        <div class="index-formula">ILUR<sub>j</sub> = Σ<sub>t∈j</sub> w<sub>t,j</sub> · Future_Uniqueness<sub>t</sub></div>
+      </div>
+      <div class="index-card">
+        <div class="index-label">Nation</div>
+        <div class="index-name">NAES<sub>c</sub></div>
+        <div class="index-desc">Overall AGI exposure of country <em>c</em>.</div>
+        <div class="index-formula">NAES<sub>c</sub> = Σ<sub>j</sub> EmpShare<sub>j,c</sub> · ILAV<sub>j</sub></div>
+      </div>
+      <div class="index-card">
+        <div class="index-label">Nation</div>
+        <div class="index-name">NHUR<sub>c</sub></div>
+        <div class="index-desc">Aggregate human uniqueness reserve of country <em>c</em>.</div>
+        <div class="index-formula">NHUR<sub>c</sub> = Σ<sub>j</sub> EmpShare<sub>j,c</sub> · ILUR<sub>j</sub></div>
+      </div>
+      <div class="index-card">
+        <div class="index-label">Nation</div>
+        <div class="index-name">PSR<sub>c</sub></div>
+        <div class="index-desc">Personality-Systemic Risk: when high exposure meets low uniqueness.</div>
+        <div class="index-formula">PSR<sub>c</sub> = NAES<sub>c</sub> · (1 − NHUR<sub>c</sub>)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Insights -->
+  <section>
+    <h3 class="section-title">Core Insights (Condensed)</h3>
+    <div class="insights-grid">
+      <div class="insight-card">
+        <div class="insight-tag">Insight 1</div>
+        <div class="insight-title">Personality diversity is a strategic macro resource.</div>
+        <div class="insight-body">
+          Personality distributions shape innovation, governance, social capital and technology adoption.
+          They are as structural as demographics or industrial composition.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 2</div>
+        <div class="insight-title">AGI shocks are personality-selective, not uniform.</div>
+        <div class="insight-body">
+          SJ-heavy routine roles face higher automation risk, while NT, NF, SP clusters often gain
+          from AGI augmentation in strategy, ethics, and real-world improvisation.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 3</div>
+        <div class="insight-title">Micro → Meso → Macro is a real structural chain.</div>
+        <div class="insight-body">
+          Personality → task choice → industry clustering → national resilience or fragility.
+          AGI propagates through this chain rather than acting in a vacuum.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 4</div>
+        <div class="insight-title">“Human uniqueness” can be measured, not only praised.</div>
+        <div class="insight-body">
+          ILUR and NHUR turn the vague notion of human uniqueness into quantifiable policy variables
+          that can be tracked and improved.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 5</div>
+        <div class="insight-title">Resilience is a function of exposure × uniqueness.</div>
+        <div class="insight-body">
+          The PSR equation (PSR = NAES · (1 − NHUR)) captures how high AGI exposure plus
+          low human uniqueness creates systemic fragility.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 6</div>
+        <div class="insight-title">Personality diversity is the basis of human–AI complementarity.</div>
+        <div class="insight-body">
+          Different personality types specialize in different complementary roles with AGI.
+          Diversity is an asset, not a defect, in hybrid-intelligence systems.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 7</div>
+        <div class="insight-title">Education, organizations and governance must become personality-aware.</div>
+        <div class="insight-body">
+          The goal is not to manufacture one “ideal type” but to create multiple pathways so all
+          personality types can find a meaningful, AI-complementary role.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 8</div>
+        <div class="insight-title">AGI society should reject the idea of a single optimal human model.</div>
+        <div class="insight-body">
+          Systemic resilience comes from cognitive biodiversity. Personality homogeneity may be
+          efficient in the short term but fragile in the long term.
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-tag">Insight 9</div>
+        <div class="insight-title">The ILAV/ILUR/NAES/NHUR/PSR framework is a first-of-its-kind macro model.</div>
+        <div class="insight-body">
+          It integrates personality science, labour economics and AI governance into a unified,
+          measurable and policy-ready architecture.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Applications -->
+  <section>
+    <h3 class="section-title">Application Domains</h3>
+    <div class="apps-wrapper">
+      <div class="app-card">
+        <h4>Education Systems</h4>
+        <ul>
+          <li>Multi-pathway curricula aligned with personality clusters.</li>
+          <li>Core layer: AI literacy, ethics, collaboration.</li>
+          <li>Reduce PSR by increasing NHUR through education.</li>
+        </ul>
+      </div>
+      <div class="app-card">
+        <h4>Organizations & Work Design</h4>
+        <ul>
+          <li>Explicit separation of human vs AGI roles.</li>
+          <li>Personality-aware team composition and task allocation.</li>
+          <li>Protect vulnerable personality clusters in high-ILAV roles.</li>
+        </ul>
+      </div>
+      <div class="app-card">
+        <h4>National Policy & Governance</h4>
+        <ul>
+          <li>Use NAES, NHUR, PSR as part of national risk dashboards.</li>
+          <li>Industrial policy to rebalance toward high-ILUR sectors.</li>
+          <li>Global governance: personality-neutral AGI standards.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section>
+    <div class="closing">
+      <div><strong>Closing View</strong></div>
+      <p class="closing-quote">
+        In a truly human-centered AGI society, technology does not force everyone into the same mould.
+        Instead, it makes it safer and more valuable to be deeply, irreducibly human.
+      </p>
+      <small>Personality diversity is not a challenge to be engineered away; it is the core human asset
+      that AGI must be designed to protect and amplify.</small>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
+
