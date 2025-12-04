@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核心概念 - 长期主义</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://unpkg.com/d3@7"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Han+Sans:wght@400;700;900&family=Source+Han+Serif:wght@400;500;700&display=swap');
+        
+        :root {
+            --deep-blue: #1e3a5f;
+            --warm-gray: #6b7280;
+            --ivory: #fefefe;
+            --amber: #f59e0b;
+            --stone-green: #374151;
+            --mist-blue: #e0f2fe;
+        }
+        
+        body {
+            font-family: 'Source Han Serif', 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #2563eb 50%, var(--stone-green) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .concept-bg {
+            background: url('knowledge-graph.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .concept-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(37, 99, 235, 0.7) 50%, rgba(55, 65, 81, 0.8) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--amber) 0%, #fbbf24 50%, var(--ivory) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .concept-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .concept-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .knowledge-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .knowledge-node:hover {
+            transform: scale(1.1);
+        }
+        
+        .connection-line {
+            stroke: rgba(245, 158, 11, 0.6);
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.8;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .category-philosophy { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .category-methodology { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .category-technology { background: linear-gradient(135deg, #059669, #10b981); }
+        .category-environment { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .category-risk { background: linear-gradient(135deg, #3730a3, #6366f1); }
+        .category-policy { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">长</span>
+                    </div>
+                    <span class="text-white font-bold text-lg">长期主义</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-amber-300">首页</a>
+                    <a href="concepts.html" class="nav-link text-amber-300">核心概念</a>
+                    <a href="timeline.html" class="nav-link text-white hover:text-amber-300">时间线</a>
+                    <a href="risks.html" class="nav-link text-white hover:text-amber-300">风险评估</a>
+                    <a href="actions.html" class="nav-link text-white hover:text-amber-300">行动指南</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="concept-bg min-h-screen flex items-center justify-center relative pt-20">
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 text-gradient leading-tight">
+                核心概念
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed font-light">
+                深入理解长期主义的理论基础和实践框架
+            </p>
+            <button onclick="scrollToSection('knowledge-graph')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                探索知识图谱
+            </button>
+        </div>
+    </section>
+
+    <!-- Core Concepts Grid -->
+    <section class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">基础概念</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    长期主义建立在多个学科的理论基础之上，形成了一个完整的思想体系
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Philosophy -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-philosophy w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">哲学基础</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        功利主义、后果主义和伦理学的理论支撑，为长期价值评估提供道德框架。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 功利主义的扩展应用</li>
+                        <li>• 后果主义的时间维度</li>
+                        <li>• 代际正义理论</li>
+                        <li>• 道德权重分配</li>
+                    </ul>
+                </div>
+
+                <!-- Methodology -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-methodology w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">方法论</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        预测建模、情景分析和风险评估的科学方法，为长期决策提供工具支持。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 预测模型构建</li>
+                        <li>• 情景分析技术</li>
+                        <li>• 不确定性量化</li>
+                        <li>• 贝叶斯推理</li>
+                    </ul>
+                </div>
+
+                <!-- Technology -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-technology w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">技术评估</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        对新兴技术的长期影响进行评估，包括AI、生物技术和纳米技术等。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• AI安全与对齐</li>
+                        <li>• 生物技术风险</li>
+                        <li>• 纳米技术治理</li>
+                        <li>• 技术奇点预测</li>
+                    </ul>
+                </div>
+
+                <!-- Environment -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-environment w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">环境挑战</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        气候变化、生物多样性丧失等环境问题对人类长期生存的威胁评估。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 气候系统建模</li>
+                        <li>• 生物多样性评估</li>
+                        <li>• 生态系统服务</li>
+                        <li>• 环境承载力</li>
+                    </ul>
+                </div>
+
+                <!-- Risk Assessment -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-risk w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">风险识别</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        系统性地识别和评估可能对人类文明造成重大影响的各种风险。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 生存风险分类</li>
+                        <li>• 概率评估方法</li>
+                        <li>• 影响程度量化</li>
+                        <li>• 风险缓解策略</li>
+                    </ul>
+                </div>
+
+                <!-- Policy -->
+                <div class="concept-card rounded-2xl p-8">
+                    <div class="category-policy w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">政策制定</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        基于长期主义原则的政策建议，包括全球治理机制和制度设计。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 全球治理机制</li>
+                        <li>• 制度设计原则</li>
+                        <li>• 政策协调机制</li>
+                        <li>• 国际合作框架</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Knowledge Graph -->
+    <section id="knowledge-graph" class="py-20 bg-gradient-to-br from-slate-900/50 to-blue-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">知识图谱</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    探索长期主义相关概念之间的复杂关联关系
+                </p>
+            </div>
+            
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button onclick="filterGraph('all')" class="filter-btn bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        全部
+                    </button>
+                    <button onclick="filterGraph('philosophy')" class="filter-btn bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        哲学
+                    </button>
+                    <button onclick="filterGraph('methodology')" class="filter-btn bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        方法论
+                    </button>
+                    <button onclick="filterGraph('technology')" class="filter-btn bg-green-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        技术
+                    </button>
+                    <button onclick="filterGraph('environment')" class="filter-btn bg-red-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        环境
+                    </button>
+                    <button onclick="filterGraph('risk')" class="filter-btn bg-indigo-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        风险
+                    </button>
+                    <button onclick="filterGraph('policy')" class="filter-btn bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                        政策
+                    </button>
+                </div>
+                
+                <div id="graph-container" class="w-full h-96 relative">
+                    <!-- 知识图谱将在这里渲染 -->
+                    <svg id="knowledge-svg" class="w-full h-full"></svg>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <p class="text-white/70 text-sm">
+                        点击节点查看详细信息，拖拽调整布局
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Concept Details Modal -->
+    <div id="concept-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-6">
+                <h3 id="modal-title" class="text-2xl font-bold text-white"></h3>
+                <button onclick="closeModal()" class="text-white/60 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modal-content" class="text-white/80 leading-relaxed">
+                <!-- 内容将动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 backdrop-blur-sm py-12 border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">长</span>
+                </div>
+                <span class="text-white font-bold text-lg">长期主义</span>
+            </div>
+            <p class="text-white/60 text-sm">
+                © 2024 长期主义研究中心. 致力于推动长期思维，为子孙后代建设更美好的未来.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 知识图谱数据
+        const graphData = {
+            nodes: [
+                { id: 'longtermism', name: '长期主义', category: 'philosophy', x: 400, y: 300, description: '长期主义是一种伦理立场，认为我们应该同等地关心所有人的福祉，无论他们生活在何时何地。' },
+                { id: 'ethics', name: '伦理学', category: 'philosophy', x: 300, y: 200, description: '研究道德原则和价值观的哲学分支，为长期主义提供理论基础。' },
+                { id: 'utilitarianism', name: '功利主义', category: 'philosophy', x: 200, y: 250, description: '认为最道德的行为是最大化整体福祉的行为，是长期主义的重要理论基础。' },
+                { id: 'risk-assessment', name: '风险评估', category: 'methodology', x: 500, y: 200, description: '系统性地识别、分析和评估潜在风险的方法论。' },
+                { id: 'future-studies', name: '未来研究', category: 'methodology', x: 600, y: 300, description: '探索可能、可行和可欲的未来，为长期决策提供指导。' },
+                { id: 'scenario-planning', name: '情景规划', category: 'methodology', x: 550, y: 150, description: '通过构建多种可能的未来情景来制定robust策略的方法。' },
+                { id: 'ai-safety', name: 'AI安全', category: 'technology', x: 500, y: 400, description: '确保人工智能系统安全、可靠、与人类价值观对齐的研究领域。' },
+                { id: 'artificial-intelligence', name: '人工智能', category: 'technology', x: 650, y: 450, description: '模拟、延伸和扩展人类智能的技术，可能对未来产生深远影响。' },
+                { id: 'climate-change', name: '气候变化', category: 'environment', x: 300, y: 400, description: '全球气候系统的长期变化，对人类社会构成重大威胁。' },
+                { id: 'biodiversity', name: '生物多样性', category: 'environment', x: 200, y: 350, description: '地球上生命形式的多样性，对生态系统稳定性至关重要。' },
+                { id: 'existential-risk', name: '生存风险', category: 'risk', x: 150, y: 300, description: '可能导致人类灭绝或永久失去潜力的全球性风险。' },
+                { id: 'global-cooperation', name: '全球合作', category: 'policy', x: 400, y: 100, description: '跨国界的协调与合作，应对全球性挑战的必要机制。' },
+                { id: 'institutional-design', name: '制度设计', category: 'policy', x: 300, y: 50, description: '设计能够长期稳定运行并促进人类福祉的制度框架。' }
+            ],
+            links: [
+                { source: 'longtermism', target: 'ethics' },
+                { source: 'longtermism', target: 'risk-assessment' },
+                { source: 'longtermism', target: 'future-studies' },
+                { source: 'ethics', target: 'utilitarianism' },
+                { source: 'risk-assessment', target: 'existential-risk' },
+                { source: 'future-studies', target: 'scenario-planning' },
+                { source: 'future-studies', target: 'ai-safety' },
+                { source: 'future-studies', target: 'climate-change' },
+                { source: 'ai-safety', target: 'artificial-intelligence' },
+                { source: 'climate-change', target: 'biodiversity' },
+                { source: 'existential-risk', target: 'ai-safety' },
+                { source: 'existential-risk', target: 'climate-change' },
+                { source: 'ethics', target: 'global-cooperation' },
+                { source: 'global-cooperation', target: 'institutional-design' }
+            ]
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeKnowledgeGraph();
+            initializeAnimations();
+        });
+
+        // 初始化知识图谱
+        function initializeKnowledgeGraph() {
+            const svg = d3.select('#knowledge-svg');
+            const width = svg.node().getBoundingClientRect().width;
+            const height = 384; // h-96
+
+            // 创建力导向图
+            const simulation = d3.forceSimulation(graphData.nodes)
+                .force('link', d3.forceLink(graphData.links).id(d => d.id).distance(100))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2));
+
+            // 绘制连接线
+            const link = svg.append('g')
+                .selectAll('line')
+                .data(graphData.links)
+                .enter().append('line')
+                .attr('class', 'connection-line');
+
+            // 绘制节点
+            const node = svg.append('g')
+                .selectAll('g')
+                .data(graphData.nodes)
+                .enter().append('g')
+                .attr('class', 'knowledge-node')
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+
+            // 节点圆圈
+            node.append('circle')
+                .attr('r', 20)
+                .attr('fill', d => getCategoryColor(d.category))
+                .attr('stroke', '#ffffff')
+                .attr('stroke-width', 2);
+
+            // 节点文字
+            node.append('text')
+                .text(d => d.name)
+                .attr('text-anchor', 'middle')
+                .attr('dy', '.35em')
+                .attr('fill', 'white')
+                .attr('font-size', '10px')
+                .attr('font-weight', 'bold');
+
+            // 节点点击事件
+            node.on('click', function(event, d) {
+                showConceptDetails(d);
+            });
+
+            // 更新位置
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                node
+                    .attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+
+            // 拖拽函数
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }
+
+        // 获取类别颜色
+        function getCategoryColor(category) {
+            const colors = {
+                'philosophy': '#7c3aed',
+                'methodology': '#2563eb',
+                'technology': '#059669',
+                'environment': '#dc2626',
+                'risk': '#3730a3',
+                'policy': '#f59e0b'
+            };
+            return colors[category] || '#6b7280';
+        }
+
+        // 过滤图谱
+        function filterGraph(category) {
+            // 更新按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500');
+                btn.classList.add('bg-gray-500');
+            });
+            event.target.classList.remove('bg-gray-500');
+            event.target.classList.add('bg-amber-500');
+
+            // 这里可以添加过滤逻辑
+            console.log('Filtering graph by category:', category);
+        }
+
+        // 显示概念详情
+        function showConceptDetails(concept) {
+            document.getElementById('modal-title').textContent = concept.name;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="mb-4">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white" 
+                          style="background-color: ${getCategoryColor(concept.category)}">
+                        ${getCategoryName(concept.category)}
+                    </span>
+                </div>
+                <p class="mb-6">${concept.description}</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white/5 rounded-lg p-4">
+                        <h4 class="font-semibold text-white mb-2">相关概念</h4>
+                        <p class="text-sm text-white/70">与该概念相关的其他重要概念</p>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4">
+                        <h4 class="font-semibold text-white mb-2">应用领域</h4>
+                        <p class="text-sm text-white/70">该概念在实际中的应用</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('concept-modal').classList.remove('hidden');
+            document.getElementById('concept-modal').classList.add('flex');
+        }
+
+        // 获取类别名称
+        function getCategoryName(category) {
+            const names = {
+                'philosophy': '哲学',
+                'methodology': '方法论',
+                'technology': '技术',
+                'environment': '环境',
+                'risk': '风险',
+                'policy': '政策'
+            };
+            return names[category] || '其他';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('concept-modal').classList.add('hidden');
+            document.getElementById('concept-modal').classList.remove('flex');
+        }
+
+        // 滚动到指定部分
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 页面导航
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // 初始化动画
+        function initializeAnimations() {
+            // 卡片依次出现动画
+            anime({
+                targets: '.concept-card',
+                opacity: [0, 1],
+                translateY: [40, 0],
+                duration: 800,
+                easing: 'easeOutExpo',
+                delay: anime.stagger(100)
+            });
+        }
+    </script>
+</body>
+</html>

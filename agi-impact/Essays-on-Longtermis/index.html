@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>长期主义：为子孙后代思考</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Crimson+Text:wght@400;600&amp;display=swap" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Han+Sans:wght@400;700;900&family=Source+Han+Serif:wght@400;500;700&display=swap');
+        
+        :root {
+            --deep-blue: #1e3a5f;
+            --warm-gray: #6b7280;
+            --ivory: #fefefe;
+            --amber: #f59e0b;
+            --stone-green: #374151;
+            --mist-blue: #e0f2fe;
+        }
+        
+        body {
+            font-family: 'Source Han Serif', 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #2563eb 50%, var(--stone-green) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background: url('hero-longtermism.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.8) 0%, rgba(37, 99, 235, 0.6) 50%, rgba(55, 65, 81, 0.7) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--amber) 0%, #fbbf24 50%, var(--ivory) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .particle-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: radial-gradient(circle at 20% 80%, rgba(245, 158, 11, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(30, 58, 95, 0.3) 0%, transparent 50%);
+        }
+        
+        .timeline-preview {
+            background: linear-gradient(90deg, var(--deep-blue) 0%, var(--amber) 50%, var(--stone-green) 100%);
+            height: 4px;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timeline-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+<script src="https://statics.moonshot.cn/sdk/preview-widgets.min.js" defer=""></script></head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">长</span>
+                    </div>
+                    <span class="text-white font-bold text-lg">长期主义</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-amber-300">首页</a>
+                    <a href="concepts.html" class="nav-link text-white hover:text-amber-300">核心概念</a>
+                    <a href="timeline.html" class="nav-link text-white hover:text-amber-300">时间线</a>
+                    <a href="risks.html" class="nav-link text-white hover:text-amber-300">风险评估</a>
+                    <a href="actions.html" class="nav-link text-white hover:text-amber-300">行动指南</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center relative">
+        <div class="particle-bg"></div>
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <div class="floating-animation">
+                <h1 class="text-5xl md:text-7xl font-black mb-6 text-gradient leading-tight">
+                    为子孙后代思考
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed font-light">
+                    探索长期主义的深刻理念，理解我们今天的行为如何塑造未来数百年的世界
+                </p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button onclick="scrollToSection(&#39;concepts&#39;)" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    开始探索
+                </button>
+                <button onclick="scrollToSection(&#39;preview&#39;)" class="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg font-semibold transition-all duration-300">
+                    了解更多
+                </button>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60">
+            <div class="animate-bounce">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts Preview -->
+    <section id="concepts" class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">核心理念</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    长期主义不仅是一种思考方式，更是对人类责任的深刻认识
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Concept 1 -->
+                <div class="card-hover bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">时间尺度</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        从短期利益转向长期影响，考虑决策在未来数十年、数百年甚至数千年的后果。
+                    </p>
+                    <div class="timeline-preview mb-4"></div>
+                    <button onclick="navigateTo(&#39;concepts.html&#39;)" class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        深入了解 →
+                    </button>
+                </div>
+
+                <!-- Concept 2 -->
+                <div class="card-hover bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">全球视角</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        超越国界和文化差异，从整个人类文明的角度思考问题和制定解决方案。
+                    </p>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                    </div>
+                    <button onclick="navigateTo(&#39;concepts.html&#39;)" class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        深入了解 →
+                    </button>
+                </div>
+
+                <!-- Concept 3 -->
+                <div class="card-hover bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">系统性思维</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        识别和理解复杂系统中的相互关联，预见潜在的连锁反应和系统性风险。
+                    </p>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="h-2 bg-amber-400 rounded"></div>
+                        <div class="h-2 bg-blue-400 rounded"></div>
+                        <div class="h-2 bg-green-400 rounded"></div>
+                    </div>
+                    <button onclick="navigateTo(&#39;concepts.html&#39;)" class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        深入了解 →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Preview -->
+    <section id="preview" class="py-20 bg-gradient-to-br from-slate-900/50 to-blue-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">交互式探索</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    通过可视化工具深入理解长期主义的各个维度
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Timeline Chart -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <h3 class="text-2xl font-bold text-white mb-6">人类发展时间线</h3>
+                    <div id="timeline-chart" class="h-64"></div>
+                    <p class="text-white/70 text-sm mt-4">
+                        探索从农业革命到未来太空文明的重大转折点
+                    </p>
+                </div>
+                
+                <!-- Risk Assessment -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <h3 class="text-2xl font-bold text-white mb-6">风险评估矩阵</h3>
+                    <div id="risk-chart" class="h-64"></div>
+                    <p class="text-white/70 text-sm mt-4">
+                        理解不同风险的概率和影响程度
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="text-center mt-16">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-white mb-4">准备好深入探索了吗？</h3>
+                    <p class="text-white/80 mb-6 leading-relaxed">
+                        通过我们的交互式工具，您可以更深入地理解长期主义的复杂性和重要性。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="navigateTo(&#39;timeline.html&#39;)" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                            探索时间线
+                        </button>
+                        <button onclick="navigateTo(&#39;risks.html&#39;)" class="border-2 border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                            风险评估
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 backdrop-blur-sm py-12 border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">长</span>
+                </div>
+                <span class="text-white font-bold text-lg">长期主义</span>
+            </div>
+            <p class="text-white/60 text-sm">
+                © 2024 长期主义研究中心. 致力于推动长期思维，为子孙后代建设更美好的未来.
+            </p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+
+</body></html>

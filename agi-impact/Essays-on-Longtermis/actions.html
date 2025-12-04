@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行动指南 - 长期主义</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Han+Sans:wght@400;700;900&family=Source+Han+Serif:wght@400;500;700&display=swap');
+        
+        :root {
+            --deep-blue: #1e3a5f;
+            --warm-gray: #6b7280;
+            --ivory: #fefefe;
+            --amber: #f59e0b;
+            --stone-green: #374151;
+            --mist-blue: #e0f2fe;
+        }
+        
+        body {
+            font-family: 'Source Han Serif', 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #2563eb 50%, var(--stone-green) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .actions-bg {
+            background: url('future-scenarios.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .actions-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(37, 99, 235, 0.7) 50%, rgba(55, 65, 81, 0.8) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--amber) 0%, #fbbf24 50%, var(--ivory) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .action-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .action-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .decision-simulator {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .decision-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .decision-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--amber);
+        }
+        
+        .decision-option.selected {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+        }
+        
+        .impact-indicator {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #10b981, #f59e0b, #ef4444);
+            position: relative;
+            margin: 8px 0;
+        }
+        
+        .impact-marker {
+            position: absolute;
+            top: -2px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid var(--amber);
+            transform: translateX(-50%);
+        }
+        
+        .time-horizon {
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 0;
+        }
+        
+        .time-horizon-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 0 4px;
+            border-radius: 8px;
+        }
+        
+        .time-horizon-item.active {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+        }
+        
+        .resource-link {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">长</span>
+                    </div>
+                    <span class="text-white font-bold text-lg">长期主义</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-amber-300">首页</a>
+                    <a href="concepts.html" class="nav-link text-white hover:text-amber-300">核心概念</a>
+                    <a href="timeline.html" class="nav-link text-white hover:text-amber-300">时间线</a>
+                    <a href="risks.html" class="nav-link text-white hover:text-amber-300">风险评估</a>
+                    <a href="actions.html" class="nav-link text-amber-300">行动指南</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="actions-bg min-h-screen flex items-center justify-center relative pt-20">
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 text-gradient leading-tight">
+                行动指南
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed font-light">
+                将长期主义理念转化为具体行动，为未来做出明智决策
+            </p>
+            <button onclick="scrollToSection('decision-simulator')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                开始模拟
+            </button>
+        </div>
+    </section>
+
+    <!-- Decision Simulator -->
+    <section id="decision-simulator" class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">决策模拟器</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    探索不同决策对未来的影响，学习长期思维的方法
+                </p>
+            </div>
+            
+            <div class="decision-simulator">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-white mb-4">情景设定</h3>
+                    <p class="text-white/80 leading-relaxed">
+                        假设您是政策制定者，需要在以下政策选项中做出选择。每个决策都会产生短期、中期和长期的不同影响。
+                    </p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Decision Options -->
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">政策选项</h4>
+                        
+                        <div class="decision-option" onclick="selectDecision('renewable')">
+                            <div class="flex items-center mb-2">
+                                <div class="w-4 h-4 border-2 border-white rounded-full mr-3 flex items-center justify-center">
+                                    <div class="w-2 h-2 bg-amber-400 rounded-full hidden option-indicator"></div>
+                                </div>
+                                <h5 class="text-lg font-semibold text-white">大力发展可再生能源</h5>
+                            </div>
+                            <p class="text-white/70 text-sm mb-3">投资太阳能、风能等清洁能源，逐步淘汰化石燃料</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div class="text-center">
+                                    <div class="text-white/60">短期</div>
+                                    <div class="text-red-400">成本高</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">中期</div>
+                                    <div class="text-green-400">就业增加</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">长期</div>
+                                    <div class="text-green-400">气候稳定</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="decision-option" onclick="selectDecision('ai-regulation')">
+                            <div class="flex items-center mb-2">
+                                <div class="w-4 h-4 border-2 border-white rounded-full mr-3 flex items-center justify-center">
+                                    <div class="w-2 h-2 bg-amber-400 rounded-full hidden option-indicator"></div>
+                                </div>
+                                <h5 class="text-lg font-semibold text-white">严格监管AI发展</h5>
+                            </div>
+                            <p class="text-white/70 text-sm mb-3">建立严格的AI安全和伦理标准，限制高风险AI应用</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div class="text-center">
+                                    <div class="text-white/60">短期</div>
+                                    <div class="text-orange-400">创新放缓</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">中期</div>
+                                    <div class="text-green-400">安全可靠</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">长期</div>
+                                    <div class="text-green-400">人机和谐</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="decision-option" onclick="selectDecision('space-investment')">
+                            <div class="flex items-center mb-2">
+                                <div class="w-4 h-4 border-2 border-white rounded-full mr-3 flex items-center justify-center">
+                                    <div class="w-2 h-2 bg-amber-400 rounded-full hidden option-indicator"></div>
+                                </div>
+                                <h5 class="text-lg font-semibold text-white">加大太空探索投入</h5>
+                            </div>
+                            <p class="text-white/70 text-sm mb-3">投资太空技术，建立月球和火星基地</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div class="text-center">
+                                    <div class="text-white/60">短期</div>
+                                    <div class="text-red-400">巨额投资</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">中期</div>
+                                    <div class="text-green-400">技术突破</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-white/60">长期</div>
+                                    <div class="text-green-400">多行星文明</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Impact Visualization -->
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">影响预测</h4>
+                        
+                        <div id="impact-chart" class="h-64 mb-6">
+                            <!-- 影响图表将在这里渲染 -->
+                        </div>
+                        
+                        <div class="time-horizon">
+                            <div class="time-horizon-item active" onclick="showTimeHorizon('short')">
+                                <div class="text-white/60 text-sm">短期</div>
+                                <div class="text-white font-semibold">1-5年</div>
+                            </div>
+                            <div class="time-horizon-item" onclick="showTimeHorizon('medium')">
+                                <div class="text-white/60 text-sm">中期</div>
+                                <div class="text-white font-semibold">5-20年</div>
+                            </div>
+                            <div class="time-horizon-item" onclick="showTimeHorizon('long')">
+                                <div class="text-white/60 text-sm">长期</div>
+                                <div class="text-white font-semibold">20-100年</div>
+                            </div>
+                        </div>
+                        
+                        <div id="impact-details" class="bg-white/5 rounded-lg p-4">
+                            <p class="text-white/80 text-sm">选择一个政策选项来查看详细影响分析</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Framework -->
+    <section class="py-20 bg-gradient-to-br from-slate-900/50 to-blue-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">行动框架</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    个人、组织和政府可以采取的具体行动
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Individual Actions -->
+                <div class="action-card rounded-2xl p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">个人行动</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        每个人都可以通过日常选择和行动为长期发展做出贡献。
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">学习长期思维方法</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">支持可持续发展</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">参与公共事务讨论</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">传播长期主义理念</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">为未来世代投资</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organizational Actions -->
+                <div class="action-card rounded-2xl p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">组织行动</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        企业、非营利组织等机构可以在其运营中融入长期主义原则。
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">制定长期战略</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">承担社会责任</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">投资可持续技术</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">建立治理机制</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">促进跨界合作</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Government Actions -->
+                <div class="action-card rounded-2xl p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">政府行动</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        政府在制定政策和制度时需要考虑长期影响，为未来世代负责。
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">建立长期规划机制</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">投资基础研究</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">制定风险防范政策</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">推动国际合作</span>
+                        </div>
+                        <div class="flex items-center text-white/80">
+                            <div class="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
+                            <span class="text-sm">保护民主制度</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources -->
+    <section class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">学习资源</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    深入了解长期主义的推荐资源和进一步阅读
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="resource-link">
+                    <h4 class="text-lg font-semibold text-white mb-2">📚 核心文献</h4>
+                    <p class="text-white/70 text-sm mb-3">长期主义的理论基础和发展历程</p>
+                    <ul class="text-white/60 text-sm space-y-1">
+                        <li>• 《论关怀远方的个体》- 彼得·辛格</li>
+                        <li>• 《长期主义》- 威廉·麦克阿斯基尔</li>
+                        <li>• 《脆弱的世界》- 托比·奥德</li>
+                        <li>• 《超级智能》- 尼克·博斯特罗姆</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-link">
+                    <h4 class="text-lg font-semibold text-white mb-2">🎓 研究机构</h4>
+                    <p class="text-white/70 text-sm mb-3">专注于长期主义和未来研究的组织</p>
+                    <ul class="text-white/60 text-sm space-y-1">
+                        <li>• 未来人类研究所 (FHI)</li>
+                        <li>• 机器智能研究所 (MIRI)</li>
+                        <li>• 全球优先研究所 (GPI)</li>
+                        <li>• 80,000 Hours</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-link">
+                    <h4 class="text-lg font-semibold text-white mb-2">💡 在线课程</h4>
+                    <p class="text-white/70 text-sm mb-3">系统学习长期主义相关知识和技能</p>
+                    <ul class="text-white/60 text-sm space-y-1">
+                        <li>• 有效利他主义导论</li>
+                        <li>• AI安全与对齐</li>
+                        <li>• 全球优先研究</li>
+                        <li>• 风险评估与决策</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-link">
+                    <h4 class="text-lg font-semibold text-white mb-2">🌐 社区平台</h4>
+                    <p class="text-white/70 text-sm mb-3">与志同道合者交流和合作</p>
+                    <ul class="text-white/60 text-sm space-y-1">
+                        <li>• LessWrong</li>
+                        <li>• 有效利他主义论坛</li>
+                        <li>• AI Alignment Forum</li>
+                        <li>• Future of Life Institute</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 backdrop-blur-sm py-12 border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">长</span>
+                </div>
+                <span class="text-white font-bold text-lg">长期主义</span>
+            </div>
+            <p class="text-white/60 text-sm">
+                © 2024 长期主义研究中心. 致力于推动长期思维，为子孙后代建设更美好的未来.
+            </p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // 决策数据
+        const decisionData = {
+            'renewable': {
+                title: '大力发展可再生能源',
+                impacts: {
+                    short: { environment: +2, economy: -1, society: 0, description: '初期投资巨大，能源成本上升，但环境污染减少' },
+                    medium: { environment: +3, economy: +2, society: +2, description: '技术成熟，成本下降，创造大量就业机会' },
+                    long: { environment: +4, economy: +3, society: +3, description: '实现能源独立，气候稳定，可持续发展' }
+                }
+            },
+            'ai-regulation': {
+                title: '严格监管AI发展',
+                impacts: {
+                    short: { environment: 0, economy: -1, society: -1, description: '创新速度放缓，合规成本增加，但安全性提升' },
+                    medium: { environment: +1, economy: 0, society: +2, description: '更安全可靠的AI系统，公众信任度提高' },
+                    long: { environment: +1, economy: +2, society: +4, description: 'AI与人类和谐共存，避免极端风险' }
+                }
+            },
+            'space-investment': {
+                title: '加大太空探索投入',
+                impacts: {
+                    short: { environment: -1, economy: -2, society: 0, description: '巨额资金投入，短期内经济负担重' },
+                    medium: { environment: +1, economy: +2, society: +2, description: '技术创新加速，新资源发现，太空产业发展' },
+                    long: { environment: +2, economy: +3, society: +4, description: '成为多行星物种，降低生存风险' }
+                }
+            }
+        };
+
+        let selectedDecision = null;
+        let currentTimeHorizon = 'short';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDecisionSimulator();
+            initializeAnimations();
+        });
+
+        // 初始化决策模拟器
+        function initializeDecisionSimulator() {
+            // 初始化影响图表
+            const impactChart = echarts.init(document.getElementById('impact-chart'));
+            const impactOption = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#f59e0b',
+                    textStyle: { color: '#ffffff' }
+                },
+                legend: {
+                    data: ['环境', '经济', '社会'],
+                    textStyle: { color: '#ffffff' }
+                },
+                radar: {
+                    indicator: [
+                        { name: '环境', max: 5 },
+                        { name: '经济', max: 5 },
+                        { name: '社会', max: 5 }
+                    ],
+                    axisName: {
+                        color: '#ffffff'
+                    },
+                    splitArea: {
+                        areaStyle: {
+                            color: ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [0, 0, 0],
+                            name: '影响评估',
+                            itemStyle: { color: '#f59e0b' },
+                            areaStyle: { color: 'rgba(245, 158, 11, 0.3)' }
+                        }
+                    ]
+                }]
+            };
+            impactChart.setOption(impactOption);
+
+            // 响应式调整
+            window.addEventListener('resize', function() {
+                impactChart.resize();
+            });
+        }
+
+        // 选择决策
+        function selectDecision(decisionId) {
+            selectedDecision = decisionId;
+            
+            // 更新UI状态
+            document.querySelectorAll('.decision-option').forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector('.option-indicator').classList.add('hidden');
+            });
+            
+            const selectedOption = document.querySelector(`[onclick="selectDecision('${decisionId}')"]`);
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('.option-indicator').classList.remove('hidden');
+            
+            // 更新影响图表
+            updateImpactChart();
+            updateImpactDetails();
+        }
+
+        // 显示时间范围
+        function showTimeHorizon(horizon) {
+            currentTimeHorizon = horizon;
+            
+            // 更新UI状态
+            document.querySelectorAll('.time-horizon-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新影响详情
+            updateImpactDetails();
+        }
+
+        // 更新影响图表
+        function updateImpactChart() {
+            if (!selectedDecision) return;
+            
+            const data = decisionData[selectedDecision];
+            const impact = data.impacts[currentTimeHorizon];
+            
+            const chart = echarts.getInstanceByDom(document.getElementById('impact-chart'));
+            chart.setOption({
+                series: [{
+                    data: [{
+                        value: [impact.environment + 3, impact.economy + 3, impact.society + 3],
+                        name: '影响评估',
+                        itemStyle: { color: '#f59e0b' },
+                        areaStyle: { color: 'rgba(245, 158, 11, 0.3)' }
+                    }]
+                }]
+            });
+        }
+
+        // 更新影响详情
+        function updateImpactDetails() {
+            if (!selectedDecision) return;
+            
+            const data = decisionData[selectedDecision];
+            const impact = data.impacts[currentTimeHorizon];
+            const timeNames = {
+                short: '短期',
+                medium: '中期',
+                long: '长期'
+            };
+            
+            const detailsElement = document.getElementById('impact-details');
+            detailsElement.innerHTML = `
+                <h5 class="font-semibold text-white mb-3">${data.title} - ${timeNames[currentTimeHorizon]}影响</h5>
+                <p class="text-white/80 text-sm mb-4">${impact.description}</p>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <div class="text-white/60 text-xs mb-1">环境影响</div>
+                        <div class="impact-indicator">
+                            <div class="impact-marker" style="left: ${(impact.environment + 4) * 12.5}%;"></div>
+                        </div>
+                        <div class="text-white text-sm font-semibold">${impact.environment > 0 ? '+' : ''}${impact.environment}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white/60 text-xs mb-1">经济影响</div>
+                        <div class="impact-indicator">
+                            <div class="impact-marker" style="left: ${(impact.economy + 4) * 12.5}%;"></div>
+                        </div>
+                        <div class="text-white text-sm font-semibold">${impact.economy > 0 ? '+' : ''}${impact.economy}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white/60 text-xs mb-1">社会影响</div>
+                        <div class="impact-indicator">
+                            <div class="impact-marker" style="left: ${(impact.society + 4) * 12.5}%;"></div>
+                        </div>
+                        <div class="text-white text-sm font-semibold">${impact.society > 0 ? '+' : ''}${impact.society}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 滚动到指定部分
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 初始化动画
+        function initializeAnimations() {
+            // 行动卡片依次出现动画
+            anime({
+                targets: '.action-card',
+                opacity: [0, 1],
+                translateY: [40, 0],
+                duration: 800,
+                easing: 'easeOutExpo',
+                delay: anime.stagger(100)
+            });
+
+            // 资源链接动画
+            anime({
+                targets: '.resource-link',
+                opacity: [0, 1],
+                translateX: [-20, 0],
+                duration: 600,
+                easing: 'easeOutExpo',
+                delay: anime.stagger(50, {start: 1000})
+            });
+        }
+    </script>
+</body>
+</html>

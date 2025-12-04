@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长远主义论文集解读</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>《长远主义论文集》中文解读</h1>
+        <p>Present Action for the Distant Future</p>
+    </header>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="part1.html">第一部分</a>
+        <a href="part2.html">第二部分</a>
+        <a href="part3.html">第三部分</a>
+        <a href="part4.html">第四部分</a>
+    </nav>
+    <div class="container">
+        <h2>引言：为什么关心遥远未来？</h2>
+        <p>在历史的长河中，我们个人的生命只是短暂的一瞬，然而我们的行为可能在未来的数千年乃至数百万年间持续发挥影响【10568911847981†L552-L558】。</p>
+        <p>“长远主义”这一概念认为，数千乃至数十亿年以后的遥远未来对于今天的决策具有重要意义【10568911847981†L559-L563】。它包含几个要素：远期痛苦和幸福的重要性不因时间而折扣；我们可以通过当前行动实质性影响未来的幸福与受益主体数量；我们拥有足够的知识评估这些影响；因此我们有强烈的道德理由采取能够积极引导远期未来的行为【10568911847981†L565-L583】。</p>
+        <p>许多学者强调新兴技术引发的灭绝风险，但减轻这些风险只是改善远期未来的众多方法之一【10568911847981†L584-L607】。</p>
+        <p>作者们还强调需要区分弱长远主义和强长远主义，以及价值论和义务论的不同方向：弱长远主义只是指出远期未来的重要性；强长远主义则认为远期未来应占据我们的核心道德优先；价值论关注什么行为能带来更好的结果，而义务论关注在道义上我们应当做什么【10568911847981†L659-L678】。</p>
+
+        <div class="figure">
+            <img src="decorative_future.png" alt="未来城市插画" style="max-width:100%; height:auto; border-radius:4px;">
+            <p style="font-size:0.9em; color:#555;">图：艺术化的未来城市，象征对远期未来的想象</p>
+        </div>
+
+        <h3>四部分概览</h3>
+        <p>本书共分为四个部分：第一部分评估长远主义的立论，第二部分探讨预测和评估远期未来的挑战，第三部分讨论伦理优先事项，第四部分则关注制度与社会。下面的柱状图展示了各部分包含的章节数量。</p>
+        <canvas id="partChart" width="400" height="200"></canvas>
+
+        <h3>互动时间轴：快速了解各部分</h3>
+        <p>移动滑块，可查看四部分的中文概述：</p>
+        <div class="timeline">
+            <input type="range" id="timelineSlider" min="0" max="3" value="0" step="1">
+            <div id="timelineDescription"></div>
+        </div>
+
+        <div class="footnotes">
+            <h4>引用</h4>
+            <ol>
+                <li id="fn1">引言中关于个人生命短暂而行动影响持久的描述摘自引言的原文【10568911847981†L552-L558】。</li>
+                <li id="fn2">对长远主义概念的解释摘自引言【10568911847981†L559-L563】。</li>
+                <li id="fn3">对长远主义四个核心要素的总结根据引言中的论述【10568911847981†L565-L583】。</li>
+                <li id="fn4">关于存在风险与长远主义范围的讨论摘自引言【10568911847981†L584-L607】。</li>
+                <li id="fn5">关于弱/强长远主义以及价值论与义务论区分的解释根据引言中的论述【10568911847981†L659-L678】。</li>
+            </ol>
+        </div>
+    </div>
+    <footer>
+        <p>本网站由人工智能助手制作，基于《Essays on Longtermism》一书的开放获取版本。所有引用均标明原文出处。</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风险评估 - 长期主义</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Han+Sans:wght@400;700;900&family=Source+Han+Serif:wght@400;500;700&display=swap');
+        
+        :root {
+            --deep-blue: #1e3a5f;
+            --warm-gray: #6b7280;
+            --ivory: #fefefe;
+            --amber: #f59e0b;
+            --stone-green: #374151;
+            --mist-blue: #e0f2fe;
+        }
+        
+        body {
+            font-family: 'Source Han Serif', 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #2563eb 50%, var(--stone-green) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .risk-bg {
+            background: url('risk-network.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .risk-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(37, 99, 235, 0.7) 50%, rgba(55, 65, 81, 0.8) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--amber) 0%, #fbbf24 50%, var(--ivory) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .risk-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .risk-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .risk-level-high { border-left: 4px solid #ef4444; }
+        .risk-level-medium { border-left: 4px solid #f59e0b; }
+        .risk-level-low { border-left: 4px solid #10b981; }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .category-environment { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .category-technology { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .category-political { background: linear-gradient(135deg, #3730a3, #6366f1); }
+        .category-health { background: linear-gradient(135deg, #be185d, #ec4899); }
+        .category-economic { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+        .category-social { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        
+        .risk-matrix-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .mitigation-strategy {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        
+        .probability-indicator {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #10b981, #f59e0b, #ef4444);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .probability-marker {
+            position: absolute;
+            top: -2px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid var(--amber);
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">长</span>
+                    </div>
+                    <span class="text-white font-bold text-lg">长期主义</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-amber-300">首页</a>
+                    <a href="concepts.html" class="nav-link text-white hover:text-amber-300">核心概念</a>
+                    <a href="timeline.html" class="nav-link text-white hover:text-amber-300">时间线</a>
+                    <a href="risks.html" class="nav-link text-amber-300">风险评估</a>
+                    <a href="actions.html" class="nav-link text-white hover:text-amber-300">行动指南</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="risk-bg min-h-screen flex items-center justify-center relative pt-20">
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 text-gradient leading-tight">
+                风险评估
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed font-light">
+                系统性识别和评估威胁人类长期发展的各类风险
+            </p>
+            <button onclick="scrollToSection('risk-matrix')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                开始评估
+            </button>
+        </div>
+    </section>
+
+    <!-- Risk Matrix -->
+    <section id="risk-matrix" class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">风险评估矩阵</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    基于发生概率和影响程度的风险分类评估
+                </p>
+            </div>
+            
+            <div class="risk-matrix-container mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-white">风险分布图</h3>
+                    <div class="flex space-x-4">
+                        <button onclick="filterRisks('all')" class="risk-filter-btn bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold">全部</button>
+                        <button onclick="filterRisks('high-impact')" class="risk-filter-btn bg-red-500 text-white px-4 py-2 rounded-lg font-semibold">高影响</button>
+                        <button onclick="filterRisks('high-probability')" class="risk-filter-btn bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold">高概率</button>
+                    </div>
+                </div>
+                <div id="risk-matrix-chart" class="h-96"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="risk-matrix-container">
+                    <h3 class="text-xl font-bold text-white mb-4">风险统计</h3>
+                    <div id="risk-stats-chart" class="h-64"></div>
+                </div>
+                
+                <div class="risk-matrix-container">
+                    <h3 class="text-xl font-bold text-white mb-4">时间趋势</h3>
+                    <div id="risk-trend-chart" class="h-64"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Risk Categories -->
+    <section class="py-20 bg-gradient-to-br from-slate-900/50 to-blue-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">风险分类</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    详细分析不同类型的长期风险
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Environmental Risks -->
+                <div class="risk-card risk-level-high rounded-2xl p-8" onclick="showRiskDetails('climate')">
+                    <div class="category-environment w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">环境风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        气候变化、生物多样性丧失等环境问题对人类长期生存的威胁。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-red-400">极高</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- Technology Risks -->
+                <div class="risk-card risk-level-high rounded-2xl p-8" onclick="showRiskDetails('ai')">
+                    <div class="category-technology w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">技术风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        人工智能、生物技术等新兴技术可能带来的不可预见后果。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>60%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 60%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-red-400">极高</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- Political Risks -->
+                <div class="risk-card risk-level-medium rounded-2xl p-8" onclick="showRiskDetails('nuclear')">
+                    <div class="category-political w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">政治风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        核战争、国际冲突、治理失败等政治因素导致的系统性风险。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-red-400">极高</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- Health Risks -->
+                <div class="risk-card risk-level-medium rounded-2xl p-8" onclick="showRiskDetails('pandemic')">
+                    <div class="category-health w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">健康风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        新型传染病、抗生素耐药性等公共卫生威胁。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>70%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 70%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-orange-400">中等</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- Economic Risks -->
+                <div class="risk-card risk-level-low rounded-2xl p-8" onclick="showRiskDetails('economic')">
+                    <div class="category-economic w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">经济风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        全球经济危机、金融体系崩溃等经济系统性风险。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-orange-400">中等</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- Social Risks -->
+                <div class="risk-card risk-level-low rounded-2xl p-8" onclick="showRiskDetails('social')">
+                    <div class="category-social w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">社会风险</h3>
+                    <p class="text-white/80 leading-relaxed mb-4">
+                        社会不平等、文化冲突、制度崩溃等社会结构性风险。
+                    </p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-white/70 mb-2">
+                            <span>发生概率</span>
+                            <span>55%</span>
+                        </div>
+                        <div class="probability-indicator">
+                            <div class="probability-marker" style="left: 55%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm text-white/70 mb-4">
+                        <span>影响程度</span>
+                        <span class="text-orange-400">中等</span>
+                    </div>
+                    <button class="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                        查看详情 →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mitigation Strategies -->
+    <section class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">缓解策略</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    基于长期主义原则的风险缓解和应对策略
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Prevention -->
+                <div class="risk-card rounded-2xl p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">预防策略</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        通过前瞻性规划和制度建设，预防风险的发生。
+                    </p>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">国际协调机制</h4>
+                        <p class="text-white/70 text-sm">建立全球性的风险监测和协调机制，促进信息共享和联合行动。</p>
+                    </div>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">技术安全标准</h4>
+                        <p class="text-white/70 text-sm">制定严格的技术安全标准和伦理规范，确保新技术的安全发展。</p>
+                    </div>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">早期预警系统</h4>
+                        <p class="text-white/70 text-sm">建立完善的早期预警系统，及时发现和识别潜在风险。</p>
+                    </div>
+                </div>
+
+                <!-- Response -->
+                <div class="risk-card rounded-2xl p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">应对策略</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        建立快速响应机制，在风险发生时能够有效应对。
+                    </p>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">应急响应体系</h4>
+                        <p class="text-white/70 text-sm">建立快速、有效的应急响应体系，确保在危机时能够迅速行动。</p>
+                    </div>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">资源储备机制</h4>
+                        <p class="text-white/70 text-sm">建立战略资源储备机制，确保在紧急情况下的基本需求。</p>
+                    </div>
+                    
+                    <div class="mitigation-strategy">
+                        <h4 class="font-semibold text-white mb-2">恢复重建计划</h4>
+                        <p class="text-white/70 text-sm">制定详细的恢复重建计划，帮助社会尽快恢复正常运转。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Risk Details Modal -->
+    <div id="risk-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-6">
+                <h3 id="risk-title" class="text-2xl font-bold text-white"></h3>
+                <button onclick="closeRiskModal()" class="text-white/60 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="risk-content" class="text-white/80 leading-relaxed">
+                <!-- 内容将动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 backdrop-blur-sm py-12 border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">长</span>
+                </div>
+                <span class="text-white font-bold text-lg">长期主义</span>
+            </div>
+            <p class="text-white/60 text-sm">
+                © 2024 长期主义研究中心. 致力于推动长期思维，为子孙后代建设更美好的未来.
+            </p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // 风险详情数据
+        const riskDetails = {
+            'climate': {
+                title: '气候变化风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险描述</h4>
+                        <p class="mb-4">气候变化是当前人类面临的最严重的环境风险之一。全球变暖导致极端天气事件频发、海平面上升、生态系统崩溃，对人类社会构成生存威胁。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">主要影响</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>极端天气事件增加（热浪、干旱、洪水）</li>
+                            <li>农业生产能力下降</li>
+                            <li>水资源短缺</li>
+                            <li>海平面上升威胁沿海地区</li>
+                            <li>生物多样性丧失</li>
+                            <li>气候难民增加</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">时间框架</h4>
+                        <p class="mb-4">气候变化是一个渐进过程，但其影响将在未来几十年内显著加剧。如果不采取紧急行动，2100年前全球温升可能超过2°C，带来灾难性后果。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">缓解措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>大幅减少温室气体排放</li>
+                            <li>发展可再生能源</li>
+                            <li>提高能源效率</li>
+                            <li>保护和恢复森林</li>
+                            <li>发展碳捕获技术</li>
+                            <li>适应气候变化的基础设施建设</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期主义视角</h4>
+                        <p>从长期主义角度看，气候变化的影响将持续数百年甚至数千年。我们今天的行为将决定未来几代人的生存环境，因此必须采取果断行动。</p>
+                    </div>
+                `
+            },
+            'ai': {
+                title: '人工智能风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险类型</h4>
+                        <p class="mb-4">AI风险包括多个层面：从当前的算法偏见、隐私侵犯，到未来的通用人工智能(AGI)可能带来的生存风险。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">短期风险</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>算法偏见和歧视</li>
+                            <li>隐私和数据安全</li>
+                            <li>就业替代和社会不平等</li>
+                            <li>信息操纵和虚假内容</li>
+                            <li>自主武器系统</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期风险</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>超级智能的出现</li>
+                            <li>目标对齐问题</li>
+                            <li>人类失去对AI系统的控制</li>
+                            <li>价值观锁定风险</li>
+                            <li>存在性风险</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">预防措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>AI安全研究投入</li>
+                            <li>技术标准和伦理规范</li>
+                            <li>国际合作治理机制</li>
+                            <li>透明度和可解释性要求</li>
+                            <li>渐进式发展策略</li>
+                            <li>人类价值观对齐研究</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">时间表现</h4>
+                        <p class="mb-4">短期风险已经显现，而AGI可能在几十年内实现。我们需要在享受AI带来好处的同时，为可能的风险做好准备。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">治理挑战</h4>
+                        <p>AI发展具有全球性特征，需要国际协调来制定统一标准。同时要在促进创新和确保安全之间找到平衡。</p>
+                    </div>
+                `
+            },
+            'nuclear': {
+                title: '核战争风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险现状</h4>
+                        <p class="mb-4">尽管冷战结束，核战争风险依然存在。全球仍有数千枚核武器，地缘政治紧张局势可能触发核冲突。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">触发因素</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>地缘政治冲突升级</li>
+                            <li>误判和意外发射</li>
+                            <li>恐怖主义组织获取核武器</li>
+                            <li>核扩散到不稳定国家</li>
+                            <li>技术故障或系统错误</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">后果影响</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>直接的人员伤亡</li>
+                            <li>长期的放射性污染</li>
+                            <li>核冬天效应</li>
+                            <li>全球粮食生产崩溃</li>
+                            <li>现代文明终结</li>
+                            <li>人类生存威胁</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">预防措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>核裁军和军控协议</li>
+                            <li>危机沟通机制</li>
+                            <li>核材料安全管控</li>
+                            <li>不扩散条约执行</li>
+                            <li>外交谈判和对话</li>
+                            <li>国际监督机制</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期主义考量</h4>
+                        <p class="mb-4">核战争的影响可能持续数百年，甚至威胁人类文明的延续。从长期主义角度看，避免核战争是当务之急。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">未来展望</h4>
+                        <p>随着更多国家获得核能力，风险可能增加。需要建立更有效的国际机制来管理和减少核威胁。</p>
+                    </div>
+                `
+            },
+            'pandemic': {
+                title: '疫情风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险特征</h4>
+                        <p class="mb-4">新型传染病的出现和传播是人类面临的持续性威胁。全球化、气候变化、生态破坏等因素增加了疫情风险。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">风险因素</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>病毒变异和跨物种传播</li>
+                            <li>全球化加速传播</li>
+                            <li>抗生素耐药性</li>
+                            <li>生物恐怖主义</li>
+                            <li>实验室意外泄漏</li>
+                            <li>公共卫生系统薄弱</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">COVID-19教训</h4>
+                        <p class="mb-4">新冠疫情揭示了全球公共卫生系统的脆弱性，也展示了科学合作和快速响应的重要性。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">预防措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>全球疾病监测网络</li>
+                            <li>疫苗研发平台建设</li>
+                            <li>公共卫生基础设施投资</li>
+                            <li>国际合作机制</li>
+                            <li>个人防护意识提升</li>
+                            <li>生物安全监管</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期准备</h4>
+                        <p class="mb-4">需要建立长期的公共卫生应急体系，包括物资储备、人员培训、技术研发等。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">未来威胁</h4>
+                        <p>未来可能出现更致命的病原体，我们需要在科学、技术、政策等多个层面做好准备。</p>
+                    </div>
+                `
+            },
+            'economic': {
+                title: '经济危机风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险类型</h4>
+                        <p class="mb-4">全球经济危机可能由多种因素引发，包括金融危机、债务危机、供应链中断、贸易战等。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">触发因素</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>金融系统脆弱性</li>
+                            <li>地缘政治冲突</li>
+                            <li>自然灾害和疫情</li>
+                            <li>技术颠覆</li>
+                            <li>资源短缺</li>
+                            <li>信任危机</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">系统性风险</h4>
+                        <p class="mb-4">现代经济的高度 interconnected 特征意味着局部危机可能快速蔓延，形成系统性风险。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">预防措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>金融监管改革</li>
+                            <li>经济多元化</li>
+                            <li>供应链韧性建设</li>
+                            <li>国际合作机制</li>
+                            <li>社会保障体系</li>
+                            <li>创新和生产力提升</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期影响</h4>
+                        <p class="mb-4">经济危机不仅影响当代人，还可能影响几代人的发展机会和生活质量。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">未来趋势</h4>
+                        <p>数字货币、自动化、气候变化等因素可能改变经济危机的特征，需要持续的政策创新。</p>
+                    </div>
+                `
+            },
+            'social': {
+                title: '社会动荡风险',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">风险来源</h4>
+                        <p class="mb-4">社会动荡可能源于经济不平等、政治腐败、文化冲突、技术失业等多种因素的累积效应。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">表现形式</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>大规模抗议活动</li>
+                            <li>政治极端主义</li>
+                            <li>社会分裂和对立</li>
+                            <li>制度崩溃</li>
+                            <li>暴力冲突</li>
+                            <li>治理失败</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">深层原因</h4>
+                        <p class="mb-4">社会动荡往往是长期积累问题的爆发，包括机会不平等、制度失效、信任缺失等。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">预防措施</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>促进社会公平</li>
+                            <li>加强对话机制</li>
+                            <li>改善治理质量</li>
+                            <li>教育投资</li>
+                            <li>社会安全网</li>
+                            <li>文化包容政策</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">技术影响</h4>
+                        <p class="mb-4">社交媒体、AI等技术既可能加剧社会分裂，也可能促进对话和理解。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期稳定</h4>
+                        <p>建立能够适应变化、解决冲突、促进合作的制度和文化，是实现长期社会稳定的关键。</p>
+                    </div>
+                `
+            }
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeRiskCharts();
+            initializeAnimations();
+        });
+
+        // 初始化风险图表
+        function initializeRiskCharts() {
+            // 风险矩阵图
+            const riskMatrixChart = echarts.init(document.getElementById('risk-matrix-chart'));
+            const riskData = [
+                { name: '气候变化', probability: 85, impact: 95, category: 'environment', color: '#ef4444' },
+                { name: 'AI风险', probability: 60, impact: 90, category: 'technology', color: '#7c3aed' },
+                { name: '核战争', probability: 30, impact: 95, category: 'political', color: '#3730a3' },
+                { name: '全球疫情', probability: 70, impact: 60, category: 'health', color: '#be185d' },
+                { name: '经济危机', probability: 45, impact: 50, category: 'economic', color: '#0891b2' },
+                { name: '社会动荡', probability: 55, impact: 40, category: 'social', color: '#f59e0b' }
+            ];
+            
+            const riskMatrixOption = {
+                backgroundColor: 'transparent',
+                grid: {
+                    left: '15%',
+                    right: '10%',
+                    top: '15%',
+                    bottom: '15%'
+                },
+                xAxis: {
+                    type: 'value',
+                    name: '发生概率 (%)',
+                    min: 0,
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#ffffff40' } },
+                    axisLabel: { color: '#ffffff80' },
+                    splitLine: { lineStyle: { color: '#ffffff20' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '影响程度',
+                    min: 0,
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#ffffff40' } },
+                    axisLabel: { color: '#ffffff80' },
+                    splitLine: { lineStyle: { color: '#ffffff20' } }
+                },
+                series: [{
+                    type: 'scatter',
+                    data: riskData.map(item => [item.probability, item.impact]),
+                    symbolSize: function(data) {
+                        return Math.sqrt(data[1]) * 4;
+                    },
+                    itemStyle: {
+                        color: function(params) {
+                            return riskData[params.dataIndex].color;
+                        },
+                        opacity: 0.8
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: '#ffffff',
+                        fontSize: 10,
+                        formatter: function(params) {
+                            return riskData[params.dataIndex].name;
+                        }
+                    }
+                }],
+                tooltip: {
+                    formatter: function(params) {
+                        const data = riskData[params.dataIndex];
+                        return `${data.name}<br/>发生概率: ${data.probability}%<br/>影响程度: ${data.impact}%<br/>类别: ${getCategoryName(data.category)}`;
+                    },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#f59e0b',
+                    textStyle: { color: '#ffffff' }
+                }
+            };
+            riskMatrixChart.setOption(riskMatrixOption);
+
+            // 风险统计图
+            const riskStatsChart = echarts.init(document.getElementById('risk-stats-chart'));
+            const riskStatsOption = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#f59e0b',
+                    textStyle: { color: '#ffffff' }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    data: [
+                        { value: 2, name: '极高风险', itemStyle: { color: '#ef4444' } },
+                        { value: 2, name: '高风险', itemStyle: { color: '#f59e0b' } },
+                        { value: 2, name: '中等风险', itemStyle: { color: '#10b981' } }
+                    ],
+                    label: {
+                        color: '#ffffff',
+                        fontSize: 12
+                    },
+                    labelLine: {
+                        lineStyle: { color: '#ffffff60' }
+                    }
+                }]
+            };
+            riskStatsChart.setOption(riskStatsOption);
+
+            // 风险趋势图
+            const riskTrendChart = echarts.init(document.getElementById('risk-trend-chart'));
+            const riskTrendOption = {
+                backgroundColor: 'transparent',
+                grid: {
+                    left: '10%',
+                    right: '10%',
+                    top: '20%',
+                    bottom: '20%'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['2020', '2030', '2040', '2050', '2100'],
+                    axisLine: { lineStyle: { color: '#ffffff40' } },
+                    axisLabel: { color: '#ffffff80' }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '风险水平',
+                    axisLine: { lineStyle: { color: '#ffffff40' } },
+                    axisLabel: { color: '#ffffff80' },
+                    splitLine: { lineStyle: { color: '#ffffff20' } }
+                },
+                series: [{
+                    data: [30, 45, 60, 75, 85],
+                    type: 'line',
+                    smooth: true,
+                    lineStyle: { color: '#f59e0b', width: 3 },
+                    itemStyle: { color: '#f59e0b' },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [
+                                { offset: 0, color: 'rgba(245, 158, 11, 0.3)' },
+                                { offset: 1, color: 'rgba(245, 158, 11, 0.05)' }
+                            ]
+                        }
+                    }
+                }],
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#f59e0b',
+                    textStyle: { color: '#ffffff' }
+                }
+            };
+            riskTrendChart.setOption(riskTrendOption);
+
+            // 响应式调整
+            window.addEventListener('resize', function() {
+                riskMatrixChart.resize();
+                riskStatsChart.resize();
+                riskTrendChart.resize();
+            });
+        }
+
+        // 获取类别名称
+        function getCategoryName(category) {
+            const names = {
+                'environment': '环境',
+                'technology': '技术',
+                'political': '政治',
+                'health': '健康',
+                'economic': '经济',
+                'social': '社会'
+            };
+            return names[category] || '其他';
+        }
+
+        // 过滤风险
+        function filterRisks(filter) {
+            // 更新按钮状态
+            document.querySelectorAll('.risk-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'bg-red-500', 'bg-orange-500');
+                btn.classList.add('bg-gray-500');
+            });
+            event.target.classList.remove('bg-gray-500');
+            
+            if (filter === 'all') {
+                event.target.classList.add('bg-amber-500');
+            } else if (filter === 'high-impact') {
+                event.target.classList.add('bg-red-500');
+            } else if (filter === 'high-probability') {
+                event.target.classList.add('bg-orange-500');
+            }
+
+            console.log('Filtering risks by:', filter);
+        }
+
+        // 显示风险详情
+        function showRiskDetails(riskId) {
+            const risk = riskDetails[riskId];
+            if (risk) {
+                document.getElementById('risk-title').textContent = risk.title;
+                document.getElementById('risk-content').innerHTML = risk.content;
+                document.getElementById('risk-modal').classList.remove('hidden');
+                document.getElementById('risk-modal').classList.add('flex');
+            }
+        }
+
+        // 关闭风险模态框
+        function closeRiskModal() {
+            document.getElementById('risk-modal').classList.add('hidden');
+            document.getElementById('risk-modal').classList.remove('flex');
+        }
+
+        // 滚动到指定部分
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 初始化动画
+        function initializeAnimations() {
+            // 风险卡片依次出现动画
+            anime({
+                targets: '.risk-card',
+                opacity: [0, 1],
+                translateY: [40, 0],
+                duration: 800,
+                easing: 'easeOutExpo',
+                delay: anime.stagger(100)
+            });
+        }
+    </script>
+</body>
+</html>

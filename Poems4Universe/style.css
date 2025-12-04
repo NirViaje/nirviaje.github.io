@@ -1,0 +1,228 @@
+/*
+ * 样式文件为“献给宇宙的散文诗”互动专辑提供视觉设计。
+ * 使用深色主题搭配星空背景，配以柔和的配色突出内容。
+ */
+
+/* 基本重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: radial-gradient(circle at 20% 30%, rgba(33, 33, 79, 0.8), rgba(0, 0, 20, 0.95)),
+              radial-gradient(circle at 80% 70%, rgba(12, 12, 48, 0.6), rgba(0, 0, 10, 0.9));
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+header .subtitle {
+  font-size: 1rem;
+  color: #b0bec5;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* 导航列表 */
+#nav {
+  flex-shrink: 0;
+  width: 220px;
+  margin-right: 1rem;
+}
+
+#nav ul {
+  list-style: none;
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  padding-left: 0;
+}
+
+#nav li {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  position: relative;
+  color: #b0bec5;
+  transition: background 0.3s, color 0.3s;
+}
+
+#nav li::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+#nav li:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+#nav li.active {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+#nav li.active::before {
+  background: #7986cb;
+}
+
+/* 主内容区域 */
+main {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.part {
+  display: none;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.part.active {
+  display: block;
+}
+
+.part h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+  color: #fff;
+}
+
+.part p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #cfd8dc;
+}
+
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 在宽屏幕上并排排列图片和媒体播放器 */
+@media (min-width: 768px) {
+  /* 在大屏幕上允许媒体并排并自动换行 */
+  .media {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .media > img,
+  .media > video,
+  .media > audio,
+  .media > .coming {
+    flex: 1 1 48%;
+    min-width: 280px;
+  }
+}
+
+.media img {
+  max-width: 100%;
+  /* 限制图片高度，保持版面整洁 */
+  max-height: 360px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 音频和视频播放器通用样式 */
+video,
+audio {
+  width: 100%;
+  max-width: 100%;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  /* 限制视频高度避免撑满视口 */
+  max-height: 360px;
+  height: auto;
+  /* 将音频和视频设为块级以确保在 flex 布局中可见 */
+  display: block;
+}
+
+.coming {
+  color: #90a4ae;
+  font-style: italic;
+  padding: 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* 独立音频容器，用于在部分页面将音频放在图片下方 */
+.audio-container {
+  margin-top: 1rem;
+}
+
+.audio-container audio {
+  width: 100%;
+  max-width: 100%;
+  height: 56px;
+  display: block;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #78909c;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式布局：在小屏幕上调整导航为横向，并将图片与媒体堆叠 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  #nav {
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+  #nav ul {
+    display: flex;
+    flex-direction: row;
+    border-left: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  #nav li {
+    flex: 1;
+    text-align: center;
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 0.5rem;
+  }
+  #nav li:first-child {
+    border-left: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

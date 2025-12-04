@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间线 - 长期主义</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Han+Sans:wght@400;700;900&family=Source+Han+Serif:wght@400;500;700&display=swap');
+        
+        :root {
+            --deep-blue: #1e3a5f;
+            --warm-gray: #6b7280;
+            --ivory: #fefefe;
+            --amber: #f59e0b;
+            --stone-green: #374151;
+            --mist-blue: #e0f2fe;
+        }
+        
+        body {
+            font-family: 'Source Han Serif', 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #2563eb 50%, var(--stone-green) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .timeline-bg {
+            background: url('time-concept.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .timeline-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(37, 99, 235, 0.7) 50%, rgba(55, 65, 81, 0.8) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--amber) 0%, #fbbf24 50%, var(--ivory) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .timeline-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--amber), var(--deep-blue), var(--stone-green));
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin: 50px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: 0;
+            margin-right: 50%;
+            padding-right: 50px;
+            text-align: right;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 50%;
+            margin-right: 0;
+            padding-left: 50px;
+            text-align: left;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--amber);
+            border: 4px solid white;
+            border-radius: 50%;
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-marker:hover {
+            transform: translateX(-50%) scale(1.2);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+        }
+        
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .timeline-content:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .era-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .time-scale-selector {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .time-scale-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .time-scale-btn.active {
+            background: var(--amber);
+            color: white;
+        }
+        
+        .time-scale-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                margin-left: 0;
+                margin-right: 0;
+                padding-left: 60px;
+                padding-right: 20px;
+                text-align: left;
+            }
+            
+            .timeline-line {
+                left: 30px;
+            }
+            
+            .timeline-marker {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">长</span>
+                    </div>
+                    <span class="text-white font-bold text-lg">长期主义</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-amber-300">首页</a>
+                    <a href="concepts.html" class="nav-link text-white hover:text-amber-300">核心概念</a>
+                    <a href="timeline.html" class="nav-link text-amber-300">时间线</a>
+                    <a href="risks.html" class="nav-link text-white hover:text-amber-300">风险评估</a>
+                    <a href="actions.html" class="nav-link text-white hover:text-amber-300">行动指南</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="timeline-bg min-h-screen flex items-center justify-center relative pt-20">
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 text-gradient leading-tight">
+                人类发展时间线
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed font-light">
+                从史前时代到遥远未来，探索塑造人类文明的关键转折点
+            </p>
+            
+            <!-- Time Scale Selector -->
+            <div class="flex justify-center mb-8">
+                <div class="time-scale-selector">
+                    <button onclick="changeTimeScale('past')" class="time-scale-btn active">过去</button>
+                    <button onclick="changeTimeScale('present')" class="time-scale-btn">现在</button>
+                    <button onclick="changeTimeScale('future')" class="time-scale-btn">未来</button>
+                    <button onclick="changeTimeScale('all')" class="time-scale-btn">全部</button>
+                </div>
+            </div>
+            
+            <button onclick="scrollToSection('timeline')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                开始探索
+            </button>
+        </div>
+    </section>
+
+    <!-- Interactive Timeline -->
+    <section id="timeline" class="py-20 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">交互式时间线</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    点击时间节点，深入了解每个重要事件的详细信息
+                </p>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <!-- Timeline Items -->
+                <div class="timeline-item" data-era="past">
+                    <div class="timeline-marker" data-year="-10000"></div>
+                    <div class="timeline-content" onclick="showEventDetails('agriculture')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元前 10000 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">农业革命</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            人类从狩猎采集转向农业生产，为文明发展奠定基础。这一转变使人口增长、社会分工和城市化成为可能。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">影响程度:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="past">
+                    <div class="timeline-marker" data-year="-3000"></div>
+                    <div class="timeline-content" onclick="showEventDetails('writing')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元前 3000 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">文字发明</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            文字的发明使知识传承、法律记录和商业交易成为可能，极大地促进了文明的发展。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">影响程度:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="past">
+                    <div class="timeline-marker" data-year="1750"></div>
+                    <div class="timeline-content" onclick="showEventDetails('industrial')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元 1750 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">工业革命</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            机械化生产改变了人类社会，带来了现代文明。同时也开始对环境产生重大影响。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">影响程度:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="past">
+                    <div class="timeline-marker" data-year="1950"></div>
+                    <div class="timeline-content" onclick="showEventDetails('information')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元 1950 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">信息时代</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            计算机和互联网的普及开启了信息时代，知识传播速度前所未有。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">影响程度:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-white/30 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="present">
+                    <div class="timeline-marker" data-year="2020"></div>
+                    <div class="timeline-content" onclick="showEventDetails('ai-era')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元 2020 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">AI时代</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            人工智能技术快速发展，重塑各行各业，同时带来新的伦理和安全挑战。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">影响程度:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="future">
+                    <div class="timeline-marker" data-year="2050"></div>
+                    <div class="timeline-content" onclick="showEventDetails('space-civilization')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元 2050 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">太空文明</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            人类开始在太空建立永久居住地，成为多行星物种的重要一步。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">预期影响:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item" data-era="future">
+                    <div class="timeline-marker" data-year="2100"></div>
+                    <div class="timeline-content" onclick="showEventDetails('post-human')">
+                        <div class="text-amber-300 text-sm font-semibold mb-2">公元 2100 年</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">后人类时代</h3>
+                        <p class="text-white/80 leading-relaxed mb-4">
+                            人类与AI深度融合，生物智能与机器智能的界限变得模糊，开启新的进化阶段。
+                        </p>
+                        <div class="flex items-center text-amber-300 text-sm">
+                            <span class="mr-2">预期影响:</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Era Analysis -->
+    <section class="py-20 bg-gradient-to-br from-slate-900/50 to-blue-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">时代分析</h2>
+                <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                    不同时代的特点及其对人类长期发展的影响
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Past Era -->
+                <div class="era-section">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">过去时代</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        从农业革命到工业革命的漫长历史时期，人类文明逐步建立和发展。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 缓慢但稳定的技术进步</li>
+                        <li>• 人口持续增长</li>
+                        <li>• 社会组织形式演变</li>
+                        <li>• 知识体系逐步积累</li>
+                    </ul>
+                </div>
+
+                <!-- Present Era -->
+                <div class="era-section">
+                    <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">现在时代</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        信息时代和AI时代的交汇点，人类面临着前所未有的机遇和挑战。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 技术指数级发展</li>
+                        <li>• 全球化深度连接</li>
+                        <li>• 环境危机显现</li>
+                        <li>• 伦理挑战加剧</li>
+                    </ul>
+                </div>
+
+                <!-- Future Era -->
+                <div class="era-section">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">未来时代</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        太空文明和后人类时代，人类可能面临根本性的转变和新的存在形式。
+                    </p>
+                    <ul class="text-white/70 text-sm space-y-2">
+                        <li>• 多行星文明发展</li>
+                        <li>• 智能形式多样化</li>
+                        <li>• 生存风险降低</li>
+                        <li>• 宇宙尺度思考</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Event Details Modal -->
+    <div id="event-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-6">
+                <h3 id="event-title" class="text-2xl font-bold text-white"></h3>
+                <button onclick="closeEventModal()" class="text-white/60 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="event-content" class="text-white/80 leading-relaxed">
+                <!-- 内容将动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 backdrop-blur-sm py-12 border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">长</span>
+                </div>
+                <span class="text-white font-bold text-lg">长期主义</span>
+            </div>
+            <p class="text-white/60 text-sm">
+                © 2024 长期主义研究中心. 致力于推动长期思维，为子孙后代建设更美好的未来.
+            </p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // 事件详情数据
+        const eventDetails = {
+            'agriculture': {
+                title: '农业革命 (公元前 10000 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">历史意义</h4>
+                        <p class="mb-4">农业革命是人类历史上最重要的转折点之一。它标志着人类从游牧的狩猎采集生活方式转向定居的农业生产方式。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">主要特征</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>定居生活的开始</li>
+                            <li>人口密度的显著增加</li>
+                            <li>社会分工的出现</li>
+                            <li>私有财产概念的形成</li>
+                            <li>技术和工具的持续改进</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期影响</h4>
+                        <p class="mb-4">农业革命为后来所有文明发展奠定了基础，包括城市化、文字发明、国家形成等。它也使人类能够积累剩余产品，支持非农业人口的发展。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">现代启示</h4>
+                        <p>农业革命告诉我们，技术和社会组织的重大变革可以对人类文明产生深远而持久的影响。这提醒我们在进行重大决策时要考虑长期后果。</p>
+                    </div>
+                `
+            },
+            'writing': {
+                title: '文字发明 (公元前 3000 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">发明背景</h4>
+                        <p class="mb-4">文字的发明源于管理复杂社会的需要，最初用于记录税收、库存和法律事务。苏美尔人的楔形文字被认为是最早的文字系统之一。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">演变过程</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>象形文字阶段</li>
+                            <li>表意文字的发展</li>
+                            <li>拼音文字的出现</li>
+                            <li>字母系统的完善</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">革命性影响</h4>
+                        <p class="mb-4">文字的发明使得知识可以跨越时空传递，大大加速了人类文明的积累和发展。它为科学、文学、哲学的发展提供了基础。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">数字时代的思考</h4>
+                        <p>在数字时代，文字的载体和形式发生了巨大变化，但其作为知识传承工具的本质功能依然重要。这提醒我们要保护好数字时代的知识遗产。</p>
+                    </div>
+                `
+            },
+            'industrial': {
+                title: '工业革命 (公元 1750 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">革命特征</h4>
+                        <p class="mb-4">工业革命以蒸汽机的发明和应用为标志，带来了生产方式的根本性变革。从手工生产转向机器生产，从家庭作坊转向工厂制度。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">技术创新</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>蒸汽机技术</li>
+                            <li>纺织机械</li>
+                            <li>铁路运输</li>
+                            <li>煤炭开采技术</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">社会影响</h4>
+                        <p class="mb-4">工业革命带来了城市化、阶级分化、劳动条件变化等深刻的社会变革。同时也促进了教育普及和民主制度的发展。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">环境代价</h4>
+                        <p class="mb-4">工业革命开始使用化石燃料，标志着人类对环境影响的大幅增加。这为今天的环境问题埋下了伏笔。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">现代启示</h4>
+                        <p>工业革命提醒我们，技术进步往往伴随着意想不到的副作用。在追求发展的同时，我们需要更加关注可持续性和长期影响。</p>
+                    </div>
+                `
+            },
+            'information': {
+                title: '信息时代 (公元 1950 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">时代特征</h4>
+                        <p class="mb-4">信息时代以计算机和互联网的普及为标志，信息的生产、传输和处理能力得到极大提升，知识传播速度前所未有。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">关键技术</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>计算机技术</li>
+                            <li>互联网协议</li>
+                            <li>移动通信</li>
+                            <li>数据库系统</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">社会变革</h4>
+                        <p class="mb-4">信息时代改变了人们的工作方式、学习方式和社交方式。全球化进程加速，信息壁垒被打破。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">新的挑战</h4>
+                        <p class="mb-4">信息过载、数字鸿沟、网络安全、隐私保护等问题随之而来。虚假信息的传播成为一个严重问题。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期影响</h4>
+                        <p>信息时代为AI时代的到来奠定了基础，同时也为人类社会的长期发展提供了新的工具和视角。</p>
+                    </div>
+                `
+            },
+            'ai-era': {
+                title: 'AI时代 (公元 2020 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">技术突破</h4>
+                        <p class="mb-4">AI时代以深度学习、大语言模型等技术的突破为标志，人工智能开始在各个领域展现出超越人类的能力。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">应用领域</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>自然语言处理</li>
+                            <li>计算机视觉</li>
+                            <li>自动驾驶</li>
+                            <li>医疗诊断</li>
+                            <li>科学研究</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">机遇与挑战</h4>
+                        <p class="mb-4">AI带来了生产力的巨大提升，但同时也带来了就业冲击、伦理问题、安全威胁等挑战。AI对齐成为一个关键问题。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期风险</h4>
+                        <p class="mb-4">通用人工智能(AGI)的发展可能带来生存风险，需要国际合作来确保安全发展。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">治理需求</h4>
+                        <p>建立有效的AI治理机制，平衡创新发展与安全管控，是当前面临的重要任务。</p>
+                    </div>
+                `
+            },
+            'space-civilization': {
+                title: '太空文明 (公元 2050 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">发展愿景</h4>
+                        <p class="mb-4">太空文明时代标志着人类成为多行星物种，在月球、火星等地建立永久居住地，减少对单一星球的依赖。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">技术需求</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>可重复使用火箭技术</li>
+                            <li>生命支持系统</li>
+                            <li>原位资源利用</li>
+                            <li>辐射防护技术</li>
+                            <li>人工重力系统</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">战略意义</h4>
+                        <p class="mb-4">太空文明能够降低人类面临的生存风险，为长期发展提供更多选择，同时开辟新的资源和机遇。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">挑战与风险</h4>
+                        <p class="mb-4">巨大的技术挑战、高昂的成本、心理健康问题、社会制度设计等都是需要克服的障碍。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">时间表现</h4>
+                        <p>虽然2050年可能为时尚早，但这一发展方向体现了长期主义的核心思想：为人类的长远未来做准备。</p>
+                    </div>
+                `
+            },
+            'post-human': {
+                title: '后人类时代 (公元 2100 年)',
+                content: `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-white mb-3">概念定义</h4>
+                        <p class="mb-4">后人类时代指的是人类通过技术手段实现根本性进化，可能包括意识上传、生物增强、人机融合等。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">可能形式</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>数字意识</li>
+                            <li>增强人类</li>
+                            <li>集体智能</li>
+                            <li>多元智能形式</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">哲学思考</h4>
+                        <p class="mb-4">后人类时代引发了关于意识、身份、人性本质的深刻哲学问题。我们需要思考什么是值得保存的人类价值。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">伦理挑战</h4>
+                        <p class="mb-4">公平获取、身份认同、权利保护、社会不平等等问题在后人类时代变得更加复杂。</p>
+                        
+                        <h4 class="text-lg font-semibold text-white mb-3">长期展望</h4>
+                        <p>后人类时代代表了人类进化的下一个阶段，但也需要我们谨慎地平衡技术进步与人文价值。</p>
+                    </div>
+                `
+            }
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTimeline();
+            initializeScrollAnimations();
+        });
+
+        // 初始化时间线
+        function initializeTimeline() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            // 设置初始状态
+            timelineItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                item.style.transition = 'all 0.6s ease';
+            });
+        }
+
+        // 初始化滚动动画
+        function initializeScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+
+        // 改变时间尺度
+        function changeTimeScale(scale) {
+            // 更新按钮状态
+            document.querySelectorAll('.time-scale-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 过滤时间线项目
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            timelineItems.forEach(item => {
+                const era = item.getAttribute('data-era');
+                
+                if (scale === 'all' || era === scale) {
+                    item.style.display = 'block';
+                    // 重新触发动画
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, 100);
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 显示事件详情
+        function showEventDetails(eventId) {
+            const event = eventDetails[eventId];
+            if (event) {
+                document.getElementById('event-title').textContent = event.title;
+                document.getElementById('event-content').innerHTML = event.content;
+                document.getElementById('event-modal').classList.remove('hidden');
+                document.getElementById('event-modal').classList.add('flex');
+            }
+        }
+
+        // 关闭事件模态框
+        function closeEventModal() {
+            document.getElementById('event-modal').classList.add('hidden');
+            document.getElementById('event-modal').classList.remove('flex');
+        }
+
+        // 滚动到指定部分
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 页面导航
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>

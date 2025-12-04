@@ -1,0 +1,98 @@
+/* 基本页面样式 */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background: #34495e;
+    padding: 10px;
+}
+
+nav a {
+    color: #fff;
+    margin: 0 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+.figure {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.timeline {
+    margin: 20px 0;
+}
+
+.timeline input[type="range"] {
+    width: 100%;
+}
+
+#timelineDescription {
+    margin-top: 10px;
+    padding: 10px;
+    background: #eef5ff;
+    border-radius: 4px;
+    min-height: 60px;
+}
+
+footer {
+    margin-top: 30px;
+    font-size: 0.8em;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+/* 样式用于章节页面 */
+details {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+details summary {
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 脚注样式 */
+.footnotes {
+    font-size: 0.8em;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.footnotes li {
+    margin-bottom: 5px;
+}
