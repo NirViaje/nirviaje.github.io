@@ -287,6 +287,57 @@
   <footer>
     <p>© 2025 献给宇宙的散文诗 | 如有音频资源更新，请持续关注</p>
   </footer>
+  <!-- Global persistent audio player (independent of chapter browsing) -->
+  <div id="global-player" role="region" aria-label="全局音频播放器">
+    <button class="gp-btn" id="gp-prev" title="上一曲" aria-label="上一曲">
+      <svg class="gp-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <polygon points="19 4 9 12 19 20 19 4"></polygon>
+        <line x1="5" y1="5" x2="5" y2="19"></line>
+      </svg>
+    </button>
+    <button class="gp-btn" id="gp-play" title="播放" aria-label="播放">
+      <svg class="gp-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <polygon points="6 4 20 12 6 20 6 4"></polygon>
+      </svg>
+    </button>
+    <button class="gp-btn hidden" id="gp-pause" title="暂停" aria-label="暂停">
+      <svg class="gp-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+        <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+      </svg>
+    </button>
+    <button class="gp-btn" id="gp-next" title="下一曲" aria-label="下一曲">
+      <svg class="gp-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+        <line x1="19" y1="5" x2="19" y2="19"></line>
+      </svg>
+    </button>
+    <div class="gp-title" id="gp-title" title="点击跳转到对应章节">未选择曲目</div>
+    <div class="gp-seek">
+      <span id="gp-current">0:00</span>
+      <input type="range" id="gp-progress" min="0" max="100" step="0.1" value="0" aria-label="进度">
+      <span id="gp-duration">0:00</span>
+    </div>
+    <div class="gp-right">
+      <button class="gp-btn" id="gp-loop" aria-pressed="false" title="循环">↺</button>
+      <input type="range" id="gp-volume" min="0" max="1" step="0.01" value="1" aria-label="音量">
+      <button class="gp-btn" id="gp-lyrics" aria-pressed="false" title="歌词">♪</button>
+    </div>
+    <audio id="gp-audio" preload="none"></audio>
+  </div>
+  <!-- Floating lyrics panel -->
+  <div id="gp-lyrics-panel" aria-live="polite" aria-label="歌词面板" hidden>
+    <div class="lyrics-header">
+      <span id="lyrics-title">歌词</span>
+      <div class="lyrics-tools">
+        <button class="gp-btn" id="lyrics-shift-back" title="歌词提前 0.2s">−0.2s</button>
+        <span id="lyrics-offset" title="歌词偏移">+0.0s</span>
+        <button class="gp-btn" id="lyrics-shift-forward" title="歌词延后 0.2s">+0.2s</button>
+      </div>
+      <button class="gp-btn" id="lyrics-close" title="关闭">✕</button>
+    </div>
+    <div class="lyrics-scroll" id="lyrics-scroll"></div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>

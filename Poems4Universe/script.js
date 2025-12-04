@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 内容已静态写入 HTML；仅绑定折叠与媒体暂停
   wireChapterMediaGuards();
+
+  // 初始化全局播放器（独立于章节浏览）
+  initGlobalPlayer();
 });
 
 function switchPart(targetId) {
@@ -391,4 +394,334 @@ function wireChapterMediaGuards() {
       }
     });
   });
+}
+
+// ============ Global Persistent Audio Player ============
+function initGlobalPlayer() {
+  const wrap = document.getElementById('global-player');
+  if (!wrap) return;
+
+  const audio = wrap.querySelector('#gp-audio');
+  const btnPlay = wrap.querySelector('#gp-play');
+  const btnPause = wrap.querySelector('#gp-pause');
+  const btnPrev = wrap.querySelector('#gp-prev');
+  const btnNext = wrap.querySelector('#gp-next');
+  const btnLoop = wrap.querySelector('#gp-loop');
+  const vol = wrap.querySelector('#gp-volume');
+  const prog = wrap.querySelector('#gp-progress');
+  const cur = wrap.querySelector('#gp-current');
+  const dur = wrap.querySelector('#gp-duration');
+  const titleEl = wrap.querySelector('#gp-title');
+  const btnLyrics = wrap.querySelector('#gp-lyrics');
+  const panel = document.getElementById('gp-lyrics-panel');
+  const panelTitle = document.getElementById('lyrics-title');
+  const panelScroll = document.getElementById('lyrics-scroll');
+  const btnLyricsClose = document.getElementById('lyrics-close');
+  const btnShiftBack = document.getElementById('lyrics-shift-back');
+  const btnShiftFwd = document.getElementById('lyrics-shift-forward');
+  const offsetEl = document.getElementById('lyrics-offset');
+  // default lyrics panel to single-line roll-up mode
+  panel.classList.add('single-line');
+
+  // Build playlist from chapter audio elements
+  const playlist = collectTracksAndInjectButtons();
+  let index = 0;
+
+  // restore volume
+  try { const savedV = localStorage.getItem('gp_volume'); if (savedV != null) { audio.volume = parseFloat(savedV); vol.value = String(audio.volume); } } catch {}
+
+  function fmt(t){ if(!isFinite(t)||t<0) return '0:00'; const m=Math.floor(t/60); const s=Math.floor(t%60); return m+':' + String(s).padStart(2,'0'); }
+
+  function setPlayPauseUI(isPlaying){
+    btnPlay.classList.toggle('hidden', isPlaying);
+    btnPause.classList.toggle('hidden', !isPlaying);
+  }
+
+  function load(i, {autoplay=false}={}){
+    if (!playlist.length) {
+      titleEl.textContent = '未找到可播放音频';
+      return;
+    }
+    index = ((i % playlist.length) + playlist.length) % playlist.length;
+    const t = playlist[index];
+    audio.src = t.src;
+    audio.dataset.chapterId = t.chapterId || '';
+    titleEl.textContent = t.title || (t.src.split('/').pop());
+    prog.value = 0; prog.max = 100;
+    cur.textContent = '0:00'; dur.textContent = '0:00';
+    // load lyrics for this track
+    loadLyricsForSrc(t.src, t.title);
+    if (autoplay) audio.play().catch(()=>{});
+  }
+
+  function next(){ load(index+1,{autoplay:true}); }
+  function prev(){ load(index-1,{autoplay:true}); }
+
+  // controls
+  btnPlay.addEventListener('click', () => { if (!audio.src) load(index); audio.play(); });
+  btnPause.addEventListener('click', () => audio.pause());
+  btnPrev.addEventListener('click', prev);
+  btnNext.addEventListener('click', next);
+  btnLoop.addEventListener('click', () => { const n=!audio.loop; audio.loop=n; btnLoop.setAttribute('aria-pressed', String(n)); });
+  vol.addEventListener('input', () => { audio.volume = parseFloat(vol.value); try{ localStorage.setItem('gp_volume', String(audio.volume)); }catch{} });
+  prog.addEventListener('input', () => { if (isFinite(audio.duration)) { audio.currentTime = (parseFloat(prog.value)/100) * audio.duration; }});
+
+  let rafId = 0;
+  function startTicker(){ cancelAnimationFrame(rafId); const tick=()=>{ syncLyrics(audio.currentTime, audio.duration); rafId = requestAnimationFrame(tick); }; rafId = requestAnimationFrame(tick); }
+  function stopTicker(){ cancelAnimationFrame(rafId); rafId = 0; }
+
+  audio.addEventListener('play', () => { setPlayPauseUI(true); startTicker(); });
+  audio.addEventListener('pause', () => { setPlayPauseUI(false); stopTicker(); });
+  audio.addEventListener('timeupdate', () => {
+    if (isFinite(audio.duration) && audio.duration>0) {
+      prog.value = String((audio.currentTime / audio.duration) * 100);
+      cur.textContent = fmt(audio.currentTime);
+      dur.textContent = fmt(audio.duration);
+    }
+    // rAF handles lyrics sync; keep as UI update only
+  });
+  audio.addEventListener('ended', () => { if (!audio.loop) next(); });
+  audio.addEventListener('seeked', () => syncLyrics(audio.currentTime, audio.duration));
+  audio.addEventListener('loadedmetadata', () => syncLyrics(audio.currentTime, audio.duration));
+  audio.addEventListener('ratechange', () => syncLyrics(audio.currentTime, audio.duration));
+
+  // Jump to corresponding chapter when title clicked
+  titleEl.addEventListener('click', () => {
+    const id = audio.dataset.chapterId; if (!id) return;
+    const ch = document.getElementById(id);
+    if (ch) {
+      const part = ch.closest('.part');
+      if (part && !part.classList.contains('active')) switchPart(part.id);
+      ch.open = true;
+      ch.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+
+  // (moved) initial track load happens after lyrics system is initialized
+
+  // Export minimal API to window for chapter buttons to use if needed
+  window.__GlobalPlayer = {
+    playBySrc: (src) => {
+      const i = playlist.findIndex(t => normalizeURL(t.src) === normalizeURL(src));
+      if (i >= 0) load(i, {autoplay:true});
+      else {
+        // If src is not in playlist, append and play
+        playlist.push({ src, title: src.split('/').pop(), chapterId: '' });
+        load(playlist.length-1, {autoplay:true});
+      }
+    }
+  };
+
+  function normalizeURL(u){ const a=document.createElement('a'); a.href=u; return a.href; }
+
+  function collectTracksAndInjectButtons(){
+    const list = [];
+    const seen = new Set();
+    document.querySelectorAll('.chapter').forEach(ch => {
+      const title = ch.querySelector('summary')?.textContent?.trim() || '音频';
+      let src = null; let audioEl = ch.querySelector('audio');
+      if (audioEl) {
+        src = audioEl.currentSrc || audioEl.src || (audioEl.querySelector('source')?.src ?? null);
+      }
+      // Only include audio media (skip pure video)
+      if (src) {
+        const full = normalizeURL(src);
+        if (!seen.has(full)) {
+          seen.add(full);
+          list.push({ src: full, title, chapterId: ch.id });
+        }
+        // Inject a helper button to play in global player
+        const btn = document.createElement('button');
+        btn.className = 'to-global';
+        btn.type = 'button';
+        btn.textContent = '▶ 在全局播放器播放';
+        btn.addEventListener('click', () => { window.__GlobalPlayer?.playBySrc(full); });
+        const target = audioEl?.parentElement || ch.querySelector('.content') || ch;
+        // Avoid duplicate injection
+        if (!target.querySelector('.to-global')) target.appendChild(btn);
+      }
+    });
+    return list;
+  }
+
+  // -------- Lyrics handling --------
+  let lyrics = { type: 'none', lines: [], stamps: [] }; // type: 'lrc' or 'md' or 'none'
+  let lastActiveLine = -1;
+  let lyricsTrack = null;
+  let lyricsOffset = 0; // seconds; positive = lyrics delayed
+  try { const saved = localStorage.getItem('gp_lyrics_offset'); if (saved != null) lyricsOffset = parseFloat(saved) || 0; } catch {}
+  function updateOffsetLabel(){ if (!offsetEl) return; const s = (lyricsOffset>=0?'+':'') + lyricsOffset.toFixed(1) + 's'; offsetEl.textContent = s; }
+  updateOffsetLabel();
+
+  function baseName(path){ const name = (path.split('?')[0].split('#')[0].split('/').pop()||''); return name.replace(/\.[^.]+$/, ''); }
+
+  async function loadLyricsForSrc(src, title){
+    lyrics = { type: 'none', lines: [], stamps: [] }; lastActiveLine = -1;
+    panelTitle.textContent = `歌词 · ${title || baseName(src)}`;
+    panelScroll.innerHTML = '<div class="lyrics-line dimmed">加载歌词…</div>';
+    const base = baseName(src);
+    const tryFiles = [
+      `assets/lyrics/${base}.lrc`,
+      `assets/lyrics/${base}.md`
+    ];
+    let text = null; let picked = null;
+    for (const f of tryFiles) {
+      try {
+        const res = await fetch(f, { cache: 'no-store' });
+        if (res.ok) { text = await res.text(); picked = f; break; }
+      } catch {}
+    }
+    if (!text) {
+      panelScroll.innerHTML = '<div class="lyrics-line dimmed">未找到歌词文件</div>';
+      lyrics = { type: 'none', lines: [], stamps: [] };
+      return;
+    }
+    if (picked.endsWith('.lrc')) {
+      lyrics = parseLRC(text);
+    } else {
+      lyrics = parseMarkdownLyrics(text);
+    }
+    renderLyrics(lyrics);
+    // Immediately sync once after rendering
+    syncLyrics(audio.currentTime, audio.duration);
+  }
+
+  function parseLRC(text){
+    const out = [];
+    const lines = text.split(/\r?\n/);
+    const re = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g;
+    for (const raw of lines) {
+      let content = raw.replace(/^\s+|\s+$/g, '');
+      if (!content) continue;
+      let m; const stamps = [];
+      while ((m = re.exec(content))) {
+        const mm = parseInt(m[1],10), ss = parseInt(m[2],10), cs = m[3]? parseInt(m[3].padEnd(3,'0'),10):0;
+        stamps.push(mm*60 + ss + cs/1000);
+      }
+      content = content.replace(re, '').trim();
+      if (!stamps.length || !content) continue;
+      stamps.forEach(t => out.push({ time: t, text: content }));
+    }
+    out.sort((a,b)=>a.time-b.time);
+    return { type: 'lrc', lines: out.map(x=>x.text), stamps: out.map(x=>x.time) };
+  }
+
+  function parseMarkdownLyrics(md){
+    const out = [];
+    const lines = md.split(/\r?\n/);
+    for (let raw of lines) {
+      const line = raw.trimEnd();
+      if (!line) { continue; }
+      if (/^#{1,6}\s+/.test(line)) {
+        const t = line.replace(/^#{1,6}\s+/, '').trim();
+        out.push({ text: `【${t}】`, section: true });
+      } else {
+        out.push({ text: line });
+      }
+    }
+    return { type: 'md', lines: out };
+  }
+
+  function renderLyrics(lrc){
+    panelScroll.innerHTML = '';
+    lyricsTrack = document.createElement('div');
+    lyricsTrack.className = 'lyrics-track';
+    lastActiveLine = -1;
+    if (lrc.type === 'lrc') {
+      lrc.lines.forEach((txt,i)=>{
+        const div = document.createElement('div');
+        const isSection = /^【.+】$/.test(txt);
+        div.className = 'lyrics-line' + (isSection ? ' section' : '');
+        div.dataset.idx = String(i);
+        div.textContent = txt;
+        lyricsTrack.appendChild(div);
+      });
+    } else if (lrc.type === 'md') {
+      lrc.lines.forEach((entry,i)=>{
+        const div = document.createElement('div');
+        div.className = 'lyrics-line' + (entry.section? ' section':'');
+        div.dataset.idx = String(i);
+        div.textContent = entry.text;
+        lyricsTrack.appendChild(div);
+      });
+    } else {
+      panelScroll.innerHTML = '<div class="lyrics-line dimmed">没有可显示的歌词</div>';
+      lyricsTrack = null;
+      return;
+    }
+    panelScroll.appendChild(lyricsTrack);
+  }
+
+  function ensureMdTiming(duration){
+    if (lyrics.type !== 'md') return;
+    const n = lyrics.lines.length;
+    if (!n || !isFinite(duration) || duration <= 0) return;
+    // Create evenly distributed timestamps across duration
+    const times = [];
+    for (let i=0;i<n;i++) times.push((i / Math.max(1,n)) * (duration * 0.98));
+    lyrics.stamps = times; // reuse stamps field
+  }
+
+  function syncLyrics(currentTime, duration){
+    if (!panel || panel.hidden) return;
+    if (lyrics.type === 'none') return;
+    if (lyrics.type === 'md' && (!lyrics.stamps || lyrics.stamps.length !== lyrics.lines.length)) {
+      ensureMdTiming(duration);
+    }
+    const stamps = lyrics.stamps || [];
+    if (!stamps.length) return;
+    const t = currentTime + lyricsOffset;
+    // Find last index with time <= effective time (with offset)
+    let lo = 0, hi = stamps.length - 1, ans = -1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (stamps[mid] <= t) { ans = mid; lo = mid + 1; } else { hi = mid - 1; }
+    }
+    if (ans !== -1 && ans !== lastActiveLine) {
+      highlightLyric(ans);
+    }
+  }
+
+  function highlightLyric(idx){
+    const prev = panelScroll.querySelector('.lyrics-line.active');
+    if (prev) prev.classList.remove('active');
+    const curLine = panelScroll.querySelector(`.lyrics-line[data-idx="${idx}"]`);
+    if (curLine) {
+      curLine.classList.add('active');
+      if (panel.classList.contains('single-line') && lyricsTrack) {
+        const offset = curLine.offsetTop;
+        lyricsTrack.style.transform = `translateY(${-offset}px)`;
+      } else {
+        // Scroll to keep line near center
+        const container = panelScroll;
+        const top = curLine.offsetTop - container.clientHeight/2 + curLine.clientHeight/2;
+        container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      }
+    }
+    lastActiveLine = idx;
+  }
+
+  // Lyrics panel toggling
+  function setLyricsVisible(v){
+    panel.hidden = !v;
+    btnLyrics.setAttribute('aria-pressed', String(v));
+  }
+
+  btnLyrics.addEventListener('click', () => setLyricsVisible(panel.hidden));
+  btnLyricsClose.addEventListener('click', () => setLyricsVisible(false));
+  // Click the title to pin/unpin tools (useful on touch devices)
+  panelTitle.addEventListener('click', () => panel.classList.toggle('tools-pinned'));
+
+  // Lyrics offset controls
+  function adjustOffset(delta){
+    lyricsOffset = Math.max(-5, Math.min(5, lyricsOffset + delta));
+    try { localStorage.setItem('gp_lyrics_offset', String(lyricsOffset)); } catch {}
+    updateOffsetLabel();
+    syncLyrics(audio.currentTime, audio.duration);
+  }
+  btnShiftBack?.addEventListener('click', () => adjustOffset(-0.2));
+  btnShiftFwd?.addEventListener('click', () => adjustOffset(+0.2));
+
+  // Load first track if available (lyrics variables already initialized above)
+  if (playlist.length) load(0);
 }
