@@ -13,6 +13,8 @@
 
   // Feature flag: show/hide theme toggle button
   const ENABLE_THEME_BTN = false;
+  // Force dark theme globally (ignores saved/OS preference when true)
+  const FORCE_DARK_THEME = true;
 
   const normalizePath = (p) => {
     try {
@@ -174,26 +176,36 @@
   }
 
   function initTheme() {
+    if (FORCE_DARK_THEME) {
+      applyTheme('dark');
+      try { localStorage.setItem('agiTheme', 'dark'); } catch {}
+      return; // do not attach OS listeners or honor stored preference
+    }
     const stored = localStorage.getItem('agiTheme');
     if (stored === 'light' || stored === 'dark') {
       applyTheme(stored);
     } else {
       const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
       applyTheme(prefersLight ? 'light' : 'dark');
-    }
-    // React to OS changes only if user hasn’t set a preference
-    if (!stored && window.matchMedia) {
-      const mq = window.matchMedia('(prefers-color-scheme: light)');
-      mq.addEventListener('change', (e) => {
-        applyTheme(e.matches ? 'light' : 'dark');
-      });
+      // React to OS changes only if user hasn’t set a preference
+      if (window.matchMedia) {
+        const mq = window.matchMedia('(prefers-color-scheme: light)');
+        mq.addEventListener('change', (e) => {
+          applyTheme(e.matches ? 'light' : 'dark');
+        });
+      }
     }
   }
 
   function toggleTheme() {
+    if (FORCE_DARK_THEME) {
+      applyTheme('dark');
+      try { localStorage.setItem('agiTheme', 'dark'); } catch {}
+      return false;
+    }
     const toLight = !isLightTheme();
     applyTheme(toLight ? 'light' : 'dark');
-    localStorage.setItem('agiTheme', toLight ? 'light' : 'dark');
+    try { localStorage.setItem('agiTheme', toLight ? 'light' : 'dark'); } catch {}
     return toLight;
   }
 
