@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>交互式教学：从能级到激光，从结到芯片</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --panel2:#0f1630;
+      --text:#e8ecff;
+      --muted:#a9b3dd;
+      --line:rgba(255,255,255,.12);
+      --accent:#7aa2ff;
+      --accent2:#6ee7ff;
+      --good:#3ee6a8;
+      --warn:#ffcc66;
+      --bad:#ff6b7a;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; background:
+        radial-gradient(1200px 700px at 18% 8%, rgba(122,162,255,.23), transparent 55%),
+        radial-gradient(900px 600px at 75% 10%, rgba(110,231,255,.18), transparent 55%),
+        radial-gradient(1200px 900px at 60% 90%, rgba(62,230,168,.12), transparent 55%),
+        linear-gradient(180deg, #070a14 0%, var(--bg) 100%);
+      color:var(--text); font-family:var(--sans);
+      overflow-x:hidden;
+    }
+    a{color:var(--accent2); text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    .wrap{max-width:1200px; margin:0 auto; padding:24px 18px 90px;}
+    header.hero{
+      display:grid; grid-template-columns: 1.25fr .75fr; gap:18px;
+      align-items:stretch; margin-top:8px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--line); border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hero .left{padding:22px 22px 16px;}
+    .hero h1{margin:0 0 10px; font-size:28px; letter-spacing:.2px;}
+    .hero p{margin:0 0 12px; color:var(--muted); line-height:1.6;}
+    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+    .pill{
+      font-size:12px; color:rgba(255,255,255,.9);
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(15,22,48,.55);
+      backdrop-filter: blur(6px);
+    }
+    .hero .right{padding:16px;}
+    .stat{
+      display:grid; gap:10px;
+      padding:14px; border-radius:14px; background:rgba(15,22,48,.55);
+      border:1px solid var(--line);
+    }
+    .stat .row{display:flex; justify-content:space-between; gap:10px; align-items:baseline;}
+    .stat .k{color:var(--muted); font-size:12px;}
+    .stat .v{font-family:var(--mono); font-size:13px;}
+    .btnrow{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+    button, .btn{
+      cursor:pointer; border:none; border-radius:12px;
+      padding:10px 12px; color:var(--text); background:rgba(122,162,255,.18);
+      border:1px solid rgba(122,162,255,.35);
+      transition:transform .06s ease, background .15s ease;
+      font-family:var(--sans);
+    }
+    button:hover, .btn:hover{background:rgba(122,162,255,.25);}
+    button:active, .btn:active{transform:translateY(1px);}
+    .btn.secondary{background:rgba(110,231,255,.12); border-color:rgba(110,231,255,.28);}
+    .btn.good{background:rgba(62,230,168,.13); border-color:rgba(62,230,168,.32);}
+    .btn.warn{background:rgba(255,204,102,.12); border-color:rgba(255,204,102,.28);}
+    .grid{
+      display:grid; grid-template-columns: 1fr 1fr; gap:18px;
+      margin-top:18px;
+    }
+    @media (max-width: 980px){
+      header.hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr;}
+    }
+    .section{
+      padding:18px 18px 16px;
+    }
+    .section h2{margin:0 0 8px; font-size:18px;}
+    .section .sub{color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:10px;}
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 14px;
+    }
+    .tab{
+      font-size:12px; padding:7px 10px; border-radius:999px;
+      background:rgba(15,22,48,.55); border:1px solid var(--line);
+      cursor:pointer; user-select:none;
+    }
+    .tab.active{border-color:rgba(110,231,255,.5); background:rgba(110,231,255,.12);}
+    details{
+      border-top:1px solid var(--line);
+      padding-top:12px; margin-top:12px;
+    }
+    summary{cursor:pointer; color:rgba(255,255,255,.92);}
+    .two{
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; align-items:start;
+    }
+    @media (max-width: 980px){.two{grid-template-columns:1fr;}}
+    .note{
+      font-size:13px; line-height:1.65; color:rgba(255,255,255,.88);
+      background:rgba(15,22,48,.4);
+      border:1px dashed rgba(255,255,255,.18);
+      padding:12px; border-radius:14px;
+    }
+    .mini{
+      background:rgba(15,22,48,.55);
+      border:1px solid var(--line); border-radius:14px;
+      padding:12px;
+    }
+    .mini h3{margin:0 0 6px; font-size:14px;}
+    .mini p{margin:0 0 8px; color:var(--muted); font-size:12.5px; line-height:1.55;}
+    .svgbox{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line); border-radius:14px;
+      padding:10px;
+      overflow:hidden;
+    }
+    .rowline{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .rowline label{font-size:12px; color:var(--muted);}
+    input[type="range"]{width:180px;}
+    .kbd{
+      font-family:var(--mono); font-size:12px;
+      background:rgba(255,255,255,.06); border:1px solid var(--line);
+      padding:2px 6px; border-radius:8px;
+    }
+    .q{
+      display:grid; gap:10px;
+    }
+    .q .opt{
+      padding:10px 10px; border-radius:14px;
+      background:rgba(15,22,48,.55); border:1px solid var(--line);
+      cursor:pointer;
+      transition:transform .06s ease, border-color .15s ease;
+    }
+    .q .opt:hover{border-color:rgba(110,231,255,.4);}
+    .q .opt:active{transform:translateY(1px);}
+    .feedback{font-size:12.5px; color:var(--muted);}
+    .feedback.good{color:var(--good);}
+    .feedback.bad{color:var(--bad);}
+    .progress{
+      height:10px; border-radius:999px; overflow:hidden;
+      background:rgba(255,255,255,.08); border:1px solid var(--line);
+    }
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, rgba(122,162,255,.85), rgba(110,231,255,.9));}
+    .footer{
+      position:fixed; left:0; right:0; bottom:0;
+      background:rgba(10,14,28,.68);
+      border-top:1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      padding:10px 14px;
+      display:flex; justify-content:center;
+      z-index:20;
+    }
+    .footer .inner{
+      width:min(1200px, calc(100% - 10px));
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      color:var(--muted); font-size:12px;
+    }
+    .footer .inner .left{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+    .tag{padding:5px 8px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04);}
+    .hidden{display:none !important;}
+    /* Flashcards */
+    .deck{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    @media (max-width: 980px){.deck{grid-template-columns:1fr;}}
+    .flashcard{
+      perspective: 900px;
+    }
+    .fc-inner{
+      position:relative; height:160px;
+      transform-style:preserve-3d;
+      transition: transform .6s cubic-bezier(.2,.8,.2,1);
+    }
+    .flashcard.flipped .fc-inner{transform:rotateY(180deg);}
+    .face{
+      position:absolute; inset:0;
+      border-radius:16px;
+      background:rgba(15,22,48,.55);
+      border:1px solid var(--line);
+      padding:14px;
+      backface-visibility:hidden;
+      overflow:hidden;
+    }
+    .face h4{margin:0 0 6px; font-size:14px;}
+    .face p{margin:0; color:var(--muted); font-size:12.5px; line-height:1.55;}
+    .back{transform:rotateY(180deg);}
+    .fc-actions{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;}
+    /* Match game */
+    .match{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+      margin-top:8px;
+    }
+    .chip{
+      padding:9px 10px; border-radius:14px;
+      background:rgba(15,22,48,.55);
+      border:1px solid var(--line);
+      cursor:pointer; user-select:none;
+    }
+    .chip.sel{border-color:rgba(255,204,102,.55);}
+    .chip.ok{border-color:rgba(62,230,168,.65);}
+    .chip.no{border-color:rgba(255,107,122,.65);}
+    .small{font-size:12px; color:var(--muted);}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero card">
+    <div class="left">
+      <h1>交互式教学：从「能级 → 反转 → 激光」到「结 → 晶体管 → 芯片」</h1>
+      <p>
+        这是把你今天给朋友讲解的一串知识点，整理成一个可互动、可练习、可复盘的网站。
+        你可以把它当成“记忆外置”：看图、拖动参数、做题、翻卡片，把概念从“听懂”变成“能讲”。
+      </p>
+      <div class="pillrow">
+        <span class="pill">原子能级 / 模态</span>
+        <span class="pill">粒子数反转 / 负温度</span>
+        <span class="pill">红宝石 / CO₂ RF / 光纤激光器</span>
+        <span class="pill">PN 结 / BJT / MOSFET</span>
+        <span class="pill">光刻 / 制程</span>
+        <span class="pill">4004 / 集成电路</span>
+        <span class="pill">霍尔电推进（选修彩蛋）</span>
+      </div>
+      <div class="btnrow">
+        <button class="btn good" id="btnContinue">继续上次进度</button>
+        <button class="btn secondary" id="btnReset">清空进度</button>
+        <button class="btn warn" id="btnExport">导出学习记录（JSON）</button>
+      </div>
+    </div>
+    <div class="right">
+      <div class="stat">
+        <div class="row"><div class="k">今日目标</div><div class="v">理解 + 可复述</div></div>
+        <div class="row"><div class="k">学习进度</div><div class="v"><span id="pct">0%</span></div></div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        <div class="row"><div class="k">已完成模块</div><div class="v"><span id="done">0</span>/<span id="total">7</span></div></div>
+        <div class="row"><div class="k">小测正确率</div><div class="v"><span id="acc">0%</span></div></div>
+        <div class="row"><div class="k">快捷键</div><div class="v"><span class="kbd">/</span> 搜索模块 · <span class="kbd">N</span> 下一章</div></div>
+      </div>
+      <div style="margin-top:10px;" class="mini">
+        <h3>快速导航</h3>
+        <p>你也可以把本站当成“讲解脚本”，点开模块就能顺着讲。</p>
+        <div class="rowline" style="gap:8px;">
+          <input id="search" placeholder="输入关键词（如：反转 / MOSFET / 光刻）" style="flex:1; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(15,22,48,.55); color:var(--text);" />
+          <button class="btn" id="btnClear">清除</button>
+        </div>
+        <div class="small" style="margin-top:8px;">提示：按 <span class="kbd">/</span> 可聚焦搜索框。</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid" id="modules">
+
+    <!-- 1 -->
+    <section class="card section module" data-keywords="能级 模态 氢原子 原子模态 光谱">
+      <h2>1) 原子能级与“模态”：为什么会有离散谱线？</h2>
+      <div class="sub">把“能级离散 + 允许跃迁 + 光子能量”这三件事串起来，你就能讲清：为什么激光不是“随便发光”。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          原子（或晶体中的电子态）只能占据离散能量状态；发生跃迁时释放/吸收的光子能量等于能级差，
+          所以谱线是离散的；而“模态”是指在系统里允许存在的稳定驻波/本征态（原子态、腔模、光纤模都可以叫模态）。
+          <details>
+            <summary>把“原子模态”和“激光纵横模”区分开</summary>
+            <div style="margin-top:8px;color:var(--muted);line-height:1.6;font-size:13px;">
+              • <b>原子/分子模态（能级态）</b>：微观量子态，决定“发/吸收哪个频率”。<br/>
+              • <b>谐振腔模态（纵模/横模）</b>：腔体允许的电磁驻波分布，决定“哪些频率/空间分布能被放大”。<br/>
+              激光输出 = “介质提供增益的频率范围” ∩ “腔允许的模态”。
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="能级跃迁示意图">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="rgba(122,162,255,.85)"/>
+                <stop offset="1" stop-color="rgba(110,231,255,.9)"/>
+              </linearGradient>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.8)"></path>
+              </marker>
+            </defs>
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <!-- energy ladder -->
+            <text x="36" y="46" fill="rgba(255,255,255,.85)" font-size="14">能级（离散）</text>
+            <line x1="70" y1="70" x2="210" y2="70" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+            <text x="220" y="74" fill="rgba(255,255,255,.7)" font-size="12">E3</text>
+
+            <line x1="90" y1="120" x2="230" y2="120" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+            <text x="240" y="124" fill="rgba(255,255,255,.7)" font-size="12">E2</text>
+
+            <line x1="60" y1="190" x2="200" y2="190" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+            <text x="210" y="194" fill="rgba(255,255,255,.7)" font-size="12">E1</text>
+
+            <text x="36" y="230" fill="rgba(255,255,255,.55)" font-size="12">光子能量 hν = ΔE</text>
+
+            <!-- transitions -->
+            <line x1="260" y1="120" x2="260" y2="70" stroke="url(#g1)" stroke-width="4" marker-end="url(#arrow)"/>
+            <text x="272" y="95" fill="rgba(110,231,255,.95)" font-size="12">吸收</text>
+
+            <line x1="320" y1="70" x2="320" y2="190" stroke="rgba(62,230,168,.85)" stroke-width="4" marker-end="url(#arrow)"/>
+            <text x="332" y="138" fill="rgba(62,230,168,.92)" font-size="12">自发/受激发射</text>
+
+            <!-- cavity modes -->
+            <text x="330" y="46" fill="rgba(255,255,255,.85)" font-size="14">腔模态（纵/横模）</text>
+            <rect x="330" y="60" width="160" height="68" rx="12" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.12)"/>
+            <path d="M340 94 C360 70, 390 118, 410 94 S450 70, 480 94" fill="none" stroke="rgba(122,162,255,.85)" stroke-width="3"/>
+            <text x="342" y="132" fill="rgba(255,255,255,.55)" font-size="12">允许的驻波分布/频率</text>
+
+            <rect x="330" y="150" width="160" height="96" rx="12" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.12)"/>
+            <circle cx="382" cy="198" r="22" fill="none" stroke="rgba(110,231,255,.8)" stroke-width="3"/>
+            <circle cx="442" cy="198" r="22" fill="none" stroke="rgba(110,231,255,.55)" stroke-width="3" stroke-dasharray="6 6"/>
+            <text x="342" y="242" fill="rgba(255,255,255,.55)" font-size="12">横模：光斑形状（TEM₀₀ 等）</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>互动：用一句话复述（自测）</h3>
+        <p>写下你的复述。系统会提示你是否包含关键要点。</p>
+        <textarea id="s1" rows="3" placeholder="例如：能级离散，跃迁放/吸收光子能量等于能级差，腔模决定哪些频率/空间分布能被放大……"
+          style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(15,22,48,.55); color:var(--text);"></textarea>
+        <div class="rowline" style="margin-top:8px;">
+          <button class="btn" onclick="checkSummary('s1',['离散','跃迁','能级差','光子','模态'])">检查要点</button>
+          <span id="s1fb" class="feedback"></span>
+          <button class="btn good" onclick="markDone(0)">标记本模块已掌握</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="card section module" data-keywords="粒子数反转 负温度 受激辐射 激光条件">
+      <h2>2) 粒子数反转与“负温度”：为什么需要反转才能有激光？</h2>
+      <div class="sub">核心是：受激发射要“净增益”，而净增益取决于上能级与下能级的人口差。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          正常热平衡下：低能级粒子更多（N1 &gt; N2），受激吸收 ≥ 受激发射，光越走越衰减；
+          只有实现 <b>粒子数反转</b>（N2 &gt; N1），才能让受激发射“多过吸收”，形成净放大。
+          <details>
+            <summary>“负温度”到底是什么意思？（概念澄清）</summary>
+            <div style="margin-top:8px;color:var(--muted);line-height:1.6;font-size:13px;">
+              在某些“能量有上限”的体系里（例如两能级近似、某些自旋体系），若高能态占据概率反而更高，
+              用玻尔兹曼分布形式拟合会得到“有效温度为负”。这不是“比 0K 更冷”，而是“分布反转”的一种表述。
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="反转与增益示意图">
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="rgba(255,204,102,.9)"/>
+                <stop offset="1" stop-color="rgba(62,230,168,.9)"/>
+              </linearGradient>
+            </defs>
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">两能级：人口分布 → 净增益</text>
+
+            <!-- axes -->
+            <line x1="60" y1="230" x2="240" y2="230" stroke="rgba(255,255,255,.2)"/>
+            <line x1="60" y1="230" x2="60" y2="70" stroke="rgba(255,255,255,.2)"/>
+            <text x="52" y="64" fill="rgba(255,255,255,.5)" font-size="11">人口</text>
+            <text x="210" y="248" fill="rgba(255,255,255,.5)" font-size="11">能级（低→高）</text>
+
+            <!-- bars: equilibrium -->
+            <text x="66" y="78" fill="rgba(255,255,255,.75)" font-size="12">热平衡</text>
+            <rect x="92" y="130" width="40" height="100" rx="8" fill="rgba(122,162,255,.35)" stroke="rgba(122,162,255,.6)"/>
+            <rect x="152" y="170" width="40" height="60" rx="8" fill="rgba(122,162,255,.18)" stroke="rgba(122,162,255,.4)"/>
+            <text x="96" y="248" fill="rgba(255,255,255,.55)" font-size="11">N1</text>
+            <text x="156" y="248" fill="rgba(255,255,255,.55)" font-size="11">N2</text>
+
+            <text x="280" y="78" fill="rgba(255,255,255,.75)" font-size="12">反转</text>
+            <rect x="302" y="165" width="40" height="65" rx="8" fill="rgba(62,230,168,.18)" stroke="rgba(62,230,168,.45)"/>
+            <rect x="362" y="115" width="40" height="115" rx="8" fill="rgba(62,230,168,.35)" stroke="rgba(62,230,168,.65)"/>
+            <text x="306" y="248" fill="rgba(255,255,255,.55)" font-size="11">N1</text>
+            <text x="366" y="248" fill="rgba(255,255,255,.55)" font-size="11">N2</text>
+
+            <!-- gain meter -->
+            <rect x="280" y="150" width="200" height="20" rx="10" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)"/>
+            <rect id="gainbar" x="280" y="150" width="120" height="20" rx="10" fill="url(#g2)"/>
+            <text x="280" y="144" fill="rgba(255,255,255,.55)" font-size="11">净增益（受激发射 - 吸收）</text>
+            <text id="gaintxt" x="410" y="164" fill="rgba(255,255,255,.8)" font-size="11">+</text>
+          </svg>
+          <div class="rowline" style="margin-top:10px;">
+            <label>N2 - N1</label>
+            <input type="range" min="-100" max="100" value="40" id="inv" />
+            <span class="kbd" id="invv">40</span>
+            <span class="small">拖动看看“净增益”如何变化</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>小测：为什么“反转”是激光必要条件？</h3>
+        <p>选一个最关键的原因。</p>
+        <div class="q" data-quiz="q2" data-answer="2">
+          <div class="opt">因为反转会让光变得更“单色”</div>
+          <div class="opt">因为反转使受激发射概率一定大于自发辐射</div>
+          <div class="opt">因为反转让受激发射多于受激吸收，从而产生净放大</div>
+          <div class="opt">因为反转等于把温度降到 0 K</div>
+          <div class="feedback" data-fb></div>
+        </div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn good" onclick="markDone(1)">标记本模块已掌握</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="card section module" data-keywords="红宝石激光器 三能级 四能级 Q开关 锁模 CO2 RF 光纤激光器">
+      <h2>3) 三类激光器的“家族谱”：红宝石 / CO₂ RF / 光纤</h2>
+      <div class="sub">把它们放在一张比较表里：介质、泵浦方式、典型波长、优缺点、应用。</div>
+
+      <div class="tabs" role="tablist" aria-label="激光器家族">
+        <div class="tab active" data-tab="ruby">红宝石</div>
+        <div class="tab" data-tab="co2">CO₂ RF</div>
+        <div class="tab" data-tab="fiber">光纤激光器</div>
+        <div class="tab" data-tab="modes">纵横模 / 锁模</div>
+      </div>
+
+      <div id="tab-ruby" class="tabpane">
+        <div class="two">
+          <div class="note">
+            <b>红宝石激光器（Ruby）</b><br/>
+            • 典型：<b>三能级系统</b>，阈值较高（因为下能级就是基态，人口很难“压过去”）<br/>
+            • 泵浦：闪光灯等光泵浦<br/>
+            • 特点：脉冲历史悠久，结构直观，教学示范很友好<br/>
+            <details><summary>一句话记忆</summary>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+                “三能级 → 难反转 → 阈值高 → 常见脉冲。”
+              </div>
+            </details>
+          </div>
+          <div class="svgbox">
+            <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="红宝石三能级示意图">
+              <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+              <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">三能级：泵浦 → 亚稳态 → 激光跃迁</text>
+              <line x1="80" y1="210" x2="250" y2="210" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+              <text x="260" y="214" fill="rgba(255,255,255,.6)" font-size="12">E1（基态）</text>
+
+              <line x1="110" y1="140" x2="280" y2="140" stroke="rgba(62,230,168,.75)" stroke-width="3"/>
+              <text x="290" y="144" fill="rgba(255,255,255,.6)" font-size="12">E2（亚稳态）</text>
+
+              <line x1="90" y1="80" x2="260" y2="80" stroke="rgba(255,204,102,.8)" stroke-width="3"/>
+              <text x="270" y="84" fill="rgba(255,255,255,.6)" font-size="12">E3（泵浦带）</text>
+
+              <defs>
+                <marker id="ar1" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.8)"></path>
+                </marker>
+              </defs>
+              <line x1="320" y1="210" x2="320" y2="80" stroke="rgba(255,204,102,.85)" stroke-width="4" marker-end="url(#ar1)"/>
+              <text x="334" y="150" fill="rgba(255,204,102,.9)" font-size="12">泵浦</text>
+
+              <line x1="370" y1="80" x2="370" y2="140" stroke="rgba(255,255,255,.4)" stroke-width="4" marker-end="url(#ar1)"/>
+              <text x="384" y="116" fill="rgba(255,255,255,.7)" font-size="12">快弛豫</text>
+
+              <line x1="420" y1="140" x2="420" y2="210" stroke="rgba(110,231,255,.85)" stroke-width="5" marker-end="url(#ar1)"/>
+              <text x="434" y="182" fill="rgba(110,231,255,.9)" font-size="12">激光跃迁</text>
+
+              <rect x="60" y="230" width="420" height="26" rx="13" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.12)"/>
+              <text x="74" y="248" fill="rgba(255,255,255,.55)" font-size="12">关键：E1 是基态 → 需要把大量粒子从基态抽走才能反转（阈值高）</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-co2" class="tabpane hidden">
+        <div class="two">
+          <div class="note">
+            <b>CO₂ RF 激光器</b><br/>
+            • 介质：CO₂ 气体分子振转能级（典型 10.6 μm）<br/>
+            • 激励：RF 放电（射频）<br/>
+            • 特点：高效率、适合非金属加工/打标/切割等；气体激光器的工程系统感很强（气路、放电、谐振腔）。<br/>
+            <details><summary>一句话记忆</summary>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+                “气体分子 → RF 放电 → 10.6 μm → 工程系统复杂但成熟。”
+              </div>
+            </details>
+          </div>
+          <div class="svgbox">
+            <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="CO2 RF 激光器结构示意图">
+              <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+              <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">CO₂ RF：放电管 + 谐振腔 + 气体循环</text>
+              <rect x="60" y="90" width="400" height="90" rx="18" fill="rgba(255,255,255,.04)" stroke="rgba(110,231,255,.25)"/>
+              <text x="74" y="120" fill="rgba(255,255,255,.7)" font-size="12">放电区（RF 电极）</text>
+              <line x1="90" y1="160" x2="430" y2="160" stroke="rgba(255,204,102,.7)" stroke-width="6" stroke-linecap="round"/>
+              <text x="74" y="178" fill="rgba(255,255,255,.55)" font-size="12">增益介质：CO₂ / N₂ / He 混合气</text>
+
+              <rect x="60" y="70" width="40" height="18" rx="9" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.14)"/>
+              <rect x="420" y="70" width="40" height="18" rx="9" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.14)"/>
+              <text x="58" y="62" fill="rgba(255,255,255,.55)" font-size="11">HR</text>
+              <text x="426" y="62" fill="rgba(255,255,255,.55)" font-size="11">OC</text>
+              <path d="M110 79 L410 79" stroke="rgba(110,231,255,.7)" stroke-width="3"/>
+              <text x="190" y="64" fill="rgba(110,231,255,.8)" font-size="11">谐振腔</text>
+
+              <path d="M120 210 C150 235, 190 235, 220 210 S290 185, 320 210 S390 235, 420 210"
+                    fill="none" stroke="rgba(62,230,168,.75)" stroke-width="3"/>
+              <text x="74" y="232" fill="rgba(255,255,255,.55)" font-size="12">气体循环 / 冷却（工程要点）</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-fiber" class="tabpane hidden">
+        <div class="two">
+          <div class="note">
+            <b>光纤激光器（Fiber）</b><br/>
+            • 介质：掺杂光纤（如掺镱/掺铒）<br/>
+            • 优点：散热好、光束质量好、易扩功率、可靠性高<br/>
+            • 在制造业里：常见于金属加工（切割/焊接/增材等）<br/>
+            <details><summary>一句话记忆</summary>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+                “光纤 = 波导 + 增益一体化 → 稳、好、易扩功率。”
+              </div>
+            </details>
+          </div>
+          <div class="svgbox">
+            <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="光纤激光器结构示意图">
+              <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+              <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">光纤：泵浦合束 → 掺杂光纤增益 → 输出</text>
+              <path d="M70 140 C130 90, 190 190, 250 140 S370 90, 450 140" fill="none" stroke="rgba(110,231,255,.75)" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="120" cy="120" r="10" fill="rgba(255,204,102,.85)"/>
+              <circle cx="180" cy="160" r="10" fill="rgba(255,204,102,.85)"/>
+              <circle cx="240" cy="120" r="10" fill="rgba(255,204,102,.85)"/>
+              <text x="80" y="214" fill="rgba(255,255,255,.55)" font-size="12">黄色：泵浦（半导体激光二极管）</text>
+              <text x="80" y="236" fill="rgba(255,255,255,.55)" font-size="12">蓝色：受激发射在波导内被约束放大</text>
+              <path d="M460 140 L500 140" stroke="rgba(62,230,168,.85)" stroke-width="7" stroke-linecap="round"/>
+              <text x="420" y="120" fill="rgba(62,230,168,.9)" font-size="12">输出</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-modes" class="tabpane hidden">
+        <div class="two">
+          <div class="note">
+            <b>纵模 / 横模 / 锁模（与“模态”呼应）</b><br/>
+            • <b>纵模</b>：谐振腔长度决定允许的离散频率间隔（模式间隔）<br/>
+            • <b>横模</b>：横向驻波分布，决定光斑形状与 M² 质量<br/>
+            • <b>锁模</b>：把很多纵模的相位锁在一起 → 时域形成超短脉冲<br/>
+            <details><summary>一分钟讲解模板</summary>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+                “腔像一把梳子：只允许某些频率存在（纵模）。横向边界让光斑也有本征形状（横模）。
+                当很多纵模相位对齐，就会在时间上叠加成短脉冲（锁模）。”
+              </div>
+            </details>
+          </div>
+          <div class="svgbox">
+            <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="纵模锁模示意图">
+              <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+              <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">频域“梳子” ↔ 时域“脉冲列”</text>
+              <!-- comb -->
+              <text x="28" y="78" fill="rgba(255,255,255,.55)" font-size="12">纵模（频域）</text>
+              <g transform="translate(28,88)">
+                <rect x="0" y="0" width="220" height="70" rx="14" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)"/>
+                <g>
+                  <line x1="18" y1="55" x2="18" y2="18" stroke="rgba(110,231,255,.8)" stroke-width="3"/>
+                  <line x1="42" y1="55" x2="42" y2="28" stroke="rgba(110,231,255,.7)" stroke-width="3"/>
+                  <line x1="66" y1="55" x2="66" y2="22" stroke="rgba(110,231,255,.85)" stroke-width="3"/>
+                  <line x1="90" y1="55" x2="90" y2="32" stroke="rgba(110,231,255,.65)" stroke-width="3"/>
+                  <line x1="114" y1="55" x2="114" y2="20" stroke="rgba(110,231,255,.8)" stroke-width="3"/>
+                  <line x1="138" y1="55" x2="138" y2="30" stroke="rgba(110,231,255,.7)" stroke-width="3"/>
+                  <line x1="162" y1="55" x2="162" y2="24" stroke="rgba(110,231,255,.85)" stroke-width="3"/>
+                  <line x1="186" y1="55" x2="186" y2="34" stroke="rgba(110,231,255,.65)" stroke-width="3"/>
+                </g>
+                <text x="12" y="66" fill="rgba(255,255,255,.45)" font-size="11">间隔由腔长决定</text>
+              </g>
+
+              <!-- pulses -->
+              <text x="280" y="78" fill="rgba(255,255,255,.55)" font-size="12">锁模（时域）</text>
+              <g transform="translate(280,88)">
+                <rect x="0" y="0" width="220" height="70" rx="14" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)"/>
+                <path d="M10 55 C25 55, 25 15, 40 15 C55 15,55 55,70 55
+                         C85 55,85 10,100 10 C115 10,115 55,130 55
+                         C145 55,145 20,160 20 C175 20,175 55,190 55"
+                      fill="none" stroke="rgba(62,230,168,.8)" stroke-width="3"/>
+                <text x="12" y="66" fill="rgba(255,255,255,.45)" font-size="11">相位对齐 → 叠加成脉冲</text>
+              </g>
+
+              <text x="28" y="226" fill="rgba(255,255,255,.55)" font-size="12">记忆钩子：频域“梳子”越宽 → 时间脉冲越短（时间-频率互补）</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>拖拽匹配：把“特点”配到“对象”</h3>
+        <p>点击左边一个，再点击右边一个，配对成功会变绿。</p>
+        <div class="match" data-match="m1"></div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn" onclick="resetMatch('m1')">重置配对</button>
+          <button class="btn good" onclick="markDone(2)">标记本模块已掌握</button>
+          <span class="feedback" id="m1fb"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="card section module" data-keywords="PN结 耗尽区 内建电场 二极管 太阳能 电池 结">
+      <h2>4) PN 结：一张图讲清“耗尽区 + 内建电场 + 整流”</h2>
+      <div class="sub">很多东西（太阳能电池、二极管、晶体管）都从这张图长出来。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          P 区多空穴、N 区多电子；接触后载流子扩散并复合，留下固定离子形成 <b>耗尽区</b> 与 <b>内建电场</b>；
+          这个电场让结对不同方向电压呈现非对称导通（整流），也能在光照下分离电子-空穴对（太阳能电池）。
+          <details>
+            <summary>把“扩散”和“漂移”放进同一句话</summary>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+              扩散把电子/空穴往对方跑；内建电场让它们“漂移”回来。平衡时：扩散电流 = 漂移电流。
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="PN结耗尽区示意图">
+            <defs>
+              <marker id="ar2" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.85)"></path>
+              </marker>
+            </defs>
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">PN 结：扩散 → 耗尽区 → 内建电场</text>
+
+            <rect x="60" y="80" width="180" height="140" rx="18" fill="rgba(255,107,122,.12)" stroke="rgba(255,107,122,.35)"/>
+            <rect x="280" y="80" width="180" height="140" rx="18" fill="rgba(122,162,255,.12)" stroke="rgba(122,162,255,.35)"/>
+            <rect id="dep" x="235" y="80" width="50" height="140" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-dasharray="6 6"/>
+            <text x="142" y="154" fill="rgba(255,255,255,.7)" font-size="16" text-anchor="middle">P</text>
+            <text x="370" y="154" fill="rgba(255,255,255,.7)" font-size="16" text-anchor="middle">N</text>
+            <text x="260" y="236" fill="rgba(255,255,255,.55)" font-size="12" text-anchor="middle">耗尽区宽度</text>
+
+            <!-- diffusion arrows -->
+            <line x1="210" y1="118" x2="260" y2="118" stroke="rgba(255,255,255,.55)" stroke-width="3" marker-end="url(#ar2)"/>
+            <text x="180" y="112" fill="rgba(255,255,255,.55)" font-size="11">电子扩散 →</text>
+
+            <line x1="310" y1="182" x2="260" y2="182" stroke="rgba(255,255,255,.55)" stroke-width="3" marker-end="url(#ar2)"/>
+            <text x="320" y="188" fill="rgba(255,255,255,.55)" font-size="11">← 空穴扩散</text>
+
+            <!-- field arrows -->
+            <line x1="260" y1="92" x2="260" y2="210" stroke="rgba(110,231,255,.65)" stroke-width="3" marker-end="url(#ar2)"/>
+            <text x="270" y="108" fill="rgba(110,231,255,.8)" font-size="11">内建电场</text>
+
+            <text x="72" y="66" fill="rgba(255,255,255,.55)" font-size="12">调参：掺杂越高 → 耗尽区越窄</text>
+          </svg>
+
+          <div class="rowline" style="margin-top:10px;">
+            <label>掺杂程度</label>
+            <input type="range" min="10" max="120" value="55" id="dope"/>
+            <span class="kbd" id="dopev">55</span>
+            <span class="small">改变耗尽区宽度（示意）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>小测：耗尽区“为什么会带电”？</h3>
+        <div class="q" data-quiz="q4" data-answer="1">
+          <div class="opt">因为电子和空穴聚集在结中间</div>
+          <div class="opt">因为扩散复合后留下固定的离子（受主/施主），形成空间电荷</div>
+          <div class="opt">因为外加电压把电荷“吸”到中间</div>
+          <div class="opt">因为温度越低耗尽区越带电</div>
+          <div class="feedback" data-fb></div>
+        </div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn good" onclick="markDone(3)">标记本模块已掌握</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="card section module" data-keywords="BJT 三极管 放大 结 晶体管">
+      <h2>5) BJT：两个 PN 结“背靠背”如何实现放大？</h2>
+      <div class="sub">抓住“发射结正偏、集电结反偏、基极很薄”这三条就够了。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          以 NPN 为例：发射结正偏注入电子，薄基区让大部分电子不复合直接到集电区，
+          集电结反偏把它们“扫走”形成集电电流；因此小小的基极电流/电压控制大大的集电电流（放大）。
+          <details><summary>一分钟讲解模板</summary>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+              “BJT 像一扇门：基极是门把手。发射区往里灌载流子，基区很薄，集电区反偏把载流子拉走。
+              所以你动一下门把手，就能放大地控制门里的人流。”
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="NPN三极管载流子流动示意">
+            <defs>
+              <marker id="ar3" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.85)"></path>
+              </marker>
+            </defs>
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">NPN：发射结正偏 + 集电结反偏 + 薄基区</text>
+
+            <rect x="60" y="90" width="140" height="130" rx="18" fill="rgba(122,162,255,.10)" stroke="rgba(122,162,255,.35)"/>
+            <rect id="base" x="210" y="90" width="80" height="130" rx="18" fill="rgba(255,107,122,.10)" stroke="rgba(255,107,122,.35)"/>
+            <rect x="300" y="90" width="160" height="130" rx="18" fill="rgba(122,162,255,.10)" stroke="rgba(122,162,255,.35)"/>
+            <text x="130" y="155" fill="rgba(255,255,255,.7)" font-size="14" text-anchor="middle">E (N)</text>
+            <text x="250" y="155" fill="rgba(255,255,255,.7)" font-size="14" text-anchor="middle">B (P)</text>
+            <text x="380" y="155" fill="rgba(255,255,255,.7)" font-size="14" text-anchor="middle">C (N)</text>
+
+            <line x1="170" y1="130" x2="340" y2="130" stroke="rgba(62,230,168,.75)" stroke-width="4" marker-end="url(#ar3)"/>
+            <line x1="170" y1="160" x2="350" y2="160" stroke="rgba(62,230,168,.55)" stroke-width="4" marker-end="url(#ar3)"/>
+            <text x="90" y="78" fill="rgba(255,255,255,.55)" font-size="12">电子主流：E → B → C</text>
+
+            <line x1="250" y1="220" x2="250" y2="248" stroke="rgba(255,204,102,.75)" stroke-width="4" marker-end="url(#ar3)"/>
+            <text x="270" y="245" fill="rgba(255,204,102,.8)" font-size="12">基极控制</text>
+
+            <text x="28" y="246" fill="rgba(255,255,255,.55)" font-size="12">调参：基区越薄 → 复合越少 → 放大越强（示意）</text>
+          </svg>
+
+          <div class="rowline" style="margin-top:10px;">
+            <label>基区厚度</label>
+            <input type="range" min="18" max="120" value="56" id="bth"/>
+            <span class="kbd" id="bthv">56</span>
+            <span class="small">基区变薄会提升“通过率”（示意）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>小测：哪一条最像“放大”的关键？</h3>
+        <div class="q" data-quiz="q5" data-answer="0">
+          <div class="opt">基区很薄，让注入载流子多数到达集电区</div>
+          <div class="opt">发射区必须反偏才会放大</div>
+          <div class="opt">集电区必须正偏才会放大</div>
+          <div class="opt">温度越低放大越强</div>
+          <div class="feedback" data-fb></div>
+        </div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn good" onclick="markDone(4)">标记本模块已掌握</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="card section module" data-keywords="MOSFET 栅极 沟道 反型 光刻 光刻胶 制程 lithography">
+      <h2>6) MOSFET + 光刻：把“电场控制沟道”做进工艺里</h2>
+      <div class="sub">理解 MOSFET 的“栅控沟道”后，再用光刻把它“复制很多次”，就能直觉理解芯片。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          MOSFET 用栅极电场在半导体表面诱导反型层形成“沟道”，实现用电压控制电流；
+          光刻则通过掩膜把结构图案化到晶圆上，层层堆叠形成复杂电路。
+          <details><summary>光刻三步记忆钩子</summary>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+              涂胶 → 对准曝光 → 显影刻蚀（或沉积/离子注入后再剥离）。<br/>
+              记成一句：<b>“涂、照、洗；刻、填、掺；再重复”</b>。
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="MOSFET沟道与光刻示意图">
+            <defs>
+              <marker id="ar4" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,.85)"></path>
+              </marker>
+            </defs>
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">MOSFET：栅压 → 反型 → 沟道</text>
+
+            <!-- substrate -->
+            <rect x="60" y="150" width="400" height="80" rx="18" fill="rgba(122,162,255,.10)" stroke="rgba(122,162,255,.30)"/>
+            <text x="80" y="198" fill="rgba(255,255,255,.55)" font-size="12">衬底</text>
+
+            <!-- source/drain -->
+            <rect x="90" y="160" width="90" height="60" rx="14" fill="rgba(255,107,122,.10)" stroke="rgba(255,107,122,.35)"/>
+            <rect x="340" y="160" width="90" height="60" rx="14" fill="rgba(255,107,122,.10)" stroke="rgba(255,107,122,.35)"/>
+            <text x="135" y="196" fill="rgba(255,255,255,.7)" font-size="12" text-anchor="middle">S</text>
+            <text x="385" y="196" fill="rgba(255,255,255,.7)" font-size="12" text-anchor="middle">D</text>
+
+            <!-- oxide + gate -->
+            <rect x="200" y="120" width="120" height="20" rx="10" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.18)"/>
+            <rect x="210" y="70" width="100" height="44" rx="14" fill="rgba(110,231,255,.12)" stroke="rgba(110,231,255,.35)"/>
+            <text x="260" y="98" fill="rgba(255,255,255,.7)" font-size="12" text-anchor="middle">Gate</text>
+
+            <!-- channel -->
+            <rect id="ch" x="190" y="202" width="140" height="12" rx="6" fill="rgba(62,230,168,.0)" stroke="rgba(62,230,168,.0)"/>
+            <text x="260" y="236" fill="rgba(255,255,255,.55)" font-size="12" text-anchor="middle">沟道强度（随栅压）</text>
+
+            <line x1="260" y1="70" x2="260" y2="120" stroke="rgba(110,231,255,.65)" stroke-width="3" marker-end="url(#ar4)"/>
+            <text x="275" y="110" fill="rgba(110,231,255,.75)" font-size="11">电场</text>
+
+            <!-- litho -->
+            <text x="28" y="74" fill="rgba(255,255,255,.55)" font-size="12">光刻：掩膜把结构复制到晶圆</text>
+            <rect x="60" y="86" width="120" height="46" rx="14" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)"/>
+            <path d="M75 100 h90 v18 h-90 z" fill="rgba(255,204,102,.18)" stroke="rgba(255,204,102,.38)"/>
+            <text x="72" y="124" fill="rgba(255,255,255,.45)" font-size="11">Mask</text>
+          </svg>
+
+          <div class="rowline" style="margin-top:10px;">
+            <label>栅压 Vg</label>
+            <input type="range" min="0" max="100" value="30" id="vg"/>
+            <span class="kbd" id="vgv">30</span>
+            <span class="small">Vg 超过阈值 → 沟道显现（示意）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>记忆卡片（翻面）</h3>
+        <p>点卡片翻面；每张卡片都可以当成你“复述时的一句话”。</p>
+        <div class="deck" id="deck"></div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn good" onclick="markDone(5)">标记本模块已掌握</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="card section module" data-keywords="4004 芯片 集成电路 摩尔定律 制造 逻辑">
+      <h2>7) 4004：为什么“能做出来”比“能画出来”更难？</h2>
+      <div class="sub">用一个早期微处理器作锚点：把“器件 → 电路 → 系统 → 制造”串起来。</div>
+
+      <div class="two">
+        <div class="note">
+          <b>一句话抓主线：</b><br/>
+          芯片不是“电路图的堆叠”，而是“可制造的几何结构 + 可控制的材料性质 + 可重复的工艺窗口”。
+          早期芯片（如 4004）最值得学的是：它把大量 MOSFET 的一致性、互连、时钟、功耗、封装都变成了工程问题。
+          <details><summary>你可以这样讲给朋友听</summary>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;">
+              “画电路像写程序；做芯片像把程序刻进石头——你要保证每一层都对齐、每个器件参数都落在窗口里，
+              还要能批量重复。难点是制造与一致性。”
+            </div>
+          </details>
+        </div>
+
+        <div class="svgbox">
+          <svg viewBox="0 0 520 280" width="100%" height="auto" aria-label="器件到系统的层级示意图">
+            <rect x="12" y="12" width="496" height="256" rx="18" fill="rgba(15,22,48,.55)" stroke="rgba(255,255,255,.12)"/>
+            <text x="28" y="44" fill="rgba(255,255,255,.85)" font-size="14">层级：器件 → 电路 → 模块 → 系统（制造贯穿）</text>
+
+            <g>
+              <rect x="60" y="78" width="120" height="50" rx="16" fill="rgba(62,230,168,.10)" stroke="rgba(62,230,168,.35)"/>
+              <text x="120" y="108" fill="rgba(255,255,255,.75)" font-size="12" text-anchor="middle">MOSFET</text>
+
+              <rect x="210" y="78" width="120" height="50" rx="16" fill="rgba(110,231,255,.10)" stroke="rgba(110,231,255,.35)"/>
+              <text x="270" y="108" fill="rgba(255,255,255,.75)" font-size="12" text-anchor="middle">逻辑门</text>
+
+              <rect x="360" y="78" width="120" height="50" rx="16" fill="rgba(122,162,255,.10)" stroke="rgba(122,162,255,.35)"/>
+              <text x="420" y="108" fill="rgba(255,255,255,.75)" font-size="12" text-anchor="middle">模块</text>
+
+              <rect x="210" y="150" width="120" height="50" rx="16" fill="rgba(255,204,102,.10)" stroke="rgba(255,204,102,.35)"/>
+              <text x="270" y="180" fill="rgba(255,255,255,.75)" font-size="12" text-anchor="middle">CPU（例：4004）</text>
+
+              <path d="M180 103 L210 103" stroke="rgba(255,255,255,.35)" stroke-width="3"/>
+              <path d="M330 103 L360 103" stroke="rgba(255,255,255,.35)" stroke-width="3"/>
+              <path d="M420 128 L270 150" stroke="rgba(255,255,255,.25)" stroke-width="3"/>
+
+              <rect x="60" y="210" width="420" height="36" rx="18" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)"/>
+              <text x="270" y="233" fill="rgba(255,255,255,.55)" font-size="12" text-anchor="middle">
+                制造要点：对准 / 线宽 / 缺陷 / 互连 / 良率 / 封装
+              </text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="mini" style="margin-top:12px;">
+        <h3>终章小测：哪句话最接近“芯片难点”？</h3>
+        <div class="q" data-quiz="q7" data-answer="2">
+          <div class="opt">难点在于画出足够复杂的电路图</div>
+          <div class="opt">难点在于把晶圆做得足够大</div>
+          <div class="opt">难点在于可制造性与一致性：层层对准、参数窗口、良率与互连</div>
+          <div class="opt">难点在于让芯片在真空里工作</div>
+          <div class="feedback" data-fb></div>
+        </div>
+        <div class="rowline" style="margin-top:10px;">
+          <button class="btn good" onclick="markDone(6)">标记本模块已掌握</button>
+          <button class="btn secondary" onclick="scrollToTop()">回到顶部</button>
+        </div>
+      </div>
+
+      <details>
+        <summary>彩蛋：霍尔电推进（把“等离子体 + 电磁场”当作另一个“模态”故事）</summary>
+        <div style="margin-top:10px;" class="note">
+          如果你今天也顺带聊到了霍尔推进：它本质上是“电场加速离子、磁场束缚电子”，
+          让电子在磁场里产生横向漂移（霍尔电流），从而建立稳定放电并把离子喷出产生推力。
+          这部分我没做深讲，只留一个“概念钩子”：<b>像 MOSFET 一样，用场去控制粒子运动。</b>
+        </div>
+      </details>
+    </section>
+
+  </div>
+</div>
+
+<div class="footer">
+  <div class="inner">
+    <div class="left">
+      <span class="tag">离线可用 · 单文件</span>
+      <span class="tag">进度保存在浏览器</span>
+      <span class="tag">按 <span class="kbd">N</span> 下一章</span>
+    </div>
+    <div class="right">
+      <span>完成度：<b id="footPct" style="color:rgba(255,255,255,.85)">0%</b></span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* -----------------------------
+  State (localStorage)
+----------------------------- */
+const STORAGE_KEY = "teachsite_progress_v1";
+const state = {
+  done: Array(7).fill(false),
+  quiz: { attempts:0, correct:0 },
+  lastModuleIndex: 0,
+  notes: {}
+};
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const obj = JSON.parse(raw);
+    if(obj && Array.isArray(obj.done)) state.done = obj.done.slice(0,7).concat(Array(7).fill(false)).slice(0,7);
+    if(obj.quiz) state.quiz = obj.quiz;
+    if(typeof obj.lastModuleIndex === "number") state.lastModuleIndex = obj.lastModuleIndex;
+    if(obj.notes) state.notes = obj.notes;
+  }catch(e){}
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderProgress();
+}
+function resetState(){
+  localStorage.removeItem(STORAGE_KEY);
+  state.done = Array(7).fill(false);
+  state.quiz = {attempts:0, correct:0};
+  state.lastModuleIndex = 0;
+  state.notes = {};
+  renderProgress();
+}
+
+/* -----------------------------
+  Progress UI
+----------------------------- */
+function renderProgress(){
+  const total = state.done.length;
+  const done = state.done.filter(Boolean).length;
+  const pct = Math.round(done/total*100);
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("footPct").textContent = pct + "%";
+  document.getElementById("done").textContent = done;
+  document.getElementById("total").textContent = total;
+  document.getElementById("bar").style.width = pct + "%";
+
+  const acc = state.quiz.attempts ? Math.round(state.quiz.correct/state.quiz.attempts*100) : 0;
+  document.getElementById("acc").textContent = acc + "%";
+
+  // show module completion subtly
+  document.querySelectorAll(".module").forEach((m, idx)=>{
+    m.style.outline = state.done[idx] ? "2px solid rgba(62,230,168,.35)" : "none";
+  });
+}
+
+/* -----------------------------
+  Navigation & Search
+----------------------------- */
+function scrollToTop(){ window.scrollTo({top:0, behavior:"smooth"}); }
+
+function focusSearch(){ document.getElementById("search").focus(); }
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "/"){
+    e.preventDefault(); focusSearch();
+  }
+  if(e.key.toLowerCase() === "n"){
+    e.preventDefault();
+    const next = Math.min(state.lastModuleIndex+1, 6);
+    jumpToModule(next);
+  }
+});
+document.getElementById("btnClear").addEventListener("click", ()=>{
+  document.getElementById("search").value = "";
+  filterModules("");
+});
+document.getElementById("search").addEventListener("input", (e)=> filterModules(e.target.value));
+
+function filterModules(q){
+  const query = (q||"").trim().toLowerCase();
+  document.querySelectorAll(".module").forEach((m)=>{
+    const kw = (m.dataset.keywords||"").toLowerCase();
+    const text = (m.innerText||"").toLowerCase();
+    const hit = !query || kw.includes(query) || text.includes(query);
+    m.classList.toggle("hidden", !hit);
+  });
+}
+
+function jumpToModule(idx){
+  const mods = document.querySelectorAll(".module");
+  const target = mods[idx];
+  if(!target) return;
+  state.lastModuleIndex = idx;
+  saveState();
+  target.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* -----------------------------
+  Mark done & summary checker
+----------------------------- */
+function markDone(idx){
+  state.done[idx] = true;
+  saveState();
+  jumpToModule(Math.min(idx+1, 6));
+}
+function checkSummary(textareaId, mustHave){
+  const el = document.getElementById(textareaId);
+  const fb = document.getElementById(textareaId+"fb");
+  const t = (el.value||"").toLowerCase();
+  let hit = 0;
+  mustHave.forEach(k => { if(t.includes(k.toLowerCase())) hit++; });
+  if(hit >= Math.max(3, Math.floor(mustHave.length*0.6))){
+    fb.className = "feedback good";
+    fb.textContent = "✅ 覆盖关键点不错（命中 "+hit+"/"+mustHave.length+"）";
+  }else{
+    fb.className = "feedback bad";
+    fb.textContent = "⚠️ 还差点意思：建议补上「"+mustHave.filter(k=>!t.includes(k.toLowerCase())).slice(0,3).join(" / ")+"」等要点";
+  }
+}
+
+/* -----------------------------
+  Interactive sliders
+----------------------------- */
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+// inversion slider
+const inv = document.getElementById("inv");
+inv.addEventListener("input", ()=>{
+  const v = parseInt(inv.value,10);
+  document.getElementById("invv").textContent = v;
+  // map to bar width
+  const w = clamp(100 + v, 10, 190); // 10..190
+  const bar = document.getElementById("gainbar");
+  bar.setAttribute("width", w);
+  bar.setAttribute("x", 280);
+  const sign = v>0 ? "+" : (v<0 ? "−" : "0");
+  document.getElementById("gaintxt").textContent = sign;
+});
+
+// doping slider (depletion width)
+const dope = document.getElementById("dope");
+dope.addEventListener("input", ()=>{
+  const v = parseInt(dope.value,10);
+  document.getElementById("dopev").textContent = v;
+  // higher doping -> narrower depletion
+  const width = clamp(140 - v, 20, 120);
+  const dep = document.getElementById("dep");
+  dep.setAttribute("x", 260 - width/2);
+  dep.setAttribute("width", width);
+});
+
+// base thickness slider (visual)
+const bth = document.getElementById("bth");
+bth.addEventListener("input", ()=>{
+  const v = parseInt(bth.value,10);
+  document.getElementById("bthv").textContent = v;
+  // thickness corresponds to base width
+  const w = clamp(v, 26, 120);
+  const base = document.getElementById("base");
+  base.setAttribute("x", 260 - w/2);
+  base.setAttribute("width", w);
+});
+
+// gate voltage slider (channel visibility)
+const vg = document.getElementById("vg");
+vg.addEventListener("input", ()=>{
+  const v = parseInt(vg.value,10);
+  document.getElementById("vgv").textContent = v;
+  const ch = document.getElementById("ch");
+  const thr = 45;
+  const strength = clamp((v-thr)/55, 0, 1);
+  ch.style.fill = `rgba(62,230,168,${0.08 + strength*0.55})`;
+  ch.style.stroke = `rgba(62,230,168,${strength*0.9})`;
+});
+
+/* -----------------------------
+  Quiz engine
+----------------------------- */
+function setupQuizzes(){
+  document.querySelectorAll("[data-quiz]").forEach((q)=>{
+    const ans = parseInt(q.dataset.answer,10);
+    const opts = Array.from(q.querySelectorAll(".opt"));
+    const fb = q.querySelector("[data-fb]");
+    opts.forEach((opt, idx)=>{
+      opt.addEventListener("click", ()=>{
+        // prevent double counting by locking after first click
+        if(q.dataset.locked === "1") return;
+        q.dataset.locked = "1";
+        state.quiz.attempts += 1;
+        const ok = idx === ans;
+        if(ok) state.quiz.correct += 1;
+        saveState();
+        fb.className = "feedback " + (ok ? "good" : "bad");
+        fb.textContent = ok ? "✅ 正确。把这句话当成你复述时的“关键句”。" : "❌ 不对。回看上面的“一句话抓主线”。";
+        opts.forEach((o,i)=>{
+          if(i===ans) o.style.borderColor = "rgba(62,230,168,.65)";
+          else o.style.borderColor = "rgba(255,255,255,.12)";
+        });
+      });
+    });
+  });
+}
+
+/* -----------------------------
+  Tabs (laser family)
+----------------------------- */
+function setupTabs(){
+  document.querySelectorAll(".tab").forEach((t)=>{
+    t.addEventListener("click", ()=>{
+      const key = t.dataset.tab;
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      document.querySelectorAll(".tabpane").forEach(p=>p.classList.add("hidden"));
+      document.getElementById("tab-"+key).classList.remove("hidden");
+    });
+  });
+}
+
+/* -----------------------------
+  Match game
+----------------------------- */
+const matchData = {
+  m1: {
+    left: [
+      {id:"ruby",  text:"红宝石"},
+      {id:"co2",   text:"CO₂ RF"},
+      {id:"fiber", text:"光纤激光器"},
+      {id:"mode",  text:"锁模"}
+    ],
+    right: [
+      {id:"fiber", text:"波导+增益一体，散热好，可靠性高"},
+      {id:"ruby",  text:"三能级，阈值高，常见脉冲"},
+      {id:"mode",  text:"多纵模相位锁定 → 超短脉冲"},
+      {id:"co2",   text:"气体分子，RF 放电，10.6 μm"}
+    ]
+  }
+};
+const matchState = {};
+function renderMatch(key){
+  const host = document.querySelector(`[data-match="${key}"]`);
+  host.innerHTML = "";
+  const data = matchData[key];
+  matchState[key] = { selL:null, selR:null, pairs: {} };
+
+  const colL = document.createElement("div");
+  const colR = document.createElement("div");
+
+  // shuffle for replay
+  const L = [...data.left].sort(()=>Math.random()-0.5);
+  const R = [...data.right].sort(()=>Math.random()-0.5);
+
+  L.forEach(item=>{
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = item.text;
+    d.dataset.side = "L";
+    d.dataset.id = item.id;
+    d.addEventListener("click", ()=>selectChip(key,d));
+    colL.appendChild(d);
+  });
+  R.forEach(item=>{
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = item.text;
+    d.dataset.side = "R";
+    d.dataset.id = item.id;
+    d.addEventListener("click", ()=>selectChip(key,d));
+    colR.appendChild(d);
+  });
+
+  host.appendChild(colL);
+  host.appendChild(colR);
+  updateMatchFeedback(key);
+}
+function selectChip(key, el){
+  const st = matchState[key];
+  if(el.classList.contains("ok")) return; // locked when correct
+
+  // clear previous selection on same side
+  hostDeselect(key, el.dataset.side);
+
+  el.classList.add("sel");
+  if(el.dataset.side==="L") st.selL = el;
+  else st.selR = el;
+
+  // if both chosen, check
+  if(st.selL && st.selR){
+    const ok = st.selL.dataset.id === st.selR.dataset.id;
+    if(ok){
+      st.selL.classList.remove("sel"); st.selR.classList.remove("sel");
+      st.selL.classList.add("ok"); st.selR.classList.add("ok");
+      st.pairs[st.selL.dataset.id] = true;
+    }else{
+      st.selL.classList.add("no"); st.selR.classList.add("no");
+      setTimeout(()=>{
+        st.selL.classList.remove("sel","no");
+        st.selR.classList.remove("sel","no");
+      }, 450);
+    }
+    st.selL = null; st.selR = null;
+    updateMatchFeedback(key);
+  }
+}
+function hostDeselect(key, side){
+  const host = document.querySelector(`[data-match="${key}"]`);
+  host.querySelectorAll(`.chip[data-side="${side}"]`).forEach(x=>x.classList.remove("sel"));
+}
+function updateMatchFeedback(key){
+  const st = matchState[key];
+  const need = Object.keys(matchData[key].left.reduce((a,x)=>{a[x.id]=1;return a;},{})).length;
+  const got = Object.keys(st.pairs).length;
+  const fb = document.getElementById(key+"fb");
+  if(got === need){
+    fb.className = "feedback good";
+    fb.textContent = "✅ 全部配对完成！这张表你已经能讲清了。";
+  }else{
+    fb.className = "feedback";
+    fb.textContent = `已配对 ${got}/${need}。`;
+  }
+}
+function resetMatch(key){ renderMatch(key); }
+
+/* -----------------------------
+  Flashcards
+----------------------------- */
+const cards = [
+  {front:"MOSFET 的“本质一句话”？", back:"用栅极电场在表面诱导反型形成沟道，用电压控制电流。"},
+  {front:"光刻一句话？", back:"用掩膜把图形转移到晶圆（涂胶→曝光→显影→刻蚀/沉积/注入）。"},
+  {front:"为什么三能级阈值高？", back:"因为下能级是基态，想反转必须把大量粒子从基态抽走。"},
+  {front:"“锁模”在干嘛？", back:"把很多纵模相位锁定，让频域叠加成时间上的超短脉冲。"},
+];
+function renderDeck(){
+  const deck = document.getElementById("deck");
+  deck.innerHTML = "";
+  cards.forEach((c, i)=>{
+    const fc = document.createElement("div");
+    fc.className = "flashcard";
+    fc.innerHTML = `
+      <div class="fc-inner">
+        <div class="face front">
+          <h4>${c.front}</h4>
+          <p>点击翻面</p>
+          <div class="fc-actions">
+            <button class="btn secondary" data-act="flip">翻面</button>
+            <button class="btn" data-act="copy">复制答案</button>
+          </div>
+        </div>
+        <div class="face back">
+          <h4>答案</h4>
+          <p>${c.back}</p>
+          <div class="fc-actions">
+            <button class="btn secondary" data-act="flip">翻回</button>
+            <button class="btn good" data-act="know">我会了</button>
+          </div>
+        </div>
+      </div>
+    `;
+    fc.querySelectorAll("[data-act='flip']").forEach(b=>b.addEventListener("click", (e)=>{
+      e.stopPropagation(); fc.classList.toggle("flipped");
+    }));
+    fc.addEventListener("click", ()=> fc.classList.toggle("flipped"));
+    fc.querySelector("[data-act='copy']").addEventListener("click", async (e)=>{
+      e.stopPropagation();
+      try{ await navigator.clipboard.writeText(c.back); }catch(err){}
+    });
+    fc.querySelector("[data-act='know']").addEventListener("click", (e)=>{
+      e.stopPropagation();
+      fc.style.outline = "2px solid rgba(62,230,168,.45)";
+    });
+    deck.appendChild(fc);
+  });
+}
+
+/* -----------------------------
+  Buttons
+----------------------------- */
+document.getElementById("btnContinue").addEventListener("click", ()=>{
+  loadState();
+  renderProgress();
+  jumpToModule(state.lastModuleIndex || 0);
+});
+document.getElementById("btnReset").addEventListener("click", ()=>{
+  resetState();
+});
+document.getElementById("btnExport").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "学习记录.json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+});
+
+/* -----------------------------
+  Init
+----------------------------- */
+loadState();
+renderProgress();
+setupQuizzes();
+setupTabs();
+renderMatch("m1");
+renderDeck();
+document.getElementById("inv").dispatchEvent(new Event("input"));
+document.getElementById("dope").dispatchEvent(new Event("input"));
+document.getElementById("bth").dispatchEvent(new Event("input"));
+document.getElementById("vg").dispatchEvent(new Event("input"));
+</script>
+</body>
+</html>
