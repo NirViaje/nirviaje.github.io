@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SETI 桌游上手交互教程（基于规则书素材）</title>
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#111936; --panel2:#0f1630; --text:#eaf0ff; --muted:#b9c5ff;
+      --brand:#7dd3fc; --brand2:#a78bfa; --ok:#34d399; --warn:#fbbf24; --bad:#fb7185;
+      --line:rgba(255,255,255,.12);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--sans); color:var(--text); background:
+      radial-gradient(1200px 800px at 20% 10%, rgba(167,139,250,.22), transparent 60%),
+      radial-gradient(1000px 700px at 90% 30%, rgba(125,211,252,.18), transparent 55%),
+      radial-gradient(900px 600px at 40% 90%, rgba(52,211,153,.10), transparent 60%),
+      linear-gradient(180deg, var(--bg), #070a14);
+    }
+    a{color:var(--brand); text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      position:sticky; top:0; z-index:20; backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(11,16,32,.92), rgba(11,16,32,.72));
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:18px 18px;}
+    .top{
+      display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .title{
+      display:flex; gap:12px; align-items:center;
+    }
+    .badge{
+      width:44px; height:44px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(125,211,252,.35), rgba(167,139,250,.35));
+      display:grid; place-items:center; box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .badge span{font-family:var(--mono); font-weight:700}
+    h1{margin:0; font-size:20px; letter-spacing:.2px}
+    .sub{margin:4px 0 0; color:var(--muted); font-size:13px}
+    .nav{
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid var(--line);
+      background: rgba(17,25,54,.65);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:13px;
+      transition:.2s;
+    }
+    .tab:hover{transform:translateY(-1px); border-color: rgba(125,211,252,.35)}
+    .tab.active{
+      background: linear-gradient(135deg, rgba(125,211,252,.28), rgba(167,139,250,.22));
+      border-color: rgba(125,211,252,.45);
+    }
+
+    main{max-width:1200px; margin:0 auto; padding:18px;}
+    .grid{display:grid; grid-template-columns: 340px 1fr; gap:16px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background: rgba(17,25,54,.68);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .card .bd{padding:14px}
+    .kpi{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .pill{
+      padding:8px 10px; border-radius:999px; border:1px solid var(--line);
+      background: rgba(15,22,48,.75); color:var(--muted); font-size:12px;
+    }
+    .pill b{color:var(--text)}
+    .section{display:none}
+    .section.active{display:block}
+    h2{margin:0 0 10px; font-size:18px}
+    h3{margin:14px 0 8px; font-size:15px}
+    p{margin:8px 0; color:var(--muted); line-height:1.55}
+    .callout{
+      padding:12px; border-radius:14px;
+      border:1px dashed rgba(125,211,252,.35);
+      background: rgba(125,211,252,.08);
+      color: var(--text);
+    }
+    .callout small{color:var(--muted)}
+    .two{
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    }
+    @media (max-width: 980px){ .two{grid-template-columns:1fr} }
+    .btn{
+      appearance:none; border:1px solid var(--line);
+      background: rgba(15,22,48,.85);
+      color:var(--text);
+      padding:10px 12px; border-radius:12px;
+      cursor:pointer; font-size:13px;
+      transition:.15s;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(167,139,250,.45)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(125,211,252,.28), rgba(167,139,250,.22));
+      border-color: rgba(125,211,252,.45);
+    }
+    .btn.good{border-color: rgba(52,211,153,.45)}
+    .btn.bad{border-color: rgba(251,113,133,.45)}
+    .list{
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .item{
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(15,22,48,.75);
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .item input{margin-top:2px}
+    .item .t{flex:1}
+    .item .t b{color:var(--text)}
+    .item .t div{color:var(--muted); font-size:12px; margin-top:3px; line-height:1.45}
+    .mini{
+      font-family: var(--mono);
+      font-size:12px; color: rgba(234,240,255,.9);
+      padding:10px; border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(7,10,20,.55);
+      white-space:pre-wrap;
+    }
+    .figuregrid{
+      display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;
+    }
+    @media (max-width: 720px){ .figuregrid{grid-template-columns:1fr} }
+    .figure{
+      border:1px solid var(--line); border-radius:14px; overflow:hidden;
+      background: rgba(15,22,48,.75);
+    }
+    .figure img{width:100%; display:block}
+    .figure .cap{padding:10px; color:var(--muted); font-size:12px; line-height:1.45}
+    .cap b{color:var(--text)}
+    footer{
+      max-width:1200px; margin:0 auto; padding:20px 18px 34px;
+      color:rgba(185,197,255,.9);
+      font-size:12px;
+    }
+    .kbd{
+      font-family: var(--mono);
+      border:1px solid var(--line);
+      background: rgba(7,10,20,.55);
+      padding:2px 6px; border-radius:8px;
+      color: rgba(234,240,255,.95);
+    }
+    /* modal */
+    .modal{
+      position:fixed; inset:0; display:none; place-items:center;
+      background: rgba(0,0,0,.72); z-index:40; padding:18px;
+    }
+    .modal.show{display:grid}
+    .modal .box{
+      max-width:min(1000px, 98vw);
+      max-height: 90vh;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(11,16,32,.92);
+      box-shadow: 0 25px 70px rgba(0,0,0,.55);
+    }
+    .modal .bar{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 12px; border-bottom:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .modal .bar .mttl{font-size:13px; color:var(--muted)}
+    .modal .bar button{
+      border:1px solid var(--line); background: rgba(15,22,48,.85);
+      color:var(--text); border-radius:12px; padding:8px 10px; cursor:pointer;
+    }
+    .modal img{display:block; width:100%; height:auto; max-height: calc(90vh - 48px); object-fit:contain; background:#000;}
+    /* quiz */
+    .q{
+      padding:12px; border-radius:14px; border:1px solid var(--line);
+      background: rgba(15,22,48,.75);
+      margin:10px 0;
+    }
+    .q .qtitle{font-size:13px; color:var(--text); margin-bottom:8px}
+    .q .opts{display:grid; gap:8px}
+    .q .opts button{text-align:left}
+    .q .ans{margin-top:8px; font-size:12px; color:var(--muted); display:none}
+    .q.correct{border-color: rgba(52,211,153,.45)}
+    .q.wrong{border-color: rgba(251,113,133,.45)}
+    .q.show .ans{display:block}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">
+        <div class="badge"><span>SETI</span></div>
+        <div>
+          <h1>SETI 桌游上手 · 交互式教程</h1>
+          <div class="sub">面向新手：一局掌握核心循环，两局形成策略直觉（含规则书关键页素材）</div>
+        </div>
+      </div>
+      <div class="nav" id="nav"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <!-- 左侧：学习进度与快速入口 -->
+    <aside class="card">
+      <div class="hd">
+        <h2 style="margin:0">学习控制台</h2>
+        <p style="margin:6px 0 0">按顺序走也行，点选模块也行。建议：先看「核心循环」→「三条主路线」→「发现外星文明」。</p>
+      </div>
+      <div class="bd">
+        <div class="kpi">
+          <div class="pill"><b id="kDone">0</b>/12 勾选项完成</div>
+          <div class="pill">快捷键：<span class="kbd">1</span>~<span class="kbd">6</span> 切换模块</div>
+        </div>
+
+        <h3>新手 12 项过关清单</h3>
+        <div class="list" id="checklist"></div>
+
+        <h3>快速工具</h3>
+        <div class="two">
+          <button class="btn primary" id="btnGuide">开启「第一局带玩模式」</button>
+          <button class="btn" id="btnQuiz">做 8 道小测验</button>
+        </div>
+
+        <h3>术语速查</h3>
+        <div class="mini" id="glossary"></div>
+      </div>
+    </aside>
+
+    <!-- 右侧：内容区 -->
+    <section class="card">
+      <div class="hd">
+        <h2 id="sectionTitle" style="margin:0">模块</h2>
+        <p id="sectionSub" style="margin:6px 0 0">点击上方标签切换。图片可点开放大。</p>
+      </div>
+      <div class="bd">
+        <!-- sections injected -->
+        <div id="sections"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="bar">
+      <div class="mttl" id="modalTitle">规则书截图</div>
+      <button id="modalClose">关闭</button>
+    </div>
+    <img id="modalImg" alt="rulebook page"/>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap" style="padding:0">
+    <div style="border-top:1px solid var(--line); padding-top:14px;">
+      <div>素材说明：本页面展示的规则书截图来自你提供的 PDF（仅用于学习与上手辅助）。</div>
+      <div style="margin-top:6px; opacity:.95">小提示：带新玩家时，让他们先在「核心循环」里走完 1 次“扫描→拿数据→分析→标记线索”，理解后再讲细节会快很多。</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- Data ----------
+  const tabs = [
+    {id:"core",   key:"1", name:"核心循环", sub:"5 轮游戏的最小闭环：资源 → 主行动 → 结算 → 过轮"},
+    {id:"actions",key:"2", name:"8 个主行动", sub:"每回合只能做 1 个主行动；免费行动可穿插"},
+    {id:"paths",  key:"3", name:"三条主路线", sub:"探测器 / 扫描星区 / 数据分析：分别怎么得分、怎么推进发现"},
+    {id:"aliens", key:"4", name:"发现外星文明", sub:"3 种生命线索如何填满发现格；发现后发生什么"},
+    {id:"tech",   key:"5", name:"科技与旋转", sub:"研究科技必旋转太阳系；三类科技如何选"},
+    {id:"teach",  key:"6", name:"带玩脚本+测验", sub:"第一局带玩台词、节奏控制与 8 题自测"}
+  ];
+
+  const rulePages = {
+    overview: {src:"assets/p07.png", title:"规则书 p7：游戏总览与卡牌结构"},
+    setup:    {src:"assets/p04.png", title:"规则书 p4：布置（主板、外星种族、卡牌行、数据等）"},
+    psetup:   {src:"assets/p06.png", title:"规则书 p6：玩家起始资源与收入（tuck 机制）"},
+    launch:   {src:"assets/p08.png", title:"规则书 p8：发射探测器 + 移动"},
+    orbit:    {src:"assets/p10.png", title:"规则书 p10：环绕行星"},
+    land:     {src:"assets/p11.png", title:"规则书 p11：登陆行星/卫星 + 生命线索"},
+    scan:     {src:"assets/p12.png", title:"规则书 p12：扫描星区"},
+    sector:   {src:"assets/p13.png", title:"规则书 p13：星区信号/数据槽/胜者结算"},
+    analyze:  {src:"assets/p14.png", title:"规则书 p14：放置数据与分析数据"},
+    research: {src:"assets/p16.png", title:"规则书 p16：研究科技 + 太阳系旋转"},
+    miles:    {src:"assets/p18.png", title:"规则书 p18：里程碑 + 资源交换/买卡"},
+    pass:     {src:"assets/p19.png", title:"规则书 p19：PASS 与回合间收入"},
+    discover: {src:"assets/p20.png", title:"规则书 p20：发现外星文明"},
+    end:      {src:"assets/p21.png", title:"规则书 p21：终局计分（黄金计分板）"},
+    remind:   {src:"assets/p28.png", title:"规则书 p28：规则提醒与术语"}
+  };
+
+  const checklistItems = [
+    {id:"c1",  t:"知道 1 局共 5 轮，轮内每回合只做 1 个主行动", d:"轮内行动直到 PASS；所有人 PASS 后结算收入并传起始玩家。"},
+    {id:"c2",  t:"能说出 8 个主行动", d:"Launch / Orbit / Land / Scan / Analyze / Play Card / Research Tech / Pass。"},
+    {id:"c3",  t:"理解“免费行动”与“主行动”区别", d:"免费行动可穿插；卡牌使用只能二选一（主行动效果 或 免费丢弃）。"},
+    {id:"c4",  t:"会发射并移动探测器", d:"能量换移动；离开小行星要多 1 移动；访问星体可得声望。"},
+    {id:"c5",  t:"会把探测器变成轨道器/登陆器并拿奖励", d:"轨道器常给数据；登陆是生命线索与分数关键来源。"},
+    {id:"c6",  t:"会执行扫描并正确丢弃卡牌行的卡", d:"地球扇区 1 信号；再丢 1 张卡并按颜色匹配扇区标记。"},
+    {id:"c7",  t:"理解星区“数据槽被填满就结算”", d:"谁信号最多谁赢；所有参与者得 1 声望；第二格会给 2 分。"},
+    {id:"c8",  t:"会放置数据到电脑并触发格子奖励", d:"数据池上限 6；放置是免费行动；触发格子可得分/声望/收入等。"},
+    {id:"c9",  t:"会分析数据并标记外星生命线索", d:"电脑上排满才能分析；花 1 能量清空电脑并标记一种线索。"},
+    {id:"c10", t:"理解“发现外星文明”的触发与流程", d:"某物种 3 个发现格满就翻面→读物种规则→设置并发奖。"},
+    {id:"c11", t:"知道研究科技=花 6 声望 + 必旋转太阳系", d:"科技三类：探测/望远镜/计算机；有立即奖励并翻面入板。"},
+    {id:"c12", t:"知道终局主要计分来源", d:"分数轨、金色计分板、终局计分卡、部分外星文明追加步骤。"}
+  ];
+
+  const glossary = [
+    ["Publicity（声望）","拿科技的关键资源；上限 10（满了再得会被忽略）。"],
+    ["Credits（信用点）","常用于发射探测器、扫描、打出卡牌。"],
+    ["Energy（能量）","常用于移动、环绕/登陆、扫描、分析数据。"],
+    ["Data（数据）","来自扫描/登陆等；放电脑触发奖励；分析数据可转化为生命线索。"],
+    ["Signal（信号）","在星区数据槽里用你的标记替换数据，争夺星区胜利。"],
+    ["Sector（星区）","8 个扇区，每个有一颗近邻恒星与数据槽；填满就结算。"],
+    ["Tuck（夹入收入）","把手牌塞到收入卡下，立刻拿右下角资源，并从第 2 轮起每轮收入都能再拿。"],
+    ["Milestone（里程碑）","跨过分数点位后在回合间结算（25/50/70 金色；20/30 中立）。"],
+    ["Rotate（旋转太阳系）","研究科技必触发；每轮第一个 PASS 也会触发一次。"]
+  ];
+
+  const quiz = [
+    {q:"每回合你能做几个【主行动】？", opts:["任意多个","1 个","2 个"], a:1, exp:"规则：你的回合只选 1 个主行动；免费行动可穿插。"},
+    {q:"扫描（Scan）时，至少会标记几个信号？", opts:["1 个","2 个","3 个"], a:1, exp:"扫描步骤：地球扇区 1 个 + 丢 1 张卡匹配扇区 1 个 = 至少 2 个。"},
+    {q:"什么时候结算一个星区（Sector）？", opts:["有人在该星区放第 1 个标记时","数据槽被填满时","每轮结束时"], a:1, exp:"当最后一个数据被替换（数据槽填满）→ 星区完成并结算胜者。"},
+    {q:"分析数据（Analyze）需要什么条件？", opts:["数据池满 6 个","电脑上排满","拥有任意计算机科技"], a:1, exp:"只有电脑上排满才可分析；花 1 能量清空并标记生命线索。"},
+    {q:"研究科技（Research）会发生什么额外事件？", opts:["立刻补满卡牌行","必旋转太阳系","立刻发现外星文明"], a:1, exp:"研究科技总是先旋转太阳系；每轮第一个 PASS 也会触发旋转。"},
+    {q:"数据池的上限是多少？", opts:["4","6","10"], a:1, exp:"规则：数据池最多 6；若超出必须弃掉多余数据。"},
+    {q:"登陆行星主要带来哪类收益？", opts:["生命线索 + 分数","更多声望上限","直接拿科技"], a:0, exp:"登陆是拿生命线索的重要来源之一，并常给分数/数据等。"},
+    {q:"外星文明发现的触发条件是什么？", opts:["任一玩家分数到 50","某物种 3 个发现格满","任意星区赢 3 次"], a:1, exp:"当某物种下方 3 个发现格子被标记满，就翻面发现该物种。"}
+  ];
+
+  // ---------- Helpers ----------
+  const $ = (sel, el=document)=>el.querySelector(sel);
+  const $$ = (sel, el=document)=>Array.from(el.querySelectorAll(sel));
+
+  function openModal(src, title){
+    $("#modalTitle").textContent = title || "规则书截图";
+    $("#modalImg").src = src;
+    $("#modal").classList.add("show");
+  }
+  function closeModal(){ $("#modal").classList.remove("show"); $("#modalImg").src=""; }
+
+  $("#modalClose").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", (e)=>{ if(e.target.id==="modal") closeModal(); });
+  window.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeModal(); });
+
+  // ---------- Build Nav ----------
+  const nav = $("#nav");
+  tabs.forEach(t=>{
+    const b=document.createElement("button");
+    b.className="tab";
+    b.dataset.id=t.id;
+    b.textContent = `${t.key} · ${t.name}`;
+    b.addEventListener("click", ()=>activate(t.id));
+    nav.appendChild(b);
+  });
+
+  // ---------- Build Checklist ----------
+  const cl = $("#checklist");
+  const stateKey = "seti_tutorial_state_v1";
+  const state = JSON.parse(localStorage.getItem(stateKey) || "{}");
+  function save(){ localStorage.setItem(stateKey, JSON.stringify(state)); }
+  function updateKpi(){
+    const done = checklistItems.filter(it=>state[it.id]).length;
+    $("#kDone").textContent = String(done);
+  }
+  checklistItems.forEach(it=>{
+    const row=document.createElement("label");
+    row.className="item";
+    row.innerHTML = `
+      <input type="checkbox" ${state[it.id]?"checked":""} />
+      <div class="t"><b>${it.t}</b><div>${it.d}</div></div>
+    `;
+    $("input", row).addEventListener("change", (e)=>{
+      state[it.id] = e.target.checked;
+      save(); updateKpi();
+    });
+    cl.appendChild(row);
+  });
+  updateKpi();
+
+  // ---------- Glossary ----------
+  $("#glossary").textContent = glossary.map(([k,v])=>`${k}\n  - ${v}`).join("\n\n");
+
+  // ---------- Sections ----------
+  const sectionsEl = $("#sections");
+
+  function figBlock(items){
+    const wrap=document.createElement("div");
+    wrap.className="figuregrid";
+    items.forEach(it=>{
+      const f=document.createElement("div");
+      f.className="figure";
+      f.innerHTML = `
+        <img src="${it.src}" alt="${it.title}" loading="lazy"/>
+        <div class="cap"><b>${it.cap}</b><br/>${it.desc}</div>
+      `;
+      $("img", f).addEventListener("click", ()=>openModal(it.src, it.title));
+      wrap.appendChild(f);
+    });
+    return wrap;
+  }
+
+  const sectionHtml = {
+    core: `
+      <div class="callout">
+        <b>你只要记住一个闭环：</b> <span class="kbd">资源</span> → <span class="kbd">主行动</span> →（可穿插免费行动）→ <span class="kbd">结算</span> → <span class="kbd">PASS</span> → <span class="kbd">收入</span>（下一轮）
+        <br/><small>规则书：回合结构与主行动列表见 p7；PASS 与回合间步骤见 p19。</small>
+      </div>
+
+      <h3>1) 回合结构（5 轮）</h3>
+      <p>每轮从起始玩家开始轮流行动；玩家一旦 <b>PASS</b> 本轮就不再行动。所有人都 PASS 后：<b>结算收入</b>，起始玩家标记左移一位，并把旋转提醒 token 移到下一轮。</p>
+
+      <h3>2) 一回合你只做 1 个主行动</h3>
+      <p>但你可以在回合中任意穿插免费行动：例如用能量换移动、丢弃卡牌换资源、把数据放进电脑、资源交换/买卡等。</p>
+
+      <div class="two" style="margin-top:10px">
+        <div class="mini"><b>新手 60 秒讲解台词（可直接照念）</b>
+你是一个太空机构，5 轮内用有限资源做科研。
+每回合你只做 1 个主行动（探测/扫描/分析/科研/项目）。
+你拿到的数据要么放电脑触发小奖励，要么攒够后分析，转成“外星生命线索”。
+当某个外星物种的 3 个发现格被填满，就会被发现，开启更强的卡与研究。</div>
+        <div class="mini"><b>新手最常犯 3 个错</b>
+1) 忘记：扫描至少标记 2 个信号（地球 + 丢卡匹配扇区）
+2) 忘记：研究科技 & 本轮第一个 PASS 都会旋转太阳系
+3) 忘记：数据池上限 6，别溢出</div>
+      </div>
+    `,
+    actions: `
+      <h3>8 个主行动一览</h3>
+      <div class="mini">1) Launch 发射探测器（花 2 信用点）
+2) Orbit 环绕行星（花 1 信用点 + 1 能量）
+3) Land 登陆行星/卫星（花 3 能量；若该行星已有轨道器则只花 2）
+4) Scan 扫描星区（花 1 信用点 + 2 能量；至少 2 个信号）
+5) Analyze 分析数据（花 1 能量；电脑上排满）
+6) Play Card 打出卡牌效果（花卡面成本，执行白色效果）
+7) Research Tech 研究科技（花 6 声望；先旋转太阳系）
+8) Pass 本轮结束（做完免费行动后执行 PASS 流程）</div>
+
+      <h3>关键“免费行动”合集</h3>
+      <div class="mini">• 1 能量 → 1 移动（可在发射当回合移动，也可之后移动）
+• 丢弃手牌（或部分卡的角标）换资源/移动
+• 任意时点把数据从数据池放进电脑
+• 资源交换：2 张牌/2 信用点/2 能量 → 1 张牌/1 信用点/1 能量
+• 花 3 声望“买卡”（从卡牌行或牌堆顶）</div>
+
+      <h3>规则书关键页（点图放大）</h3>
+    `,
+    paths: `
+      <div class="callout">
+        <b>三条主路线 = 三类“外星生命线索”来源：</b><br/>
+        • <b>扫描（Scan）</b> 常产生一种线索　• <b>登陆（Land）</b> 常产生另一种线索　• <b>分析（Analyze）</b> 产生第三种线索
+        <br/><small>发现外星文明需要三种线索都能推进（p20）。</small>
+      </div>
+
+      <h3>路线 A：探测器（Launch/Move → Orbit/Land）</h3>
+      <p>优点：登陆直接给分、给数据、给生命线索；还能在行星/彗星上捞声望。缺点：能量消耗大，路线规划很重要。</p>
+
+      <h3>路线 B：扫描星区（Scan → 争夺星区胜利）</h3>
+      <p>优点：不用探测器也能拿数据与线索；适合前期稳定滚雪球。缺点：需要能量+信用点，并且会与他人竞争。</p>
+
+      <h3>路线 C：数据分析（Place Data → Analyze）</h3>
+      <p>优点：把“数据”变成关键线索，并且电脑格子能提供分数/收入。缺点：需要积攒并管理数据池上限 6。</p>
+
+      <h3>规则书关键页（点图放大）</h3>
+    `,
+    aliens: `
+      <div class="callout">
+        <b>发现外星文明 = 游戏中段的“引擎开启”。</b>
+        <br/>当某外星物种下方 <b>3 个发现格</b> 都被标记满，就翻开该物种，并按其规则布置与发奖（p20）。
+      </div>
+
+      <h3>发现流程（导师口令）</h3>
+      <div class="mini">当你触发发现（可能在你回合结束后）：
+1) 先处理里程碑（如果刚跨过）
+2) 翻开该外星板块
+3) 读该物种规则小页（只读被发现的那一个）
+4) 按设置规则拿出对应外星牌堆/组件
+5) 给“标记发现格”的玩家发奖励
+（之后：该物种板上出现更多可标记的研究格，继续拿奖励/得分）</div>
+
+      <h3>溢出格（Overflow）要点</h3>
+      <p>当你该颜色线索想标记但本列都满了，你可以把标记放在溢出区并直接拿 <b>3 分</b>；并且它仍被视为“你标记过该物种的线索”。</p>
+
+      <h3>规则书关键页（点图放大）</h3>
+    `,
+    tech: `
+      <div class="callout">
+        <b>研究科技不仅是能力提升，更是“转盘变化”。</b>
+        <br/>研究科技一定会先 <b>旋转太阳系</b>（p16）。每轮第一个 PASS 也会旋转一次（p19）。
+      </div>
+
+      <h3>科技选择：新手 3 条简单原则</h3>
+      <div class="mini">1) 你打算走探测路线：优先【多探测器】或【登陆更便宜】类探测科技
+2) 你打算走扫描路线：优先【扫描额外信号】或【邻接地球扫描】类望远镜科技
+3) 你数据经常溢出：优先【计算机扩展】类科技，把“数据→分数/收入”做成引擎</div>
+
+      <h3>旋转太阳系：如何教学不混乱</h3>
+      <p>让新手只记：<b>按提示 token 旋转下一层圆盘 1 格（逆时针）</b>，探测器会跟着转，有时会被“推”到下一格并立即拿到该格声望。</p>
+
+      <h3>规则书关键页（点图放大）</h3>
+    `,
+    teach: `
+      <div class="two">
+        <div>
+          <h3>第一局带玩模式（建议 45 分钟）</h3>
+          <div class="mini">【开局 3 分钟】
+你只要记住：每回合 1 个主行动；扫描/登陆/分析 是三条推进外星发现的路。
+现在我们先做一套闭环：扫描 → 拿数据 → 放电脑 → 分析 → 标记线索。
+
+【第 1 轮（示范）】
+1) 让每位玩家至少做一次 Scan（标记 2 个信号）。
+2) 解释星区：数据被替换满了就结算，谁标记最多谁赢。
+3) 让每位玩家把 1~2 个数据放进电脑（免费行动），触发一次小奖励。
+4) 如果有人电脑上排满：做一次 Analyze（标记线索）。
+
+【第 2~3 轮（分流）】
+• 想探测：发射→移动→环绕/登陆（强调能量消耗与声望）
+• 想扫描：继续 Scan + 望远镜科技（强调卡牌行丢弃与颜色匹配）
+• 想引擎：研究计算机科技，做“放数据拿分/收入”滚雪球
+
+【第 4~5 轮（收束）】
+围绕：外星发现、金色计分板选择、终局计分卡/任务完成，做最后冲刺。</div>
+
+          <div style="margin-top:10px">
+            <button class="btn primary" id="startGuide">我正在带人玩：给我“每轮提醒清单”</button>
+          </div>
+          <div id="guideOut" class="mini" style="margin-top:10px; display:none"></div>
+        </div>
+        <div>
+          <h3>8 题快速测验</h3>
+          <p>用于确认“规则是否真的懂了”。每题点选即可显示解析。</p>
+          <div id="quiz"></div>
+          <button class="btn" id="resetQuiz" style="margin-top:8px">重置测验状态</button>
+        </div>
+      </div>
+
+      <h3>规则书快速入口（点图放大）</h3>
+    `
+  };
+
+  function buildSections(){
+    tabs.forEach(t=>{
+      const sec=document.createElement("div");
+      sec.className="section";
+      sec.id = "sec-"+t.id;
+      sec.innerHTML = sectionHtml[t.id] || "<p>内容准备中</p>";
+
+      // attach figures per section
+      if(t.id==="actions"){
+        sec.appendChild(figBlock([
+          {src:rulePages.overview.src, title:rulePages.overview.title, cap:"游戏总览 & 卡牌结构", desc:"主行动列表、回合结构、卡牌四象限信息。"},
+          {src:rulePages.pass.src, title:rulePages.pass.title, cap:"PASS & 回合间步骤", desc:"弃牌到 4、旋转条件、选回合结束卡、轮间收入。"}
+        ]));
+      }
+      if(t.id==="paths"){
+        sec.appendChild(figBlock([
+          {src:rulePages.launch.src, title:rulePages.launch.title, cap:"探测器：发射/移动", desc:"能量换移动；离开小行星多 1；到星体拿声望。"},
+          {src:rulePages.scan.src, title:rulePages.scan.title, cap:"扫描：至少 2 信号", desc:"地球扇区 1 + 丢卡匹配扇区 1；科技可到 4。"},
+          {src:rulePages.analyze.src, title:rulePages.analyze.title, cap:"数据：放电脑/分析", desc:"放置触发奖励；电脑上排满后分析，清空并标记线索。"},
+          {src:rulePages.sector.src, title:rulePages.sector.title, cap:"星区：填满结算胜者", desc:"胜者得奖励并留标记；第二名保留 1 标记用于刷新。"}
+        ]));
+      }
+      if(t.id==="aliens"){
+        sec.appendChild(figBlock([
+          {src:rulePages.land.src, title:rulePages.land.title, cap:"登陆：线索与分数来源", desc:"登陆给分/数据，并让你标记生命线索。"},
+          {src:rulePages.discover.src, title:rulePages.discover.title, cap:"发现外星文明", desc:"3 个发现格满→翻面→按物种规则设置并发奖。"}
+        ]));
+      }
+      if(t.id==="tech"){
+        sec.appendChild(figBlock([
+          {src:rulePages.research.src, title:rulePages.research.title, cap:"研究科技 & 旋转太阳系", desc:"花 6 声望；先旋转后选科技；首拿该堆额外 2 分。"},
+          {src:rulePages.miles.src, title:rulePages.miles.title, cap:"里程碑 & 资源交换", desc:"跨分结算在回合间；资源交换与花声望买卡。"},
+          {src:rulePages.end.src, title:rulePages.end.title, cap:"终局计分", desc:"金色计分板的集合计分；终局计分卡加分。"}
+        ]));
+      }
+      if(t.id==="teach"){
+        sec.appendChild(figBlock([
+          {src:rulePages.psetup.src, title:rulePages.psetup.title, cap:"起始资源 & tuck 收入", desc:"夹入收入：立刻拿资源，并从第 2 轮起每轮收入再拿。"},
+          {src:rulePages.remind.src, title:rulePages.remind.title, cap:"规则提醒 & 术语", desc:"常见忘点与术语定义，适合游戏中快速查。"}
+        ]));
+      }
+
+      sectionsEl.appendChild(sec);
+    });
+  }
+
+  buildSections();
+
+  // ---------- Quiz ----------
+  function buildQuiz(){
+    const box=$("#quiz");
+    box.innerHTML="";
+    quiz.forEach((qq, i)=>{
+      const q=document.createElement("div");
+      q.className="q";
+      q.dataset.index = i;
+      q.innerHTML = `
+        <div class="qtitle">Q${i+1}. ${qq.q}</div>
+        <div class="opts"></div>
+        <div class="ans">解析：${qq.exp}</div>
+      `;
+      const opts=$(".opts", q);
+      qq.opts.forEach((txt, j)=>{
+        const b=document.createElement("button");
+        b.className="btn";
+        b.textContent = txt;
+        b.addEventListener("click", ()=>{
+          $$(".q").forEach(x=>x.classList.remove("correct","wrong"));
+          q.classList.add("show");
+          if(j===qq.a){ q.classList.add("correct"); }
+          else{ q.classList.add("wrong"); }
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(q);
+    });
+  }
+  buildQuiz();
+
+  $("#resetQuiz").addEventListener("click", buildQuiz);
+
+  // ---------- Guide ----------
+  function roundReminders(){
+    return `【每轮开始】
+□ 所有人拿收入（起始收入卡 + tuck 卡）
+□ 起始玩家标记左移 1 位
+□ 旋转提醒 token 放到下一轮卡堆
+
+【轮内随时提醒】
+□ 每回合只有 1 个主行动
+□ 免费行动：移动/放数据/资源交换/买卡/丢弃卡换资源
+□ 数据池上限 6（溢出就弃）
+□ 声望上限 10（满了再得忽略）
+□ 里程碑在“回合之间”结算，不在行动中立刻结算
+
+【本轮第一个 PASS】
+□ 旋转太阳系（第 5 轮也旋转，但丢掉提醒 token）
+□ 该玩家从本轮回合结束卡中选 1 张拿走`;
+  }
+  $("#startGuide").addEventListener("click", ()=>{
+    const out=$("#guideOut");
+    out.style.display="block";
+    out.textContent = roundReminders();
+  });
+
+  // Buttons to navigate
+  $("#btnGuide").addEventListener("click", ()=>activate("teach"));
+  $("#btnQuiz").addEventListener("click", ()=>activate("teach"));
+
+  // ---------- Activate section ----------
+  function activate(id){
+    $$(".tab").forEach(b=>b.classList.toggle("active", b.dataset.id===id));
+    $$(".section").forEach(s=>s.classList.toggle("active", s.id==="sec-"+id));
+    const t = tabs.find(x=>x.id===id) || tabs[0];
+    $("#sectionTitle").textContent = t.name;
+    $("#sectionSub").textContent = t.sub;
+    history.replaceState(null,"","#"+id);
+  }
+
+  // ---------- Keyboard shortcuts ----------
+  window.addEventListener("keydown", (e)=>{
+    const t = tabs.find(x=>x.key===e.key);
+    if(t) activate(t.id);
+  });
+
+  // ---------- Initial ----------
+  const hash = (location.hash||"").replace("#","");
+  activate(tabs.some(t=>t.id===hash)?hash:"core");
+})();
+</script>
+</body>
+</html>
