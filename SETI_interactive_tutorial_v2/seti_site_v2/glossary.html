@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>术语速查 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>术语速查</h2>
+        <p>把常见概念统一成一句话，减少“我听懂但记不住”的卡顿。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="grid">
+  <div class="card">
+    <div class="hd"><h3>术语速查（教学时最常被问的）</h3></div>
+    <div class="bd">
+      <div class="list">
+        <div class="item"><b>主行动 Main Action</b><div class="small">你的回合“只能做一件大事”。Launch/Scan/Land/Analyze/Research/Play/Pass 等。</div></div>
+        <div class="item"><b>免费行动 Free Action</b><div class="small">可穿插在主行动前后，但只能在你自己的回合。例：能量换移动、资源交换、买卡、放数据。</div></div>
+        <div class="item"><b>声望 Publicity</b><div class="small">代表公众关注与科研影响力，核心用途：支付 6 点研究科技。</div></div>
+        <div class="item"><b>数据 Data</b><div class="small">你收集到的观测/采样。数据池上限 6；放进电脑触发奖励；电脑上排满才可 Analyze。</div></div>
+        <div class="item"><b>星区 Sector</b><div class="small">天空划分的区域。通过 Scan 或卡牌放“信号标记”。填满后结算赢家并重置。</div></div>
+        <div class="item"><b>发现 Discovery</b><div class="small">某外星种族的 3 个发现格被填满就翻开板块，按该种族规则继续游戏。</div></div>
+        <div class="item"><b>太阳系旋转 Rotate</b><div class="small">研究科技时必触发；每轮首位 Pass 也会触发。旋转可能“推动/挤压”探测器。</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h3>一分钟“话术模板”（你可以直接复制给玩家）</h3></div>
+    <div class="bd">
+      <div class="notice">
+        <b>你只要记住三条链：</b><br/>
+        1）<b>扫描</b>：花信用+能量 → 放信号 → 拿数据 → 竞争星区 → 得分/线索<br/>
+        2）<b>探测</b>：发射→移动→环绕/登陆 → 拿数据/分数/线索<br/>
+        3）<b>分析</b>：数据进电脑 → 上排满 → 分析 → 线索 → 触发外星发现<br/><br/>
+        科技与卡牌是放大器：让你同样的主行动“做得更多、更便宜、更稳”。
+      </div>
+      <hr class="sep"/>
+      <a class="btn primary" href="rules.html">对照规则页 →</a>
+    </div>
+  </div>
+</div>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

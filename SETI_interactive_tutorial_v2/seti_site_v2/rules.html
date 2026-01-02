@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>规则书素材页 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>规则书素材页</h2>
+        <p>把最常用的规则页做成可点开放大图库，教学时不用翻书。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="card">
+  <div class="hd"><h3>规则书关键页截图（点击放大）</h3></div>
+  <div class="bd">
+    <p>以下截图来自你提供的 PDF 规则书，用于教学时快速对照。建议投屏：先看“概览”，再看“八大主行动”。</p>
+    <div class="gallery">
+      <div class="thumb" data-src="assets/rules/p01.png" data-title="封面/氛围（p1）"><img src="assets/rules/p01.png"/><div class="cap">封面</div></div>
+      <div class="thumb" data-src="assets/rules/p07.png" data-title="游戏概览与行动列表（p7）"><img src="assets/rules/p07.png"/><div class="cap">概览</div></div>
+      <div class="thumb" data-src="assets/rules/p08.png" data-title="Launch 发射探测器（p8）"><img src="assets/rules/p08.png"/><div class="cap">Launch</div></div>
+      <div class="thumb" data-src="assets/rules/p09.png" data-title="移动与声望（p9）"><img src="assets/rules/p09.png"/><div class="cap">移动</div></div>
+      <div class="thumb" data-src="assets/rules/p10.png" data-title="Orbit 环绕（p10）"><img src="assets/rules/p10.png"/><div class="cap">Orbit</div></div>
+      <div class="thumb" data-src="assets/rules/p11.png" data-title="Land 登陆与生命痕迹（p11）"><img src="assets/rules/p11.png"/><div class="cap">Land</div></div>
+      <div class="thumb" data-src="assets/rules/p12.png" data-title="Scan 扫描（p12）"><img src="assets/rules/p12.png"/><div class="cap">Scan</div></div>
+      <div class="thumb" data-src="assets/rules/p13.png" data-title="星区结算与重置（p13）"><img src="assets/rules/p13.png"/><div class="cap">星区</div></div>
+      <div class="thumb" data-src="assets/rules/p14.png" data-title="Analyze 数据分析（p14）"><img src="assets/rules/p14.png"/><div class="cap">Analyze</div></div>
+      <div class="thumb" data-src="assets/rules/p15.png" data-title="Play a card 打出卡牌（p15）"><img src="assets/rules/p15.png"/><div class="cap">卡牌</div></div>
+      <div class="thumb" data-src="assets/rules/p16.png" data-title="Research a tech & 旋转（p16）"><img src="assets/rules/p16.png"/><div class="cap">科技</div></div>
+      <div class="thumb" data-src="assets/rules/p17.png" data-title="科技类型汇总（p17）"><img src="assets/rules/p17.png"/><div class="cap">科技表</div></div>
+      <div class="thumb" data-src="assets/rules/p20.png" data-title="发现外星文明（p20）"><img src="assets/rules/p20.png"/><div class="cap">发现</div></div>
+    </div>
+
+    <hr class="sep"/>
+    <div class="notice">
+      <b>课堂式讲解建议：</b><br/>
+      1) 先放大 p7：让玩家记住“每回合 1 个主行动”；<br/>
+      2) 再放大 p12+p13：解释“扫描→星区竞争→结算→重置”；<br/>
+      3) 最后放大 p14+p20：把“数据→分析→线索→发现”的因果串起来。
+    </div>
+  </div>
+</div>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

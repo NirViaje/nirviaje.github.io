@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>行动模拟器 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>行动模拟器</h2>
+        <p>用简化沙盘练习“成本→产出→触发”，把节奏练到肌肉记忆后再回到实体棋盘。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="grid">
+  <div class="card">
+    <div class="hd">
+      <h3>行动模拟器（教学用：简化版，但严格保留“成本→产出→触发”）</h3>
+      <div class="flex">
+        <button class="btn" id="newGame">新开一局</button>
+        <button class="btn warn" id="undo">撤销一步</button>
+        <button class="btn bad" id="hardReset">清空存档</button>
+      </div>
+    </div>
+    <div class="bd">
+      <p>用途：让新玩家在不摆完整棋盘的情况下，练习“每回合只做 1 个主行动”的节奏，并理解三条主线如何产出线索。这里的“星区/电脑/线索”都做了可视化简化。</p>
+
+      <div class="twocol">
+        <div class="item">
+          <b>当前状态</b>
+          <div class="pills">
+            <span class="pill">Round <span class="mono" id="round">1</span>/5</span>
+            <span class="pill">Turn <span class="mono" id="turn">1</span></span>
+            <span class="pill">主行动：<span class="mono" id="mainUsed">未使用</span></span>
+          </div>
+          <hr class="sep"/>
+          <table class="table">
+            <thead><tr><th>资源</th><th>数值</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>声望 Publicity</td><td class="mono" id="pub">4</td><td class="small">研究科技的门票（6点一项）</td></tr>
+              <tr><td>信用 Credits</td><td class="mono" id="cr">4</td><td class="small">发射/部分行动成本</td></tr>
+              <tr><td>能量 Energy</td><td class="mono" id="en">3</td><td class="small">移动/扫描/分析的燃料</td></tr>
+              <tr><td>数据 Data(池)</td><td class="mono" id="dataPool">0</td><td class="small">上限 6，溢出要弃</td></tr>
+              <tr><td>分数 VP</td><td class="mono" id="vp">1</td><td class="small">终局比大小</td></tr>
+            </tbody>
+          </table>
+          <div class="small" style="margin-top:10px">注：此模拟器不会替代真实规则，只用于“练节奏 + 理解因果”。</div>
+        </div>
+
+        <div class="item">
+          <b>三个科研面板（简化）</b>
+          <div class="small">• 星区：把数据槽填满会结算一次<br/>• 电脑：上排满才能 Analyze<br/>• 线索：凑齐 3 个发现格触发“发现”</div>
+          <hr class="sep"/>
+          <div class="small"><b>星区（Sector）</b></div>
+          <div class="pills" id="sectorSlots"></div>
+          <div class="small" style="margin-top:10px"><b>电脑（Computer 上排 4 格）</b></div>
+          <div class="pills" id="computerSlots"></div>
+          <div class="small" style="margin-top:10px"><b>外星发现进度（3 格）</b></div>
+          <div class="pills" id="discoverSlots"></div>
+        </div>
+      </div>
+
+      <hr class="sep"/>
+
+      <div class="item">
+        <b>主行动区（每回合只能点 1 次；点完可“结束回合”）</b>
+        <div class="row" style="margin-top:10px; flex-wrap:wrap">
+          <button class="btn primary" data-act="launch">Launch 发射（-2信用）</button>
+          <button class="btn primary" data-act="orbit">Orbit 环绕（-1信用 -1能量，+VP）</button>
+          <button class="btn primary" data-act="land">Land 登陆（-3能量，+VP +数据 +线索）</button>
+          <button class="btn primary" data-act="scan">Scan 扫描（-1信用 -2能量，+标记×2）</button>
+          <button class="btn primary" data-act="analyze">Analyze 分析（-1能量，清电脑→+线索）</button>
+          <button class="btn primary" data-act="research">Research 科技（-6声望，旋转提示→+VP）</button>
+          <button class="btn" data-act="playcard">Play Card 打出项目（示例效果）</button>
+          <button class="btn warn" data-act="pass">Pass（结束本轮→拿回合末卡）</button>
+        </div>
+
+        <hr class="sep"/>
+        <div class="row">
+          <button class="btn good" id="endTurn">结束本回合（结算星区/发现）</button>
+          <button class="btn" id="freeMove">免费：能量换移动（-1能量 → +1声望）</button>
+          <button class="btn" id="placeData">免费：放 1 数据进电脑</button>
+          <button class="btn" id="exchange">免费：资源交换（2换1）</button>
+          <button class="btn" id="buyCard">免费：买卡（-3声望）</button>
+        </div>
+        <p class="small" style="margin-top:10px" id="log"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h3>教学用“为何如此设计”（让玩家更容易记住）</h3></div>
+    <div class="bd">
+      <div class="list">
+        <div class="item"><b>Launch / Orbit / Land</b><div class="small">像现实航天：先到达、再围绕、再“下去采样”。登陆最容易产出“生命痕迹线索”。</div></div>
+        <div class="item"><b>Scan</b><div class="small">像射电望远镜：你不是拿样本，而是在天空里“抢发现优先权”。扫描最像“互动竞标”。</div></div>
+        <div class="item"><b>Analyze</b><div class="small">像论文发表：把积累的数据整理成结论，最终变成可用于“发现”的线索。</div></div>
+        <div class="item"><b>Research</b><div class="small">像技术路线选择：一次投入大，但让你后面同样的动作更强。并且会触发“太阳系旋转”，体现时间推进。</div></div>
+        <div class="item"><b>Pass</b><div class="small">像项目结题：提前结束本轮可拿更好的回合末卡，同时可能推动太阳系旋转。</div></div>
+      </div>
+      <hr class="sep"/>
+      <div class="notice">
+        <b>建议练习：</b><br/>
+        1) 用模拟器做 3 回合，要求每回合主行动不同；<br/>
+        2) 观察哪条线更容易让你攒够 3 个发现格；<br/>
+        3) 再回到真实桌面，你会更自然地规划行动顺序。
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const KEY="seti_sim_v2";
+  const HISTORY="seti_sim_hist_v2";
+
+  const def = {
+    round:1, turn:1, mainUsed:false,
+    pub:4, cr:4, en:3, dataPool:0, vp:1,
+    // simplified boards
+    sector:[null,null,null,null], // fill with 'M' markers
+    computer:[null,null,null,null], // filled with 'D'
+    discover:[null,null,null], // traces
+    passed:false
+  };
+
+  let st = store.get(KEY, def);
+  let hist = store.get(HISTORY, []);
+
+  function pushHist(){
+    hist.push(JSON.parse(JSON.stringify(st)));
+    if(hist.length>30) hist.shift();
+    store.set(HISTORY, hist);
+  }
+  function save(){ store.set(KEY, st); }
+  function log(msg){
+    $('#log').textContent = msg;
+  }
+
+  function renderPills(containerId, arr, filledChar, emptyChar){
+    const el = document.getElementById(containerId);
+    el.innerHTML="";
+    arr.forEach((v,i)=>{
+      const span=document.createElement('span');
+      span.className='pill mono';
+      span.textContent = v ? filledChar : emptyChar;
+      el.appendChild(span);
+    });
+  }
+
+  function render(){
+    $('#round').textContent=st.round;
+    $('#turn').textContent=st.turn;
+    $('#mainUsed').textContent=st.mainUsed ? "已使用" : "未使用";
+    $('#pub').textContent=st.pub;
+    $('#cr').textContent=st.cr;
+    $('#en').textContent=st.en;
+    $('#dataPool').textContent=st.dataPool;
+    $('#vp').textContent=st.vp;
+
+    renderPills('sectorSlots', st.sector, '■', '□');
+    renderPills('computerSlots', st.computer, '●', '○');
+    renderPills('discoverSlots', st.discover, '✦', '·');
+
+    // disable actions if main used
+    $$('[data-act]').forEach(b=>{
+      b.disabled = st.mainUsed || st.passed;
+      b.style.opacity = (b.disabled?0.55:1);
+      b.style.cursor = (b.disabled?'not-allowed':'pointer');
+    });
+    $('#endTurn').disabled = st.passed;
+    if(st.passed) log("你已 Pass：本轮不能再行动，点“结束本回合”进入下一轮。");
+  }
+
+  function capData(){
+    if(st.dataPool>6){
+      const over = st.dataPool-6;
+      st.dataPool=6;
+      log("数据池溢出：弃掉 "+over+" 个数据（规则：上限6）。");
+    }
+  }
+
+  function gainData(n){
+    st.dataPool += n;
+    capData();
+  }
+
+  function markSector(times){
+    for(let k=0;k<times;k++){
+      const idx = st.sector.findIndex(x=>x===null);
+      if(idx===-1){
+        // overflow: still counts to win; in this simplified model, just give +1 vp to represent advantage
+        st.vp += 1;
+        continue;
+      }
+      st.sector[idx]='M';
+      // replaced data gives you data in pool
+      gainData(1);
+      if(idx===1) st.vp += 2; // mimic "second position scores 2"
+    }
+    // if sector completed (filled)
+    if(st.sector.every(x=>x!==null)){
+      // resolve sector: you "win" in sim
+      st.vp += 3;
+      st.pub += 1;
+      // winning gives a trace
+      const di = st.discover.findIndex(x=>x===null);
+      if(di!==-1) st.discover[di]='T';
+      // reset sector, keep one marker for "second place" abstraction
+      st.sector=[ 'M', null, null, null ];
+      log("星区结算：你赢得星区（+3VP，+1声望，+1线索），并重置（保留1枚标记）。");
+    } else {
+      log("标记星区信号并获得数据。提示：填满会触发结算。");
+    }
+  }
+
+  function checkDiscovery(){
+    if(st.discover.every(x=>x!==null)){
+      st.vp += 8;
+      st.discover=[null,null,null];
+      log("发现外星文明！（简化奖励：+8VP），发现格重置。");
+    }
+  }
+
+  function requireMain(){
+    if(st.mainUsed || st.passed) return false;
+    st.mainUsed=true;
+    return true;
+  }
+
+  function act(name){
+    if(!requireMain()) return;
+
+    if(name==='launch'){
+      if(st.cr<2){ st.mainUsed=false; return log("信用不足，无法发射。"); }
+      st.cr -= 2;
+      st.pub += 1;
+      log("发射探测器：-2信用，简化奖励 +1声望（代表媒体关注）。");
+    }
+    if(name==='orbit'){
+      if(st.cr<1||st.en<1){ st.mainUsed=false; return log("资源不足，无法环绕。"); }
+      st.cr -= 1; st.en -= 1;
+      st.vp += 3;
+      gainData(1);
+      log("环绕行星：-1信用 -1能量，+3VP，+1数据（代表轨道观测）。");
+    }
+    if(name==='land'){
+      if(st.en<3){ st.mainUsed=false; return log("能量不足，无法登陆（需3）。"); }
+      st.en -= 3;
+      st.vp += 5;
+      gainData(2);
+      // land gives trace
+      const di = st.discover.findIndex(x=>x===null);
+      if(di!==-1) st.discover[di]='T';
+      log("登陆：-3能量，+5VP，+2数据，+1线索（生命痕迹）。");
+    }
+    if(name==='scan'){
+      if(st.cr<1||st.en<2){ st.mainUsed=false; return log("资源不足，无法扫描（需1信用2能量）。"); }
+      st.cr -= 1; st.en -= 2;
+      markSector(2);
+    }
+    if(name==='analyze'){
+      if(st.en<1){ st.mainUsed=false; return log("能量不足，无法分析（需1）。"); }
+      if(st.computer.some(x=>x===null)){ st.mainUsed=false; return log("电脑上排未满：先用“放数据”填满4格。"); }
+      st.en -= 1;
+      st.computer=[null,null,null,null];
+      // analyze gives trace
+      const di = st.discover.findIndex(x=>x===null);
+      if(di!==-1) st.discover[di]='T';
+      st.vp += 2;
+      log("分析数据：-1能量，清空电脑，+1线索，+2VP（代表形成结论）。");
+    }
+    if(name==='research'){
+      if(st.pub<6){ st.mainUsed=false; return log("声望不足，无法研究科技（需6）。"); }
+      st.pub -= 6;
+      st.vp += 2;
+      st.en += 1;
+      log("研究科技：-6声望，+2VP，+1能量（即时奖励示例）。教学提示：真实规则还会旋转太阳系。");
+    }
+    if(name==='playcard'){
+      // example: free scan +1
+      st.vp += 1;
+      markSector(1);
+      log("打出项目卡（示例）：+1VP，并额外标记1次信号（不再付扫描标准成本）。");
+    }
+    if(name==='pass'){
+      st.passed = true;
+      log("Pass：本轮结束动作。教学提示：真实规则会弃到4张、选回合末卡，首位Pass常触发旋转。");
+    }
+
+    checkDiscovery();
+    save();
+    render();
+  }
+
+  // bind main actions
+  $$('[data-act]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      pushHist();
+      act(btn.dataset.act);
+    });
+  });
+
+  // free actions
+  $('#freeMove').addEventListener('click', ()=>{
+    if(st.passed) return;
+    pushHist();
+    if(st.en<1) return log("能量不足。");
+    st.en -= 1;
+    st.pub += 1;
+    save(); render();
+    log("免费：-1能量 → +1声望（代表用能量做一次机动/观测带来曝光）。");
+  });
+
+  $('#placeData').addEventListener('click', ()=>{
+    if(st.passed) return;
+    pushHist();
+    if(st.dataPool<1) return log("数据池为空：先扫描/登陆/环绕拿数据。");
+    const idx = st.computer.findIndex(x=>x===null);
+    if(idx===-1) return log("电脑已满：可直接 Analyze。");
+    st.dataPool -= 1;
+    st.computer[idx]='D';
+    // simple bonuses
+    if(idx===1) st.vp += 2; // mimic points space
+    if(idx===0) st.pub += 1; // mimic publicity space
+    save(); render();
+    log("免费：放1数据进电脑（触发简化奖励）。");
+  });
+
+  $('#exchange').addEventListener('click', ()=>{
+    if(st.passed) return;
+    pushHist();
+    // simplest: 2 credits -> 1 energy if possible else 2 energy -> 1 credit else 2 cards ignored
+    if(st.cr>=2){ st.cr-=2; st.en+=1; log("资源交换：-2信用 → +1能量。"); }
+    else if(st.en>=2){ st.en-=2; st.cr+=1; log("资源交换：-2能量 → +1信用。"); }
+    else { hist.pop(); return log("资源不足：需要同类资源≥2。"); }
+    save(); render();
+  });
+
+  $('#buyCard').addEventListener('click', ()=>{
+    if(st.passed) return;
+    pushHist();
+    if(st.pub<3) return log("声望不足：买卡需要3声望。");
+    st.pub-=3;
+    st.vp+=1;
+    save(); render();
+    log("买卡（简化）：-3声望 → +1VP（代表获取更强项目带来的长期收益）。");
+  });
+
+  $('#endTurn').addEventListener('click', ()=>{
+    pushHist();
+    // resolve between turns: if main not used, encourage
+    if(!st.mainUsed && !st.passed){ log("提示：你还没用主行动。也可以直接结束回合，但不建议。"); }
+    st.mainUsed=false;
+    st.turn += 1;
+    if(st.passed){
+      // round ends for you
+      st.round += 1;
+      st.turn = 1;
+      st.passed=false;
+      // income (simplified)
+      st.cr += 2; st.en += 1; st.pub += 1;
+      log("进入下一轮并获得收入（简化：+2信用 +1能量 +1声望）。");
+    }
+    if(st.round>5){ st.round=5; log("已到第5轮：可以继续练动作，但正式游戏将进行终局计分。"); }
+    save(); render();
+    checkDiscovery();
+  });
+
+  $('#undo').addEventListener('click', ()=>{
+    const last = hist.pop();
+    if(!last) return log("没有可撤销步骤。");
+    st = last;
+    store.set(HISTORY, hist);
+    save(); render();
+    log("已撤销一步。");
+  });
+
+  $('#newGame').addEventListener('click', ()=>{
+    pushHist();
+    st = JSON.parse(JSON.stringify(def));
+    save(); render();
+    log("新开一局：已重置为默认起始状态。");
+  });
+
+  $('#hardReset').addEventListener('click', ()=>{
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(HISTORY);
+    st = JSON.parse(JSON.stringify(def));
+    hist=[];
+    save(); render();
+    log("已清空本地存档。");
+  });
+
+  render();
+  log("就绪：先用 Launch/Scan 开局，再用 Land/Analyze 拿线索。");
+});
+</script>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

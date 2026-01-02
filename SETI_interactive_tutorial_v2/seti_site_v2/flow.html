@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>流程动画 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>流程动画</h2>
+        <p>用动画把“收入 → 主行动 → 免费行动 → 结算 → 下一轮”讲清楚；适合教学时投屏。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="grid">
+  <div class="card">
+    <div class="hd"><h3>流程动画：从“资源”到“发现”</h3>
+      <div class="flex">
+        <button class="btn primary" id="play">播放</button>
+        <button class="btn" id="pause">暂停</button>
+        <button class="btn" id="step">单步</button>
+        <button class="btn" id="reset">重置</button>
+      </div>
+    </div>
+    <div class="bd">
+      <p>这张动画把 SETI 的核心循环拆成 7 个节点。建议教学时：<b>先播放一遍</b>，再让玩家用“单步”复述每一步在做什么。</p>
+      <div class="canvasBox">
+        <canvas id="flowCanvas" width="1100" height="520"></canvas>
+      </div>
+      <div class="flex" style="margin-top:12px">
+        <div class="slider">
+          <span class="small">速度</span>
+          <input type="range" min="0.5" max="2.5" step="0.1" value="1.2" id="speed"/>
+          <span class="small mono" id="speedVal">1.2x</span>
+        </div>
+        <div class="pill">提示：Pass 也算主行动；首位 Pass 常触发太阳系旋转</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h3>节点解释（讲解用提词）</h3></div>
+    <div class="bd">
+      <div class="list" id="nodeNotes"></div>
+      <hr class="sep"/>
+      <div class="notice">
+        <b>教学关键句：</b><br/>
+        • “扫描/登陆/分析”分别贡献三种生命线索（信号/生命痕迹/数据结论）。<br/>
+        • “科技”是放大器：让你同一个主行动做得更多、更便宜或更稳定。<br/>
+        • “星区竞争”是互动核心：你不必每次都赢，但不要长期缺席。
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const nodes = [
+    {id:"income",  label:"轮初/收入",  sub:"获得资源（含收入卡）"},
+    {id:"main",    label:"主行动",    sub:"8选1：Launch/Scan/…"},
+    {id:"free",    label:"免费行动",  sub:"换资源/弃牌小收益/放数据"},
+    {id:"resolve", label:"结算触发",  sub:"里程碑/完成星区/发现"},
+    {id:"engine",  label:"科技/卡牌", sub:"长期增益与组合"},
+    {id:"pass",    label:"Pass",      sub:"回合末卡 + 可能旋转"},
+    {id:"score",   label:"得分推进",  sub:"分数轨与金色目标"}
+  ];
+  const notes = [
+    ["轮初/收入", "从第2轮起会稳定拿收入；把卡“夹进收入”会立即拿一次，并在之后每轮重复。"],
+    ["主行动", "每回合只做一个。新手记住：Launch/Orbit/Land（探测）+ Scan（天文）+ Analyze（数据）。"],
+    ["免费行动", "任何时候插入（但只能在自己回合）。包含：能量换移动、资源交换、买卡、放数据等。"],
+    ["结算触发", "完成星区后：比较标记数量决定赢家；里程碑在回合之间结算；发现外星在回合结束后触发。"],
+    ["科技/卡牌", "科技研究会旋转太阳系；卡牌是“一次性科研项目”，也可以当免费小收益弃掉。"],
+    ["Pass", "Pass 是主行动：先做免费行动再Pass；首位Pass通常触发太阳系旋转；并从本轮卡堆选回合末卡。"],
+    ["得分推进", "25/50/70 触发金色计分板选择；终局还有金色板与金色卡结算。"]
+  ];
+  const list = document.querySelector('#nodeNotes');
+  notes.forEach(n=>{
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<b>${n[0]}</b><div class="small">${n[1]}</div>`;
+    list.appendChild(div);
+  });
+
+  const c = document.getElementById('flowCanvas');
+  const ctx = c.getContext('2d');
+
+  const W=c.width, H=c.height;
+  const layout = [
+    {x:110, y:120, w:220, h:78, i:0},
+    {x:420, y:120, w:220, h:78, i:1},
+    {x:730, y:120, w:250, h:78, i:2},
+    {x:420, y:260, w:220, h:78, i:3},
+    {x:110, y:260, w:220, h:78, i:4},
+    {x:730, y:260, w:250, h:78, i:5},
+    {x:420, y:400, w:220, h:78, i:6},
+  ];
+
+  const edges = [
+    [0,1],[1,2],[2,3],[3,6],
+    [1,4],[4,1], // engine influences main
+    [2,5],[5,6], // pass to score
+    [3,1]        // next turn loop
+  ];
+
+  let t=0, playing=false, stage=0, speed=1.2;
+
+  function drawNode(n, active=false){
+    const {x,y,w,h,i}=n;
+    // panel
+    ctx.beginPath();
+    const r=16;
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+    ctx.fillStyle = active ? "rgba(123,223,246,.18)" : "rgba(255,255,255,.05)";
+    ctx.fill();
+    ctx.strokeStyle = active ? "rgba(123,223,246,.65)" : "rgba(255,255,255,.12)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle="rgba(232,238,252,.96)";
+    ctx.font="600 18px ui-sans-serif, system-ui";
+    ctx.fillText(nodes[i].label, x+14, y+30);
+    ctx.fillStyle="rgba(159,176,208,.95)";
+    ctx.font="13px ui-sans-serif, system-ui";
+    ctx.fillText(nodes[i].sub, x+14, y+54);
+  }
+
+  function arrow(x1,y1,x2,y2, prog=1){
+    const dx=x2-x1, dy=y2-y1;
+    const L=Math.hypot(dx,dy);
+    const ux=dx/L, uy=dy/L;
+    const len=L*prog;
+    const ex=x1+ux*len, ey=y1+uy*len;
+
+    ctx.strokeStyle="rgba(123,223,246,.35)";
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(ex,ey);
+    ctx.stroke();
+
+    // arrow head if near end
+    if(prog>0.98){
+      const ah=10;
+      const ax=x2, ay=y2;
+      const leftx = ax - ux*ah - uy*ah*0.6;
+      const lefty = ay - uy*ah + ux*ah*0.6;
+      const rightx = ax - ux*ah + uy*ah*0.6;
+      const righty = ay - uy*ah - ux*ah*0.6;
+      ctx.fillStyle="rgba(123,223,246,.55)";
+      ctx.beginPath();
+      ctx.moveTo(ax,ay);
+      ctx.lineTo(leftx,lefty);
+      ctx.lineTo(rightx,righty);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  function clear(){
+    ctx.clearRect(0,0,W,H);
+    // background grid
+    ctx.strokeStyle="rgba(255,255,255,.04)";
+    ctx.lineWidth=1;
+    for(let x=0;x<=W;x+=50){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<=H;y+=50){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  }
+
+  function draw(){
+    clear();
+    layout.forEach(n=> drawNode(n, n.i===stage));
+    // edges animate sequentially around stage
+    edges.forEach(([a,b], idx)=>{
+      const A=layout.find(n=>n.i===a);
+      const B=layout.find(n=>n.i===b);
+      const x1=A.x+A.w/2, y1=A.y+A.h/2;
+      const x2=B.x+B.w/2, y2=B.y+B.h/2;
+      // compute progress for current stage edge(s)
+      let prog=0.25;
+      if(idx===stage){ prog = clamp((t%1),0,1); }
+      else if(idx<stage){ prog=1; }
+      arrow(x1,y1,x2,y2,prog);
+    });
+    // title
+    ctx.fillStyle="rgba(232,238,252,.85)";
+    ctx.font="600 16px ui-sans-serif, system-ui";
+    ctx.fillText("SETI 核心循环（教学动画）", 18, 24);
+  }
+
+  function tick(){
+    if(playing){
+      t += 0.02*speed;
+      if(t>=edges.length){ t=0; stage=0; }
+      stage = Math.floor(t);
+    }
+    draw();
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  document.getElementById('speed').addEventListener('input', (e)=>{
+    speed = parseFloat(e.target.value);
+    document.getElementById('speedVal').textContent = speed.toFixed(1)+'x';
+  });
+  document.getElementById('play').addEventListener('click', ()=> playing=true);
+  document.getElementById('pause').addEventListener('click', ()=> playing=false);
+  document.getElementById('reset').addEventListener('click', ()=>{ playing=false; t=0; stage=0; draw(); });
+  document.getElementById('step').addEventListener('click', ()=>{
+    playing=false;
+    stage = (stage+1) % layout.length;
+    // map stage to a close edge index for visual: just set t accordingly
+    t = stage;
+    draw();
+  });
+});
+</script>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

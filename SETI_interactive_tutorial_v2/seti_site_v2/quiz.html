@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>测验与复盘 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>测验与复盘</h2>
+        <p>用 8 题查漏补缺，再用复盘模板把策略讲清楚。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="grid">
+  <div class="card">
+    <div class="hd"><h3>8 题小测验（答完就知道自己卡在哪）</h3>
+      <div class="flex">
+        <button class="btn primary" id="grade">评分</button>
+        <button class="btn" id="resetQuiz">重置</button>
+      </div>
+    </div>
+    <div class="bd">
+      <p>这些题刻意覆盖“新手最常忘的触发时机与资源约束”。做完建议回到模拟器复练对应动作。</p>
+      <div id="quiz"></div>
+      <p class="small" id="scoreLine" style="margin-top:12px"></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h3>复盘模板（你可以直接照这个问玩家）</h3></div>
+    <div class="bd">
+      <div class="list">
+        <div class="item"><b>1）你这局的“主线”是什么？</b><div class="small">探测/扫描/分析三者哪个是你最常用的得分来源？</div></div>
+        <div class="item"><b>2）你最缺的资源是哪一个？</b><div class="small">声望（买科技） vs 能量（行动燃料） vs 信用（发射/扫描成本）</div></div>
+        <div class="item"><b>3）你在星区竞争里是“参与者”还是“旁观者”？</b><div class="small">每轮至少争 1 个星区通常更健康。</div></div>
+        <div class="item"><b>4）你为什么选择在那个时机 Pass？</b><div class="small">为了拿回合末卡？为了触发旋转？还是因为资源断档？</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const qs = [
+    {q:"每回合你最多能做几个“主行动”？", a:1, opts:["0个","1个","2个","不限"]},
+    {q:"Scan 扫描的标准成本是什么？", a:2, opts:["2信用","1信用+1能量","1信用+2能量","2能量"]},
+    {q:"数据池上限是多少？超出怎么办？", a:1, opts:["4；超出回合末弃","6；超出立刻弃","8；可无限堆","10；下轮再处理"]},
+    {q:"Analyze 的触发条件是什么？", a:3, opts:["只要有1个数据","数据池满6","有任意科技","电脑上排满"]},
+    {q:"Research 科技做主行动时，必须做的一件事是什么？", a:0, opts:["旋转太阳系","立刻Pass","弃到4张","拿外星卡"]},
+    {q:"完成星区后，谁获得“星区奖励”？", a:2, opts:["最后放标记的人","所有人","标记最多的人","声望最高的人"]},
+    {q:"Pass 是什么类型的行动？", a:2, opts:["免费行动","里程碑","主行动","回合间结算"]},
+    {q:"外星文明发现的条件是：", a:1, opts:["任意线索达到3个","发现区3格全被标记","赢3次星区","登陆3个行星"]},
+  ];
+
+  function render(){
+    const root = document.getElementById('quiz');
+    root.innerHTML="";
+    qs.forEach((x, i)=>{
+      const div=document.createElement('div');
+      div.className='item';
+      div.innerHTML = `
+        <b>${i+1}. ${x.q}</b>
+        <div class="small" style="margin-top:6px; display:grid; gap:6px">
+          ${x.opts.map((o, j)=>`
+            <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer">
+              <input type="radio" name="q${i}" value="${j}" style="margin-top:2px"/>
+              <span>${o}</span>
+            </label>`).join('')}
+        </div>
+      `;
+      root.appendChild(div);
+    });
+    document.getElementById('scoreLine').textContent="";
+  }
+  render();
+
+  document.getElementById('grade').addEventListener('click', ()=>{
+    let score=0;
+    qs.forEach((x, i)=>{
+      const sel = document.querySelector(`input[name="q${i}"]:checked`);
+      if(sel && parseInt(sel.value,10)===x.a) score++;
+    });
+    const msg = score>=7 ? "很稳：可以直接开局。"
+              : score>=5 ? "基本掌握：建议再用模拟器练 2 回合。"
+              : "还不稳：回到“流程动画 + 规则截图”再串一次因果。";
+    document.getElementById('scoreLine').textContent = `得分：${score}/${qs.length} — ${msg}`;
+  });
+  document.getElementById('resetQuiz').addEventListener('click', ()=>{
+    render();
+  });
+});
+</script>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

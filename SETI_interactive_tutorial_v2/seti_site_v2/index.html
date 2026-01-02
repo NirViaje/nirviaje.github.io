@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>总览与带玩 · SETI 交互教程</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>SETI 交互教程</h1>
+        <p>流程动画 · 行动模拟器 · 多页结构</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">总览与带玩 <span class="kbd">1</span></a>
+      <a href="flow.html">流程动画 <span class="kbd">2</span></a>
+      <a href="simulator.html">行动模拟器 <span class="kbd">3</span></a>
+      <a href="rules.html">规则书素材页 <span class="kbd">4</span></a>
+      <a href="quiz.html">测验与复盘 <span class="kbd">5</span></a>
+      <a href="glossary.html">术语速查 <span class="kbd">6</span></a>
+    </nav>
+    <div class="mini">
+      <div class="small"><b>快速提示</b></div>
+      <div>• 键盘 <span class="mono">1~6</span> 切换页面<br/>
+      • 点缩略图可放大查看规则页<br/>
+      • 模拟器状态会自动保存（浏览器本地）</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div>
+        <h2>总览与带玩</h2>
+        <p>用“科学机构负责人”的视角带新玩家：先理解科研循环，再上手细节。</p>
+      </div>
+      <div class="badges">
+        <div class="badge">离线可用</div>
+        <div class="badge">适合教学带新</div>
+        <div class="badge">含规则书截图素材</div>
+      </div>
+    </section>
+
+    
+<div class="grid">
+  <div class="card">
+    <div class="hd"><h3>一局就能上手：教学带玩脚本（建议照着念）</h3></div>
+    <div class="bd">
+      <p>你是“科研机构负责人”。每回合只做 <b>1 个主行动</b>，再穿插免费行动。三条主线：<b>探测器</b>（太阳系）、<b>扫描</b>（星区）、<b>分析</b>（数据→线索）。</p>
+      <div class="list">
+        <div class="item"><b>Round 1</b>做一个“起飞动作”：<span class="pill">发射探测器</span>或<span class="pill">扫描</span>。目标：把自己推进到“能赚声望 / 能拿数据”。</div>
+        <div class="item"><b>Round 2</b>做一个“拿线索动作”：<span class="pill">登陆</span>（偏生命痕迹）或<span class="pill">扫描</span>（偏信号痕迹）。</div>
+        <div class="item"><b>Round 3</b>做一个“起引擎动作”：<span class="pill">研究科技</span>（花声望）或<span class="pill">打出卡牌</span>（让行动变强/变多）。</div>
+        <div class="item"><b>Round 4-5</b>做一个“冲分动作”：围绕你已铺开的引擎，稳定地把线索转成发现、把胜利条件做满。</div>
+      </div>
+
+      <hr class="sep"/>
+      <div class="notice">
+        <b>新手最重要的 3 个检查点：</b><br/>
+        ① 我现在缺 <b>声望</b> 还是缺 <b>能量</b>？<br/>
+        ② 我这轮的主行动，是在 <b>拿数据</b> 还是在 <b>把数据变成线索</b>？<br/>
+        ③ 我有没有在“星区竞争”里落后到完全没机会赢？
+      </div>
+
+      <hr class="sep"/>
+      <div class="row">
+        <a class="btn primary" href="flow.html">去看流程动画 →</a>
+        <a class="btn primary" href="simulator.html">打开行动模拟器 →</a>
+        <a class="btn" href="rules.html">查看规则书素材页 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd"><h3>12 项新手清单（完成 8 项以上就算会玩）</h3></div>
+    <div class="bd">
+      <div class="list" id="checklist"></div>
+      <hr class="sep"/>
+      <div class="row">
+        <button class="btn good" id="checkAll">全选（演示用）</button>
+        <button class="btn" id="resetChecks">重置</button>
+      </div>
+      <p class="small" id="checkStat" style="margin-top:10px"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const items = [
+    ["知道每回合只能做 1 个主行动", "总览页/规则书概览"],
+    ["理解“免费行动”可以插在主行动前后", "规则书：回合结构"],
+    ["能解释 Launch / Orbit / Land 的区别", "探测器线"],
+    ["知道移动的 3 种来源（能量、卡牌、效果）", "探测器移动"],
+    ["知道 Scan 至少标 2 个信号，最多可到 4", "扫描线"],
+    ["知道星区填满后会结算、会重置", "星区竞争"],
+    ["知道数据池上限 6，满了要弃", "数据管理"],
+    ["能完成一次 Analyze（电脑上排满 → 付能量清空）", "分析线"],
+    ["知道研究科技会触发太阳系旋转", "科技线"],
+    ["能说出声望的 3 个常见来源", "星体/星区/效果"],
+    ["知道外星发现条件是 3 个发现格全满", "发现系统"],
+    ["知道 Pass 会带来回合末卡、并可能触发旋转", "Pass/轮间"]
+  ];
+  const key = "seti_checklist_v2";
+  const state = store.get(key, Array(items.length).fill(false));
+
+  const list = document.querySelector('#checklist');
+  function render(){
+    list.innerHTML = "";
+    let done = 0;
+    items.forEach((it, i)=>{
+      const [t, s] = it;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer">
+          <input type="checkbox" ${state[i]?'checked':''} style="margin-top:2px"/>
+          <div>
+            <b>${t}</b>
+            <div class="small">提示：${s}</div>
+          </div>
+        </label>
+      `;
+      div.querySelector('input').addEventListener('change', (e)=>{
+        state[i] = e.target.checked;
+        store.set(key, state);
+        render();
+      });
+      list.appendChild(div);
+      if (state[i]) done++;
+    });
+    document.querySelector('#checkStat').textContent = `完成：${done}/${items.length}（≥8：一局后基本无障碍）`;
+  }
+  render();
+
+  document.querySelector('#checkAll').addEventListener('click', ()=>{
+    for(let i=0;i<state.length;i++) state[i]=true;
+    store.set(key, state); render();
+  });
+  document.querySelector('#resetChecks').addEventListener('click', ()=>{
+    for(let i=0;i<state.length;i++) state[i]=false;
+    store.set(key, state); render();
+  });
+});
+</script>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="inner">
+    <div class="bar">
+      <div class="title" id="modalTitle">查看</div>
+      <div class="x" id="modalClose">关闭 Esc</div>
+    </div>
+    <div class="content">
+      <img id="modalImg" alt="rule page"/>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
