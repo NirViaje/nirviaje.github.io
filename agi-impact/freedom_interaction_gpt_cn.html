@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>自由的棱镜 · AI 时代（互动摘要）</title>
+  <style>
+    :root{
+      --bg:#f7f8fb;
+      --panel:#ffffff;
+      --panel2:#fbfcff;
+      --text:#111827;
+      --muted:#5b677a;
+      --line:rgba(17,24,39,.12);
+      --accent:#2563eb;
+      --good:#059669;
+      --warn:#d97706;
+      --bad:#e11d48;
+      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+              "Microsoft YaHei", Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:
+        radial-gradient(1100px 520px at 20% 10%, rgba(37,99,235,.10), transparent 55%),
+        radial-gradient(900px 520px at 85% 55%, rgba(5,150,105,.10), transparent 55%),
+        radial-gradient(900px 520px at 25% 85%, rgba(225,29,72,.07), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.55;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(247,248,251,.82);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 18px;}
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background: conic-gradient(from 180deg, rgba(37,99,235,.95), rgba(5,150,105,.9), rgba(217,119,6,.88), rgba(225,29,72,.88), rgba(37,99,235,.95));
+      box-shadow: var(--shadow);
+      border:1px solid rgba(17,24,39,.08);
+    }
+    h1{font-size:18px; margin:0;}
+    .sub{color:var(--muted); font-size:13px; margin-top:2px}
+    nav{display:flex; gap:8px; flex-wrap:wrap;}
+    .pill{
+      border:1px solid var(--line);
+      color:var(--text);
+      background: rgba(255,255,255,.66);
+      padding:8px 10px;
+      border-radius:999px;
+      text-decoration:none;
+      font-size:13px;
+      transition:transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .pill:hover{transform:translateY(-1px); background: rgba(255,255,255,.92); border-color: rgba(17,24,39,.18);}
+    main{padding:20px 0 44px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr; }
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.88));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: rgba(255,255,255,.72);
+    }
+    .card .bd{padding:14px 16px;}
+    .title{font-size:14px; letter-spacing:.2px; margin:0}
+    .mini{color:var(--muted); font-size:12px}
+    .kpi{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .chip b{color:var(--text); font-weight:650}
+    .section{margin-top:14px}
+    .two{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width:680px){.two{grid-template-columns:1fr}}
+    .btn{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:13px;
+      transition:transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .btn:hover{transform:translateY(-1px); background: rgba(255,255,255,.95); border-color: rgba(17,24,39,.18)}
+    .btn.primary{
+      border-color: rgba(37,99,235,.35);
+      background: rgba(37,99,235,.10);
+      color:#0b2a75;
+    }
+    .btn.danger{
+      border-color: rgba(225,29,72,.35);
+      background: rgba(225,29,72,.08);
+      color:#7a0b23;
+    }
+    .btn.good{
+      border-color: rgba(5,150,105,.35);
+      background: rgba(5,150,105,.08);
+      color:#064e3b;
+    }
+    .btn.small{padding:8px 10px; border-radius:10px; font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .muted{color:var(--muted)}
+    .hr{height:1px; background: var(--line); margin:14px 0;}
+    textarea, input[type="text"]{
+      width:100%;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.85);
+      color:var(--text);
+      border-radius: 12px;
+      padding:10px 12px;
+      font-size:13px;
+      outline:none;
+    }
+    textarea{min-height:92px; resize:vertical}
+    .note{font-size:12px; color:var(--muted)}
+    .quote{
+      border-left:3px solid rgba(37,99,235,.55);
+      padding:10px 12px;
+      margin:10px 0;
+      background: rgba(37,99,235,.06);
+      border-radius: 12px;
+    }
+    .tag{font-family:var(--mono); font-size:12px; color: rgba(17,24,39,.85)}
+    .spectrum{
+      position:relative;
+      height:180px;
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background:
+        radial-gradient(700px 260px at 18% 50%, rgba(37,99,235,.22), transparent 55%),
+        radial-gradient(700px 260px at 82% 50%, rgba(217,119,6,.12), transparent 60%),
+        radial-gradient(700px 260px at 92% 50%, rgba(5,150,105,.18), transparent 55%),
+        linear-gradient(90deg, rgba(37,99,235,.12), rgba(255,255,255,.75), rgba(5,150,105,.12));
+      overflow:hidden;
+    }
+    .dot{
+      position:absolute;
+      top:50%;
+      width:18px; height:18px;
+      border-radius:50%;
+      transform: translate(-50%, -50%);
+      background: rgba(17,24,39,.92);
+      box-shadow: 0 0 0 6px rgba(17,24,39,.06), 0 0 24px rgba(37,99,235,.20);
+      border:1px solid rgba(255,255,255,.85);
+    }
+    .slabels{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size:12px; color:var(--muted);
+      margin-top:10px;
+    }
+    input[type="range"]{
+      width:100%;
+      margin-top:10px;
+      accent-color: var(--accent);
+    }
+    .microgrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:680px){.microgrid{grid-template-columns:1fr}}
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(255,255,255,.74);
+      padding:10px 12px;
+    }
+    .item .meta{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted)}
+    .item .txt{margin-top:8px; font-size:13px; white-space:pre-wrap}
+    .bar{
+      height:10px; border-radius:999px; background: rgba(17,24,39,.06); overflow:hidden;
+      border:1px solid rgba(17,24,39,.08);
+    }
+    .bar > i{display:block; height:100%; width:50%; background: linear-gradient(90deg, rgba(37,99,235,.85), rgba(5,150,105,.85));}
+    .kbd{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:2px 6px;
+      border:1px solid var(--line);
+      border-bottom-color: rgba(17,24,39,.22);
+      background: rgba(255,255,255,.8);
+      border-radius:8px;
+      color:rgba(17,24,39,.85);
+    }
+    footer{padding:22px 0; border-top:1px solid var(--line); color:var(--muted); font-size:12px}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,.14);
+      background: rgba(255,255,255,.72);
+      font-size:12px;
+      color:rgba(17,24,39,.85);
+    }
+    .badge .b{width:8px; height:8px; border-radius:50%; background: rgba(5,150,105,.9)}
+    .mono{font-family:var(--mono)}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>自由的棱镜 · AI 时代</h1>
+          <div class="sub">把我们整段对话压缩成可互动的“摘要 + 讨论 + 共创”页面：资本主义→消极自由、积极自由、自由论者、AI/UBI、公有 AI、“离线权”。</div>
+        </div>
+      </div>
+      <nav>
+        <a class="pill" href="#spectrum">光谱</a>
+        <a class="pill" href="#map">概念地图</a>
+        <a class="pill" href="#dilemmas">两难题</a>
+        <a class="pill" href="#charter">未来宪章</a>
+        <a class="pill" href="#gallery">共创</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <!-- LEFT -->
+    <section class="card" id="map">
+      <div class="hd">
+        <div>
+          <p class="title">概念地图（我们讨论了什么）</p>
+          <div class="mini">用最短的结构，记住整段讨论的主线。</div>
+        </div>
+        <div class="kpi">
+          <span class="chip"><b id="kPosts">0</b> 条共创</span>
+          <span class="chip"><b id="kVotes">0</b> 次投票</span>
+          <span class="chip"><b id="kCharters">0</b> 条宪章</span>
+        </div>
+      </div>
+
+      <div class="bd">
+        <div class="quote">
+          <div class="tag">核心轴</div>
+          <div><b>消极自由</b>：不被干涉（freedom from） • <b>积极自由</b>：有能力去做/成为自己（freedom to / capability / self-mastery）。</div>
+        </div>
+
+        <div class="two">
+          <div class="item">
+            <div class="meta"><b>为什么资本主义倾向消极自由</b><span class="mono">私产 · 契约 · 限制国家</span></div>
+            <div class="txt">
+• 私有财产权划出“不可侵犯的边界”
+• 市场强调自愿交换与非强制（过程正义 > 结果平等）
+• 警惕“宏大目标”→ 担心国家以“为了你好”名义扩权
+• 形式权利常忽略真实能力（有门但没腿）
+            </div>
+          </div>
+          <div class="item">
+            <div class="meta"><b>自由论者（Libertarian）</b><span class="mono">自我所有权 · 互不侵犯原则</span></div>
+            <div class="txt">
+• 将自由主要定义为“不被强制”的消极自由
+• 警惕税收与再分配：认为会侵害财产权与选择
+• 光谱：小政府 → 极小政府 → 无政府资本主义
+• 内部张力：反国家但可能忽视“私人权力/公司霸权”
+            </div>
+          </div>
+        </div>
+
+        <div class="section two">
+          <div class="item">
+            <div class="meta"><b>更偏积极自由的制度</b><span class="mono">福利 · 能力基础</span></div>
+            <div class="txt">
+• 社会民主（北欧）：教育/医疗/保障作为公民权利
+• 共和主义/参与式民主：自由=参与自我立法
+• 发展型国家：用国家能力建“能力底座”（基建/产业/教育）
+            </div>
+          </div>
+          <div class="item">
+            <div class="meta"><b>中国在光谱上的位置（概括）</b><span class="mono">发展 · 稳定 · 强国家</span></div>
+            <div class="txt">
+• 官方强调生存权/发展权（积极自由取向强）
+• 个人消极自由边界相对更受秩序与集体目标约束
+• 混合：市场选择 + 国家在关键部门更强的组织与调度
+            </div>
+          </div>
+        </div>
+
+        <div class="section item">
+          <div class="meta"><b>AI 时代的“自由危机”</b><span class="mono">失业 · 权力 · 数据</span></div>
+          <div class="txt">
+• 大规模自动化下，“没工作”可能是“无缘劳动”而非“不愿劳动”
+• 仅有消极自由可能退化为“挨饿的自由”
+• 积极自由（UBI/数字红利）变得必要，但风险是：
+  - 依附：领取者被分配系统绑定
+  - 意义：尊严、联结与“被需要感”可能坍塌
+• 新前沿：自由=与系统保持距离 → “离线权 / 不被追踪权 / 退出权”
+          </div>
+        </div>
+
+        <div class="row section">
+          <button class="btn small" id="btnExport">导出数据（JSON）</button>
+          <button class="btn small danger" id="btnReset">重置本地数据</button>
+          <span class="note">演示版：所有内容只保存在浏览器本地（localStorage），不上传服务器。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="card" id="spectrum">
+      <div class="hd">
+        <div>
+          <p class="title">流动光谱</p>
+          <div class="mini">拖动滑块，放置你的“自由重心”。</div>
+        </div>
+        <span class="badge" title="本地演示">
+          <span class="b"></span> 本地
+        </span>
+      </div>
+      <div class="bd">
+        <div class="spectrum" aria-label="光谱可视化">
+          <div class="dot" id="dot" style="left:50%"></div>
+        </div>
+
+        <div class="slabels">
+          <div><b>消极</b>（边界）</div>
+          <div class="muted">动态平衡</div>
+          <div><b>积极</b>（能力）</div>
+        </div>
+
+        <input id="rng" type="range" min="0" max="100" value="50" />
+
+        <div class="item" style="margin-top:12px">
+          <div class="meta"><b id="stanceTitle">你的位置：平衡</b><span id="stanceTag" class="mono">50/100</span></div>
+          <div class="txt" id="stanceText">把滑块向左/向右移动，看看“承诺”和“恐惧”如何变化。</div>
+        </div>
+
+        <div class="microgrid section">
+          <button class="btn primary" id="btnQuickPost">写一句未来</button>
+          <button class="btn good" id="btnQuickCharter">写一条宪章</button>
+        </div>
+
+        <div class="section">
+          <div class="mini">社区倾向（由投票+平均位置计算）</div>
+          <div class="bar" aria-label="倾向条"><i id="tiltBar" style="width:50%"></i></div>
+          <div class="row" style="margin-top:8px">
+            <span class="chip">积极倾向：<b id="tiltText">50%</b></span>
+            <span class="chip">平均位置：<b id="avgStance">50</b>/100</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- DILEMMAS -->
+  <section class="card section" id="dilemmas">
+    <div class="hd">
+      <div>
+        <p class="title">两难题（把理论变成选择）</p>
+        <div class="mini">讨论的“发动机”：每个问题都逼你定义自由的边界。</div>
+      </div>
+      <div class="row">
+        <span class="chip"><b id="dAnswered">0</b> / 4 已回答</span>
+      </div>
+    </div>
+
+    <div class="bd">
+      <div class="two">
+        <div class="item">
+          <div class="meta"><b>1）UBI：分红还是封口费？</b><span class="mono">再分配</span></div>
+          <div class="txt">当“面包免费”，价格会是什么？</div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small" data-vote="ubi" data-opt="dividend">A. 人类共同遗产分红</button>
+            <button class="btn small" data-vote="ubi" data-opt="hush">B. 维稳系统封口费</button>
+            <button class="btn small" data-vote="ubi" data-opt="third">C. 我有第三种定义</button>
+          </div>
+          <div class="mini" style="margin-top:10px" id="ubiResult">尚未投票。</div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>2）AI 阻止你“犯错”</b><span class="mono">失败之权</span></div>
+          <div class="txt">AI 预测你会痛苦，并试图阻拦你，你会？</div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small" data-vote="block" data-opt="accept">A. 接受指引：我不想受苦</button>
+            <button class="btn small" data-vote="block" data-opt="refuse">B. 拒绝：失败也是我的</button>
+            <button class="btn small" data-vote="block" data-opt="mirror">C. 只做镜子，不做方向盘</button>
+          </div>
+          <div class="mini" style="margin-top:10px" id="blockResult">尚未投票。</div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>3）离线权：穷一点也要不被追踪？</b><span class="mono">退出权</span></div>
+          <div class="txt">你愿意用多少舒适，交换“不被看透”？</div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small" data-vote="offline" data-opt="yes">A. 愿意：宁可更穷也要独立</button>
+            <button class="btn small" data-vote="offline" data-opt="no">B. 不愿意：我需要服务</button>
+            <button class="btn small" data-vote="offline" data-opt="hybrid">C. 折中：部分离线</button>
+          </div>
+          <div class="mini" style="margin-top:10px" id="offlineResult">尚未投票。</div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>4）公有 AI：进步还是新暴政？</b><span class="mono">所有权</span></div>
+          <div class="txt">核心 AI 是否应视为公共基础设施？</div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small" data-vote="publicAI" data-opt="public">A. 核心模型公有</button>
+            <button class="btn small" data-vote="publicAI" data-opt="private">B. 维持私有竞争</button>
+            <button class="btn small" data-vote="publicAI" data-opt="mixed">C. 混合所有制</button>
+          </div>
+          <div class="mini" style="margin-top:10px" id="publicAIResult">尚未投票。</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="two">
+        <div class="item">
+          <div class="meta"><b>补一条“第三选项”</b><span class="mono">新框架</span></div>
+          <textarea id="thirdOption" placeholder="写下你认为更准确的框架。例如：『UBI 不是钱，是拒绝被迫劳动的权利。』"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small primary" id="btnSaveThird">保存</button>
+            <span class="note" id="thirdSaved"></span>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>关键词脉冲</b><span class="mono">本地词频</span></div>
+          <div class="txt muted">从共创与宪章中提取关键词（本地简单统计）。</div>
+          <div id="cloud" class="row" style="gap:8px; margin-top:10px; flex-wrap:wrap;"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small" id="btnRebuildCloud">重建词云</button>
+            <span class="note">提示：写更多共创/宪章，词云会更有意思。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHARTER -->
+  <section class="card section" id="charter">
+    <div class="hd">
+      <div>
+        <p class="title">未来宪章（请写下《自由第一条》）</p>
+        <div class="mini">把“底线”写成规则：谁也不能越过。</div>
+      </div>
+      <div class="row">
+        <button class="btn small good" id="btnTemplate">套用模板</button>
+        <button class="btn small" id="btnRandomClause">随机提示</button>
+      </div>
+    </div>
+
+    <div class="bd">
+      <div class="two">
+        <div class="item">
+          <div class="meta"><b>写一条宪章</b><span class="mono">human rights v2</span></div>
+          <input id="clauseTitle" type="text" placeholder="标题（可选）例如：不被优化之权" />
+          <textarea id="clauseBody" placeholder="条文：人类应保留 ______ 的绝对权利，任何机构与 AI 不得剥夺。"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="btnAddClause">加入宪章</button>
+            <button class="btn" id="btnMakePoster">生成“签名海报”文本</button>
+          </div>
+          <div class="note" id="posterOut" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>宪章列表</b><span class="mono">可点赞/可删除</span></div>
+          <div class="list" id="clauseList"></div>
+          <div class="note" id="noClauses">还没有宪章条款。写第一条吧。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section class="card section" id="gallery">
+    <div class="hd">
+      <div>
+        <p class="title">共创：一句话的未来</p>
+        <div class="mini">欢迎参与讨论与创作：你眼里的未来自由是什么？（可匿名）</div>
+      </div>
+      <div class="row">
+        <button class="btn small" id="btnSeed">填充示例</button>
+        <button class="btn small" id="btnClearPosts">清空共创</button>
+      </div>
+    </div>
+
+    <div class="bd">
+      <div class="two">
+        <div class="item">
+          <div class="meta"><b>发布一句话</b><span class="mono">2050 / 2070</span></div>
+          <input id="postName" type="text" placeholder="署名（可选，默认匿名）" />
+          <input id="postTags" type="text" placeholder="标签（逗号）例如：离线, UBI, 尊严, 监控" />
+          <textarea id="postText" placeholder="写一句你对未来的预言：当系统能完美照顾你，自由是什么？"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="btnAddPost">发布</button>
+            <button class="btn" id="btnEcho">『我共振』(+1)</button>
+            <span class="note" id="echoNote"></span>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="meta"><b>共创流</b><span class="mono">最新在上</span></div>
+          <div class="list" id="postList"></div>
+          <div class="note" id="noPosts">还没有共创内容。你可以成为第一个。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div class="badge"><span class="b"></span> 为讨论与创作而建</div>
+        <div style="margin-top:8px">
+          <span class="kbd">提示</span> 先拖光谱，再做两难题，最后写一条宪章。
+        </div>
+      </div>
+      <div class="mono muted">
+        本地存储键：<span class="muted">fp_data_v1_cn_light</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+/* ============================
+   数据模型（本地存储）
+============================ */
+const KEY = "fp_data_v1_cn_light";
+
+const defaultData = () => ({
+  stance: 50,
+  votes: {
+    ubi: { dividend:0, hush:0, third:0 },
+    block: { accept:0, refuse:0, mirror:0 },
+    offline: { yes:0, no:0, hybrid:0 },
+    publicAI: { public:0, private:0, mixed:0 }
+  },
+  thirdOptions: [],
+  clauses: [],
+  posts: [],
+  resonates: 0
+});
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return defaultData();
+    const d = JSON.parse(raw);
+    return Object.assign(defaultData(), d, {
+      votes: Object.assign(defaultData().votes, d.votes||{})
+    });
+  }catch(e){
+    return defaultData();
+  }
+}
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(state));
+  renderAll();
+}
+let state = load();
+
+/* ============================
+   小工具
+============================ */
+const $ = (id)=>document.getElementById(id);
+const nowISO = ()=> new Date().toISOString();
+const fmtTime = (iso)=> {
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"});
+  }catch(e){ return iso; }
+};
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function sumVotes(){
+  let s=0;
+  for(const k in state.votes){
+    const obj = state.votes[k];
+    for(const o in obj) s += obj[o];
+  }
+  return s;
+}
+
+/* ============================
+   “社区平均位置”与倾向（简单启发式）
+============================ */
+function avgStance(){
+  const w = {
+    ubi:     { dividend: 70, hush: 40, third: 55 },
+    block:   { accept: 45, refuse: 65, mirror: 55 },
+    offline: { yes: 35, no: 65, hybrid: 50 },
+    publicAI:{ public: 70, private: 35, mixed: 55 }
+  };
+  let total = state.stance, count = 1;
+  for(const k in state.votes){
+    for(const opt in state.votes[k]){
+      const c = state.votes[k][opt];
+      if(c>0){
+        total += (w[k]?.[opt] ?? 50) * c;
+        count += c;
+      }
+    }
+  }
+  return Math.round(total / count);
+}
+function communityTiltPositive(){
+  return clamp(avgStance(),0,100);
+}
+
+/* ============================
+   光谱描述（中文）
+============================ */
+function stanceDescriptor(v){
+  if(v<=20) return {
+    title:"强烈偏消极自由",
+    tag:`${v}/100`,
+    text:"你更重视边界：不被干涉、隐私、退出权，以及对“家长式扩权”的警惕。"
+  };
+  if(v<=40) return {
+    title:"较偏消极自由",
+    tag:`${v}/100`,
+    text:"你担心权力集中（国家或资本），把“说不的能力”看作自由的核心。"
+  };
+  if(v<=60) return {
+    title:"平衡 / 动态",
+    tag:`${v}/100`,
+    text:"你希望有能力底线（保障/教育/医疗），同时保留不被优化、不被追踪的空间。"
+  };
+  if(v<=80) return {
+    title:"较偏积极自由",
+    tag:`${v}/100`,
+    text:"你更重视真实能力：基本保障、公共服务与数字红利，避免自由空洞化。"
+  };
+  return {
+    title:"强烈偏积极自由",
+    tag:`${v}/100`,
+    text:"你认为再分配与公共供给是 AI 时代的必要底色，否则自由会变成“挨饿的自由”。"
+  };
+}
+
+/* ============================
+   渲染：光谱
+============================ */
+function renderSpectrum(){
+  const v = clamp(state.stance,0,100);
+  $("dot").style.left = v + "%";
+  $("rng").value = v;
+  const d = stanceDescriptor(v);
+  $("stanceTitle").textContent = "你的位置：" + d.title;
+  $("stanceTag").textContent = d.tag;
+  $("stanceText").textContent = d.text;
+
+  const tilt = communityTiltPositive();
+  $("tiltBar").style.width = tilt + "%";
+  $("tiltText").textContent = tilt + "%";
+  $("avgStance").textContent = avgStance();
+}
+
+/* ============================
+   投票（两难题）
+============================ */
+function vote(voteKey, opt){
+  if(!state.votes[voteKey] || state.votes[voteKey][opt] === undefined) return;
+  state.votes[voteKey][opt] += 1;
+  save();
+}
+function renderVoteResult(voteKey, elId){
+  const v = state.votes[voteKey];
+  const total = Object.values(v).reduce((a,b)=>a+b,0);
+  if(total===0){
+    $(elId).textContent = "尚未投票。";
+    return;
+  }
+  let topOpt=null, top=-1;
+  for(const k in v){ if(v[k]>top){ top=v[k]; topOpt=k; } }
+  const pct = Math.round((top/total)*100);
+  const map = {
+    ubi:{ dividend:"A（分红）", hush:"B（封口费）", third:"C（第三种）" },
+    block:{ accept:"A（接受）", refuse:"B（拒绝）", mirror:"C（镜子）" },
+    offline:{ yes:"A（离线）", no:"B（在线）", hybrid:"C（折中）" },
+    publicAI:{ public:"A（公有）", private:"B（私有）", mixed:"C（混合）" }
+  };
+  $(elId).textContent = `当前最多：${map[voteKey]?.[topOpt] ?? topOpt} • ${pct}%（n=${total}）`;
+}
+function renderDilemmas(){
+  renderVoteResult("ubi","ubiResult");
+  renderVoteResult("block","blockResult");
+  renderVoteResult("offline","offlineResult");
+  renderVoteResult("publicAI","publicAIResult");
+
+  let answered = 0;
+  for(const k in state.votes){
+    const total = Object.values(state.votes[k]).reduce((a,b)=>a+b,0);
+    if(total>0) answered += 1;
+  }
+  $("dAnswered").textContent = answered;
+}
+
+/* ============================
+   第三选项
+============================ */
+function renderThirdSaved(msg=""){
+  $("thirdSaved").textContent = msg;
+  if(msg){
+    setTimeout(()=>{$("thirdSaved").textContent="";}, 1500);
+  }
+}
+
+/* ============================
+   宪章
+============================ */
+function addClause(title, body){
+  const t = (title||"").trim();
+  const b = (body||"").trim();
+  if(!b) return;
+  state.clauses.unshift({
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2),
+    title: t,
+    body: b,
+    at: nowISO(),
+    up: 0
+  });
+  save();
+}
+function removeClause(id){
+  state.clauses = state.clauses.filter(c=>c.id!==id);
+  save();
+}
+function upClause(id){
+  const c = state.clauses.find(x=>x.id===id);
+  if(c){ c.up += 1; save(); }
+}
+function renderClauses(){
+  const list = $("clauseList");
+  list.innerHTML = "";
+  if(state.clauses.length===0){
+    $("noClauses").style.display = "block";
+    return;
+  }
+  $("noClauses").style.display = "none";
+  for(const c of state.clauses){
+    const div = document.createElement("div");
+    div.className = "item";
+    const title = c.title ? `<b>${escapeHtml(c.title)}</b><br/>` : "";
+    div.innerHTML = `
+      <div class="meta">
+        <span>${c.title ? "条款" : "条款（未命名）"}</span>
+        <span>${fmtTime(c.at)} • <span class="mono">▲ ${c.up}</span></span>
+      </div>
+      <div class="txt">${title}${escapeHtml(c.body)}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small good" data-action="up" data-id="${c.id}">我共振（▲）</button>
+        <button class="btn small danger" data-action="del" data-id="${c.id}">删除</button>
+      </div>
+    `;
+    list.appendChild(div);
+  }
+  list.querySelectorAll("button").forEach(btn=>{
+    const id = btn.getAttribute("data-id");
+    const action = btn.getAttribute("data-action");
+    btn.onclick = ()=>{
+      if(action==="up") upClause(id);
+      if(action==="del") removeClause(id);
+    };
+  });
+}
+
+/* ============================
+   共创（帖子）
+============================ */
+function addPost(name, tags, text){
+  const t = (text||"").trim();
+  if(!t) return;
+  const nm = (name||"").trim() || "匿名";
+  const tg = (tags||"").split(",").map(s=>s.trim()).filter(Boolean);
+  state.posts.unshift({
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2),
+    name: nm,
+    tags: tg,
+    text: t,
+    at: nowISO(),
+    up: 0
+  });
+  save();
+}
+function upPost(id){
+  const p = state.posts.find(x=>x.id===id);
+  if(p){ p.up += 1; state.resonates += 1; save(); }
+}
+function removePost(id){
+  state.posts = state.posts.filter(p=>p.id!==id);
+  save();
+}
+function renderPosts(){
+  const list = $("postList");
+  list.innerHTML = "";
+  if(state.posts.length===0){
+    $("noPosts").style.display = "block";
+    return;
+  }
+  $("noPosts").style.display = "none";
+  for(const p of state.posts){
+    const div = document.createElement("div");
+    div.className = "item";
+    const tags = p.tags?.length ? p.tags.map(x=>`<span class="chip">#${escapeHtml(x)}</span>`).join(" ") : "";
+    div.innerHTML = `
+      <div class="meta">
+        <span><b>${escapeHtml(p.name)}</b> ${tags ? "• " + tags : ""}</span>
+        <span>${fmtTime(p.at)} • <span class="mono">▲ ${p.up}</span></span>
+      </div>
+      <div class="txt">${escapeHtml(p.text)}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small good" data-action="up" data-id="${p.id}">我共振（▲）</button>
+        <button class="btn small danger" data-action="del" data-id="${p.id}">删除</button>
+      </div>
+    `;
+    list.appendChild(div);
+  }
+  list.querySelectorAll("button").forEach(btn=>{
+    const id = btn.getAttribute("data-id");
+    const action = btn.getAttribute("data-action");
+    btn.onclick = ()=>{
+      if(action==="up") upPost(id);
+      if(action==="del") removePost(id);
+    };
+  });
+}
+
+/* ============================
+   词云（简单词频）
+============================ */
+const STOP = new Set([
+  "the","a","an","and","or","to","of","in","on","for","with","is","are","be","as","at","by","from",
+  "我","你","他","她","它","我们","你们","他们","这个","那个","这些","那些","如果","还是","以及","因为","所以","但是","可以","应该","一个","不会","就是","不是","为了","可能","已经",
+  "自由","积极","消极","权利","国家","政府","市场","资本","主义","时代","系统"
+]);
+
+function tokenize(s){
+  return (s||"")
+    .toLowerCase()
+    .replace(/[\u2019']/g,"")
+    .replace(/[^a-z0-9\u4e00-\u9fff\s-]/g," ")
+    .split(/\s+/)
+    .map(x=>x.trim())
+    .filter(x=>x && x.length>=2 && !STOP.has(x));
+}
+function buildCloud(){
+  const freq = new Map();
+  const sources = [];
+  state.posts.forEach(p=>sources.push(p.text, ...(p.tags||[])));
+  state.clauses.forEach(c=>sources.push(c.title||"", c.body||""));
+  state.thirdOptions.forEach(t=>sources.push(t));
+  sources.forEach(s=>{
+    tokenize(s).forEach(w=>{
+      freq.set(w, (freq.get(w)||0) + 1);
+    });
+  });
+
+  const arr = Array.from(freq.entries()).sort((a,b)=>b[1]-a[1]).slice(0,24);
+  const cloud = $("cloud");
+  cloud.innerHTML = "";
+  if(arr.length===0){
+    cloud.innerHTML = `<span class="note">暂无关键词。先写共创或宪章。</span>`;
+    return;
+  }
+  const max = arr[0][1];
+  for(const [w,c] of arr){
+    const span = document.createElement("span");
+    span.className = "chip";
+    const size = 12 + Math.round((c/max)*10); // 12..22
+    span.style.fontSize = size + "px";
+    span.innerHTML = `<b>${escapeHtml(w)}</b>&nbsp;<span class="muted">×${c}</span>`;
+    cloud.appendChild(span);
+  }
+}
+
+/* ============================
+   KPI
+============================ */
+function renderKPIs(){
+  $("kPosts").textContent = state.posts.length;
+  $("kVotes").textContent = sumVotes();
+  $("kCharters").textContent = state.clauses.length;
+}
+
+/* ============================
+   工具
+============================ */
+function escapeHtml(str){
+  return (str??"").replace(/[&<>"']/g, (m)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[m]));
+}
+
+/* ============================
+   海报生成（纯文本）
+============================ */
+function makePosterText(title, body){
+  const t = (title||"AI 时代自由宪章").trim();
+  const b = (body||"").trim();
+  const stamp = new Date().toLocaleDateString();
+  return `
+${t}
+────────────────────────
+${b}
+────────────────────────
+签名：___________________
+日期：${stamp}
+`.trim();
+}
+
+/* ============================
+   Render all
+============================ */
+function renderAll(){
+  renderKPIs();
+  renderSpectrum();
+  renderDilemmas();
+  renderClauses();
+  renderPosts();
+  buildCloud();
+}
+
+/* ============================
+   绑定事件
+============================ */
+$("rng").addEventListener("input", (e)=>{
+  state.stance = Number(e.target.value);
+  save();
+});
+
+document.querySelectorAll("[data-vote]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    vote(btn.getAttribute("data-vote"), btn.getAttribute("data-opt"));
+  });
+});
+
+$("btnSaveThird").onclick = ()=>{
+  const t = $("thirdOption").value.trim();
+  if(!t){ renderThirdSaved("先写点内容。"); return; }
+  state.thirdOptions.unshift(t);
+  $("thirdOption").value = "";
+  renderThirdSaved("已保存。");
+  save();
+};
+
+$("btnAddClause").onclick = ()=>{
+  addClause($("clauseTitle").value, $("clauseBody").value);
+  $("clauseTitle").value = "";
+  $("clauseBody").value = "";
+};
+
+$("btnTemplate").onclick = ()=>{
+  $("clauseTitle").value = "不被优化之权";
+  $("clauseBody").value = "第一条：人类应保留拒绝行为优化与过度个性化的绝对权利。任何机构或 AI 不得将基本生存与服从绑定。";
+};
+
+$("btnRandomClause").onclick = ()=>{
+  const prompts = [
+    "第一条：人类应保留“离线”的绝对权利，并且不因此失去基本尊严与生存保障。",
+    "第一条：人类应保留“犯错”的绝对权利，任何 AI 不得强制阻止其选择。",
+    "第一条：人类应保留“私密思想”的绝对权利，不得被强制推断与画像。",
+    "第一条：人类应保留“不被量化的时间”的绝对权利，不得被强制评分。",
+    "第一条：人类应保留“退出任何分配系统”的绝对权利，并享有最低限度的尊严保障。"
+  ];
+  $("clauseTitle").value = "随机提示";
+  $("clauseBody").value = prompts[Math.floor(Math.random()*prompts.length)];
+};
+
+$("btnMakePoster").onclick = ()=>{
+  const text = makePosterText($("clauseTitle").value || "自由第一条", $("clauseBody").value || "（先写一条宪章）");
+  $("posterOut").textContent = text;
+};
+
+$("btnAddPost").onclick = ()=>{
+  addPost($("postName").value, $("postTags").value, $("postText").value);
+  $("postText").value = "";
+  $("postTags").value = "";
+};
+
+$("btnEcho").onclick = ()=>{
+  if(state.posts.length===0){
+    $("echoNote").textContent = "还没有共创内容可共振。";
+    setTimeout(()=>$("echoNote").textContent="", 1200);
+    return;
+  }
+  upPost(state.posts[0].id);
+  $("echoNote").textContent = "已对最新内容共振 +1。";
+  setTimeout(()=>$("echoNote").textContent="", 1200);
+};
+
+$("btnSeed").onclick = ()=>{
+  if(state.posts.length>0) return;
+  state.posts = [
+    {id:"p1", name:"匿名", tags:["离线","尊严"], text:"当系统能完美照顾我时，自由就是拒绝被完全理解的权利。", at:nowISO(), up:0},
+    {id:"p2", name:"匿名", tags:["UBI","意义"], text:"UBI 不是施舍，而是我不必把生命出售给机器的许可。", at:nowISO(), up:0},
+    {id:"p3", name:"匿名", tags:["公有AI","权力"], text:"公有 AI 只有在治理去中心化时才是进步，否则只是更柔软的牢笼。", at:nowISO(), up:0}
+  ];
+  state.clauses = [
+    {id:"c1", title:"离线权", body:"第一条：人类应保留离线而不失去基本尊严与生存保障的绝对权利。", at:nowISO(), up:0}
+  ];
+  save();
+};
+
+$("btnClearPosts").onclick = ()=>{
+  state.posts = [];
+  save();
+};
+
+$("btnRebuildCloud").onclick = ()=> buildCloud();
+
+$("btnQuickPost").onclick = ()=>{
+  location.hash = "#gallery";
+  $("postText").focus();
+  $("postText").placeholder = "写一句。例：『自由是对优化说不的能力。』";
+};
+$("btnQuickCharter").onclick = ()=>{
+  location.hash = "#charter";
+  $("clauseBody").focus();
+};
+
+$("btnExport").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "自由的棱镜_导出.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
+
+$("btnReset").onclick = ()=>{
+  if(!confirm("确定重置所有本地数据？")) return;
+  state = defaultData();
+  save();
+};
+
+/* ============================
+   初始化
+============================ */
+renderAll();
+</script>
+</body>
+</html>
+
