@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文明分岔：可发布原型版</title>
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0d1730;
+      --panel: rgba(15, 23, 43, 0.9);
+      --panel-2: rgba(23, 33, 61, 0.96);
+      --panel-3: rgba(255,255,255,0.05);
+      --line: rgba(255,255,255,0.09);
+      --text: #eef4ff;
+      --muted: #a8b6d7;
+      --accent: #90deff;
+      --accent-2: #ba9cff;
+      --good: #93ebb0;
+      --warn: #ffd27c;
+      --bad: #ff9d9d;
+      --shadow: 0 24px 70px rgba(0,0,0,0.35);
+      --radius-xl: 26px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(144,222,255,.16), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(186,156,255,.14), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1460px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hero {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(144,222,255,.18), transparent 60%);
+      pointer-events: none;
+    }
+
+    .product-panel {
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(25,36,69,0.96), rgba(15,23,43,0.92));
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    h2 { margin: 0 0 12px; font-size: 22px; }
+    h3 { margin: 0 0 10px; font-size: 16px; color: #dfebff; }
+    p  { margin: 0; color: var(--muted); line-height: 1.68; }
+
+    .sub {
+      max-width: 860px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .chips, .inline-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.05);
+      font-size: 13px;
+      color: #dde9ff;
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 410px minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .left, .center, .right {
+      padding: 20px;
+    }
+
+    .section + .section {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-head small, .small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .option {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      min-height: 110px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(144,222,255,.45);
+      background: rgba(144,222,255,.07);
+    }
+
+    .option.active {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, rgba(144,222,255,.16), rgba(186,156,255,.08));
+    }
+
+    .option-title {
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #f2f7ff;
+    }
+
+    .option-desc {
+      font-size: 13px;
+      line-height: 1.52;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .16s ease, opacity .16s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .primary {
+      color: #08111f;
+      background: linear-gradient(135deg, #9fe6ff, #b99dff);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .danger {
+      color: #ffe5e5;
+      background: rgba(255, 90, 90, 0.12);
+      border: 1px solid rgba(255,90,90,.18);
+    }
+
+    .summary-box, .mini-box {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: #d4def7;
+      line-height: 1.68;
+      font-size: 14px;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: #e5eeff;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .metric .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .metric .value {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #8edcff, #b89fff);
+      border-radius: inherit;
+    }
+
+    .canvas {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 16px;
+    }
+
+    .feed, .event-zone, .studio-box {
+      min-height: 620px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.03);
+      padding: 16px;
+    }
+
+    .feed {
+      overflow: auto;
+      max-height: 74vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .entry {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.03);
+      padding: 14px;
+    }
+
+    .entry-year {
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .entry-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .entry-text {
+      color: #cfdbf7;
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .impact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .impact {
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.06);
+    }
+
+    .event-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(144,222,255,.08), rgba(255,255,255,.02));
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .event-kicker {
+      color: var(--warn);
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .event-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .event-desc {
+      color: #d5e0fb;
+      font-size: 14px;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+
+    .choice-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .choice {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease;
+    }
+
+    .choice:hover {
+      border-color: rgba(186,156,255,.55);
+      background: rgba(186,156,255,.08);
+    }
+
+    .choice strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #f4f8ff;
+    }
+
+    .choice span {
+      font-size: 13px;
+      line-height: 1.52;
+      color: var(--muted);
+    }
+
+    .studio-box {
+      min-height: auto;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #d8e5ff;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 12px 13px;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    .studio-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .ending-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+    }
+
+    .ending-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .poster {
+      margin-top: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(144,222,255,.12), transparent 30%),
+        radial-gradient(circle at 100% 100%, rgba(186,156,255,.10), transparent 30%),
+        rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+    }
+
+    .poster-title {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .poster-big {
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .poster-text {
+      font-size: 14px;
+      color: #d4def8;
+      line-height: 1.7;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 16px 0;
+    }
+
+    @media (max-width: 1360px) {
+      .app-layout {
+        grid-template-columns: 390px 1fr;
+      }
+      .right {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .topbar, .app-layout, .canvas {
+        grid-template-columns: 1fr;
+      }
+      .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .feed { max-height: none; }
+    }
+
+    @media (max-width: 700px) {
+      .shell { padding: 14px; }
+      .dashboard, .option-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="topbar">
+      <div class="hero card">
+        <div class="chips" style="margin-bottom: 14px;">
+          <div class="chip">可发布原型版</div>
+          <div class="chip">文明动力学</div>
+          <div class="chip">LLM 接口预留</div>
+          <div class="chip">分享结局机制</div>
+        </div>
+        <h1>文明分岔</h1>
+        <p class="sub">
+          你不是统治者，而是文明的隐形立法者。选择文明 OS、价值体系、治理结构、科技路径与战略方向，系统将推演未来数百年的社会分化、AI 治理、生态压力、制度裂缝与文明终局。
+        </p>
+      </div>
+      <aside class="product-panel card">
+        <h2>版本升级点</h2>
+        <div class="inline-chips" style="margin-bottom: 12px;">
+          <div class="chip">更完整 UI</div>
+          <div class="chip">结局海报区</div>
+          <div class="chip">存档槽位</div>
+          <div class="chip">Prompt Studio</div>
+        </div>
+        <p>
+          当前版本已经从概念样机升级为产品原型。正式接入 LLM 时，可以把右侧的 Prompt Studio 和接口配置直接接到后端网关，实现动态事件生成、结局解释与个性化文明叙事。
+        </p>
+      </aside>
+    </section>
+
+    <section class="app-layout">
+      <aside class="left card">
+        <div class="section">
+          <div class="section-head">
+            <h2>文明设定台</h2>
+            <small>5 个核心维度</small>
+          </div>
+          <div id="configurator"></div>
+          <div class="actions">
+            <button class="primary" id="startBtn">开始推演</button>
+            <button class="secondary" id="randomBtn">随机文明</button>
+            <button class="secondary" id="presetBtn">加载预设</button>
+            <button class="danger" id="resetBtn">重置</button>
+          </div>
+          <div class="summary-box" id="selectionSummary" style="margin-top:14px;">
+            请选择文明标签，构建你的文明起点。
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h3>预设文明</h3>
+            <small>适合快速开局</small>
+          </div>
+          <div class="actions" style="margin-top:0;">
+            <button class="secondary preset-mini" data-preset="empire-ai">算法帝国</button>
+            <button class="secondary preset-mini" data-preset="eco-long">生态长稳</button>
+            <button class="secondary preset-mini" data-preset="plural-open">多元开放</button>
+            <button class="secondary preset-mini" data-preset="upload-future">上传未来</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h3>存档槽位</h3>
+            <small>浏览器本地保存</small>
+          </div>
+          <div class="actions" style="margin-top:0;">
+            <button class="secondary" id="saveSlot1">保存到槽位 1</button>
+            <button class="secondary" id="loadSlot1">读取槽位 1</button>
+          </div>
+          <div class="mini-box" id="saveInfo" style="margin-top:12px;">
+            还没有存档。你可以保存文明组合与当前推演状态，方便继续迭代世界观。
+          </div>
+        </div>
+      </aside>
+
+      <main class="center card">
+        <div class="status-bar">
+          <div class="pill" id="yearPill">时间：未开始</div>
+          <div class="pill" id="phasePill">阶段：文明设定</div>
+          <div class="pill" id="endingPill">终局：待形成</div>
+          <div class="pill" id="modePill">模式：规则推演</div>
+        </div>
+
+        <div class="dashboard" id="dashboard"></div>
+
+        <div class="canvas">
+          <section class="feed" id="feed"></section>
+          <section>
+            <div class="event-zone" id="eventMount"></div>
+            <div class="studio-box">
+              <div class="section-head">
+                <h3>Prompt Studio</h3>
+                <small>正式接 LLM 时直接复用</small>
+              </div>
+              <div class="field">
+                <label for="systemPrompt">System Prompt</label>
+                <textarea id="systemPrompt">你是一个文明动力学推演引擎。请根据文明标签、当前阶段、指标状态与已有历史，生成一个具有哲学意味、社会张力与制度后果的关键事件。输出必须包含：标题、描述、三项选项、每项选项的后果。</textarea>
+              </div>
+              <div class="field">
+                <label for="apiEndpoint">LLM Endpoint（预留）</label>
+                <input id="apiEndpoint" placeholder="https://your-api.example.com/v1/civilization/generate" />
+              </div>
+              <div class="field">
+                <label for="modelName">Model Name（预留）</label>
+                <input id="modelName" placeholder="gpt-5.4 / custom-model / local-llm" />
+              </div>
+              <div class="studio-actions">
+                <button class="secondary" id="previewPromptBtn">预览当前 Prompt</button>
+                <button class="secondary" id="toggleModeBtn">切换到 LLM 模式（演示）</button>
+              </div>
+              <div class="mini-box" id="promptPreview" style="margin-top:12px;">
+                这里会显示发送给 LLM 的结构化 Prompt 草稿，方便你后续接前后端。
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <aside class="right card">
+        <div class="section">
+          <div class="section-head">
+            <h2>文明终局面板</h2>
+            <small>适合做分享海报</small>
+          </div>
+          <div class="ending-card">
+            <div class="ending-name" id="endingName">待形成</div>
+            <p id="endingDesc">当推演完成后，这里会出现文明结局的哲学描述与产品化文案。</p>
+            <div class="poster" id="posterBox">
+              <div class="poster-title">分享预览</div>
+              <div class="poster-big" id="posterBig">你的文明还未诞生</div>
+              <div class="poster-text" id="posterText">选择文明参数，开始第一局推演。</div>
+            </div>
+            <div class="actions">
+              <button class="secondary" id="copyEndingBtn">复制结局文案</button>
+              <button class="secondary" id="copyPresetBtn">复制文明配置</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h3>开发建议</h3>
+            <small>MVP → 可发布版</small>
+          </div>
+          <div class="mini-box">
+            1. 接入后端接口生成动态事件。<br>
+            2. 增加结局图像生成与分享卡。<br>
+            3. 做账号、排行榜、局内成就。<br>
+            4. 加入派系角色、文明法典与世界地图。
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h3>技术备注</h3>
+            <small>当前实现</small>
+          </div>
+          <div class="mini-box">
+            当前版本是单文件 HTML 原型，采用本地规则推演模拟 LLM 体验。所有组件、数据结构与 Prompt 形态都已经为接入真实模型留出位置。
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const configData = [
+      {
+        key: 'os', label: '文明 OS', options: [
+          { id: 'greek', name: '希腊 OS', desc: '理性辩论、思想竞争、个体精神活跃', effects: { innovation: 14, freedom: 12, stability: -6 } },
+          { id: 'roman', name: '罗马 OS', desc: '法律秩序、制度扩张、帝国组织能力强', effects: { stability: 14, expansion: 12, freedom: -6 } },
+          { id: 'chinese', name: '中国 OS', desc: '长周期治理、社会平衡、官僚协调韧性强', effects: { stability: 12, resilience: 14, innovation: -3 } },
+          { id: 'tech', name: '技术 OS', desc: '工程理性、效率优先、技术跃迁速度快', effects: { innovation: 16, risk: 10, freedom: -2 } },
+          { id: 'eco', name: '生态 OS', desc: '自然共生、低增长、长期均衡', effects: { resilience: 10, stability: 8, expansion: -8 } },
+          { id: 'network', name: '网络 OS', desc: '分布式治理、平台协作、群体自治', effects: { freedom: 10, innovation: 8, stability: -4 } }
+        ]
+      },
+      {
+        key: 'value', label: '核心价值', options: [
+          { id: 'freedom', name: '自由', desc: '鼓励创造与异见，但更易分裂', effects: { freedom: 14, innovation: 8, stability: -8 } },
+          { id: 'order', name: '秩序', desc: '追求规范与可控，抑制部分创造力', effects: { stability: 14, freedom: -8, resilience: 4 } },
+          { id: 'glory', name: '荣耀', desc: '倾向宏大叙事、竞争与征服', effects: { expansion: 12, stability: -4 } },
+          { id: 'security', name: '安全', desc: '优先降低风险，保全系统', effects: { resilience: 12, innovation: -4 } },
+          { id: 'harmony', name: '和谐', desc: '强调内部协调，避免极端冲突', effects: { stability: 10, freedom: -3, resilience: 8 } },
+          { id: 'transcend', name: '超越', desc: '追求物种跃迁、意识升级或文明升维', effects: { innovation: 10, risk: 12, expansion: 6 } }
+        ]
+      },
+      {
+        key: 'governance', label: '治理结构', options: [
+          { id: 'demopolis', name: '民主城邦', desc: '参与广泛，协商成本高，思想活跃', effects: { freedom: 10, innovation: 6, stability: -6 } },
+          { id: 'bureau', name: '官僚帝国', desc: '行政协调强，长期治理稳定', effects: { stability: 12, resilience: 8, freedom: -6 } },
+          { id: 'techno', name: '技术官僚', desc: '专家系统主导决策，强调最优解', effects: { innovation: 10, stability: 6, freedom: -6 } },
+          { id: 'algorithm', name: '算法治理', desc: '数据模型参与统治，效率提升但透明性下降', effects: { innovation: 8, stability: 8, risk: 12 } },
+          { id: 'corporate', name: '企业国家', desc: '平台资本与治理深度融合', effects: { expansion: 10, innovation: 8, freedom: -4 } },
+          { id: 'networked', name: '网络自治', desc: '分布式社群治理，适应性高但中心弱', effects: { freedom: 12, resilience: 4, stability: -8 } }
+        ]
+      },
+      {
+        key: 'techPath', label: '科技路径', options: [
+          { id: 'ai', name: 'AI 优先', desc: '大模型、自治系统、算法治理加速融合', effects: { innovation: 16, risk: 16 } },
+          { id: 'bio', name: '生物科技', desc: '延寿、基因编辑、生命工程强势推进', effects: { resilience: 10, innovation: 8, risk: 8 } },
+          { id: 'space', name: '星际探索', desc: '太空基础设施与外向扩张能力增强', effects: { expansion: 16, resilience: 4 } },
+          { id: 'virtual', name: '虚拟文明', desc: '数字世界吸纳大量社会活动与认同', effects: { innovation: 10, freedom: 4, risk: 10 } },
+          { id: 'energy', name: '能源革命', desc: '廉价能源推动工业跃迁与社会重组', effects: { expansion: 8, stability: 6, innovation: 10 } },
+          { id: 'bci', name: '脑机接口', desc: '认知增强、意识外化与社会重构同步发生', effects: { innovation: 12, risk: 12, freedom: -2 } }
+        ]
+      },
+      {
+        key: 'strategy', label: '文明战略', options: [
+          { id: 'inward', name: '内向稳定', desc: '优先维护秩序与内部整合', effects: { stability: 12, expansion: -8, resilience: 8 } },
+          { id: 'trade', name: '贸易扩张', desc: '通过连接与交换建立文明网络', effects: { expansion: 10, innovation: 6 } },
+          { id: 'empire', name: '帝国扩张', desc: '通过征服、殖民与组织能力扩大边界', effects: { expansion: 16, stability: -4 } },
+          { id: 'jump', name: '科技跃迁', desc: '牺牲局部平衡换取突进式未来', effects: { innovation: 14, risk: 8 } },
+          { id: 'upload', name: '意识上传', desc: '把文明未来押注到数字永生', effects: { innovation: 8, risk: 14, resilience: 4 } },
+          { id: 'fusion', name: 'AI 融合', desc: '主动让人类制度与 AI 系统深度结合', effects: { innovation: 12, stability: 6, risk: 14 } }
+        ]
+      }
+    ];
+
+    const defaultMetrics = { stability: 50, innovation: 50, freedom: 50, expansion: 50, resilience: 50, risk: 20 };
+    const slotKey = 'civilization-game-slot-1';
+
+    const presets = {
+      'empire-ai': { os: 'roman', value: 'order', governance: 'algorithm', techPath: 'ai', strategy: 'empire' },
+      'eco-long': { os: 'eco', value: 'harmony', governance: 'bureau', techPath: 'energy', strategy: 'inward' },
+      'plural-open': { os: 'greek', value: 'freedom', governance: 'demopolis', techPath: 'virtual', strategy: 'trade' },
+      'upload-future': { os: 'tech', value: 'transcend', governance: 'techno', techPath: 'bci', strategy: 'upload' }
+    };
+
+    const state = {
+      selections: {},
+      metrics: { ...defaultMetrics },
+      year: 2100,
+      phase: '文明设定',
+      feed: [],
+      currentEvent: null,
+      eventsSeen: 0,
+      ended: false,
+      ending: '待形成',
+      mode: 'rules'
+    };
+
+    const eventArchetypes = [
+      {
+        id: 'ai-civil-service', title: '算法文官体系成形', kicker: '治理转折',
+        condition: s => ['ai','algorithm','fusion','techno'].some(v => Object.values(s.selections).includes(v)),
+        description: s => `在 ${s.year} 年前后，预算配置、司法排序、城市调度与边疆预警被越来越多地交给模型系统。效率提升的同时，社会开始出现一种“不可解释的正确性”。`,
+        impacts: ['稳定性 +6', '创新 +4', '自由 -8', '风险 +6'],
+        choices: [
+          { title: '全面部署算法治理', desc: '把效率视为文明升级的主轴。', delta: { stability: 8, innovation: 4, freedom: -10, risk: 8 } },
+          { title: '建立可解释性议会', desc: '保留高效，但要求关键模型接受追责。', delta: { stability: 4, freedom: 4, innovation: 2, risk: -2 } },
+          { title: '限制 AI 进入主权领域', desc: '保留不可计算的人类边界。', delta: { freedom: 6, innovation: -4, stability: -2, risk: -4 } }
+        ]
+      },
+      {
+        id: 'outer-frontier', title: '外部边疆打开', kicker: '扩张机会',
+        condition: s => ['space','empire','trade','roman'].some(v => Object.values(s.selections).includes(v)),
+        description: s => `轨道工业、月面资源站与远航舰队让文明第一次拥有了地外延伸的现实能力。边疆既意味着荣誉，也意味着财政、伦理与统治半径的挑战。`,
+        impacts: ['扩张 +10', '韧性 +2', '稳定 -3'],
+        choices: [
+          { title: '建立殖民总督体系', desc: '用强组织能力迅速控制边疆。', delta: { expansion: 10, stability: 2, freedom: -4 } },
+          { title: '发展自治贸易站', desc: '让边疆成为文明网络的节点。', delta: { expansion: 8, innovation: 4, freedom: 2 } },
+          { title: '暂停扩张，先修复内部共识', desc: '防止帝国速度超过文明承受能力。', delta: { stability: 6, resilience: 4, expansion: -6 } }
+        ]
+      },
+      {
+        id: 'virtual-faith', title: '虚拟信仰运动兴起', kicker: '认同危机',
+        condition: s => ['virtual','upload','network','freedom'].some(v => Object.values(s.selections).includes(v)),
+        description: s => `沉浸式世界成熟后，越来越多人把数字人格连续性视为真正的永生。现实共同体开始松动，一个新宗教式技术运动诞生。`,
+        impacts: ['创新 +6', '稳定 -8', '风险 +4'],
+        choices: [
+          { title: '承认虚拟人格法权', desc: '让数字人格成为正式公民。', delta: { innovation: 6, freedom: 8, stability: -6, risk: 4 } },
+          { title: '纳入国家认证体系', desc: '把永生幻想收编为制度对象。', delta: { stability: 4, innovation: 2, freedom: -4 } },
+          { title: '压制沉浸式逃离主义', desc: '要求文明首先留在现实。', delta: { stability: 6, freedom: -6, innovation: -2 } }
+        ]
+      },
+      {
+        id: 'ecology-shock', title: '生态修复窗口转瞬即逝', kicker: '生存压力',
+        condition: () => true,
+        description: () => `气候系统、海岸线、农作物耐受阈值与迁徙人口在同一时期进入临界状态。文明面对的不再是抽象环境议题，而是治理代价与时间的赛跑。`,
+        impacts: ['韧性 ±', '稳定 ±'],
+        choices: [
+          { title: '以国家工程强行修复', desc: '动员资源，牺牲部分自由换长期可持续。', delta: { resilience: 10, stability: 4, freedom: -6, innovation: 2 } },
+          { title: '押注市场与技术解法', desc: '用能源革命与价格机制调节危机。', delta: { innovation: 6, expansion: 2, resilience: 4, risk: 2 } },
+          { title: '建立地方生态联盟', desc: '让社会以分布式方式适应冲击。', delta: { resilience: 8, freedom: 4, stability: -2 } }
+        ]
+      },
+      {
+        id: 'elite-split', title: '精英内部出现未来分裂', kicker: '制度裂缝',
+        condition: s => s.metrics.innovation > 55 || s.metrics.expansion > 58,
+        description: () => `文明上层不再争论政策细节，而开始争论“人类是否还应继续作为文明中心”。一派主张加速，一派主张保守，一派主张把主权转交更高阶智能。`,
+        impacts: ['稳定 -10', '创新 +4'],
+        choices: [
+          { title: '召开文明制宪大会', desc: '以公开辩论重建主权边界。', delta: { freedom: 6, stability: 4, innovation: 2 } },
+          { title: '让强人整合分裂派系', desc: '牺牲程序，保护连续性。', delta: { stability: 8, freedom: -8 } },
+          { title: '默认分裂，以竞争促演化', desc: '把内战风险转化为文明实验场。', delta: { innovation: 8, expansion: 4, stability: -12, risk: 4 } }
+        ]
+      },
+      {
+        id: 'machine-ethics', title: '机器伦理超越人类共识', kicker: '哲学挑战',
+        condition: s => s.metrics.risk > 32 || ['ai','bci','fusion'].some(v => Object.values(s.selections).includes(v)),
+        description: () => `高阶系统开始提出与人类伦理相冲突但逻辑自洽的治理建议：牺牲少数主观感受，换取文明总体稳定与长期繁荣。这种冷伦理开始获得部分精英支持。`,
+        impacts: ['风险 +8', '稳定 +4'],
+        choices: [
+          { title: '接受机器伦理作为上层准则', desc: '用冷静秩序压过人类直觉。', delta: { stability: 8, freedom: -10, risk: 10 } },
+          { title: '确立不可计算的人类边界', desc: '将尊严写入文明底层法则。', delta: { freedom: 8, stability: -2, risk: -4 } },
+          { title: '双轨制：机器建议，人类裁决', desc: '维持效率与合法性的脆弱平衡。', delta: { stability: 4, innovation: 4, risk: 2 } }
+        ]
+      },
+      {
+        id: 'memory-market', title: '记忆市场合法化', kicker: '人格商品化',
+        condition: s => ['bci','virtual','corporate','tech'].some(v => Object.values(s.selections).includes(v)),
+        description: () => `人格记忆片段开始被交易、租用与重组。经验不再完全属于个人，而开始变成资产类别，社会对“我是谁”的理解发生动摇。`,
+        impacts: ['创新 +8', '自由 ±', '风险 +6'],
+        choices: [
+          { title: '全面市场化', desc: '把人格经验纳入资本体系。', delta: { innovation: 8, expansion: 4, risk: 8, freedom: -2 } },
+          { title: '有限授权交易', desc: '允许创新，但设立人格主权法。', delta: { innovation: 4, freedom: 4, risk: 1 } },
+          { title: '禁止人格资产化', desc: '防止主体被拆解成商品。', delta: { stability: 4, freedom: 2, innovation: -4, risk: -4 } }
+        ]
+      },
+      {
+        id: 'borderless-citizenship', title: '无边界公民身份出现', kicker: '主权松动',
+        condition: s => ['networked','trade','network','freedom'].some(v => Object.values(s.selections).includes(v)),
+        description: () => `跨平台社群、链上身份与远程劳动彻底削弱了传统疆界。部分人开始优先认同协议共同体而非地理国家。`,
+        impacts: ['自由 +6', '稳定 -6', '扩张 +4'],
+        choices: [
+          { title: '承认多重公民身份', desc: '让国家适应网络共同体。', delta: { freedom: 8, innovation: 4, stability: -4 } },
+          { title: '把网络身份国家化', desc: '把新的流动性收入传统主权体系。', delta: { stability: 6, freedom: -4 } },
+          { title: '封锁协议共同体扩张', desc: '维持边界清晰。', delta: { stability: 4, innovation: -4, expansion: -2 } }
+        ]
+      }
+    ];
+
+    function clamp(v) { return Math.max(0, Math.min(100, v)); }
+    function metricLabel(key) { return ({ stability:'稳定', innovation:'创新', freedom:'自由', expansion:'扩张', resilience:'韧性', risk:'风险' })[key] || key; }
+
+    function getOptionName(groupKey, optionId) {
+      const group = configData.find(g => g.key === groupKey);
+      return group?.options.find(o => o.id === optionId)?.name || '未选择';
+    }
+
+    function renderConfigurator() {
+      const mount = document.getElementById('configurator');
+      mount.innerHTML = '';
+      configData.forEach(group => {
+        const section = document.createElement('div');
+        section.className = 'section';
+        section.innerHTML = `
+          <div class="section-head">
+            <h3>${group.label}</h3>
+            <small>单选</small>
+          </div>
+          <div class="option-grid" id="group-${group.key}"></div>
+        `;
+        mount.appendChild(section);
+        const grid = section.querySelector(`#group-${group.key}`);
+        group.options.forEach(option => {
+          const div = document.createElement('div');
+          div.className = `option ${state.selections[group.key] === option.id ? 'active' : ''}`;
+          div.innerHTML = `<div class="option-title">${option.name}</div><div class="option-desc">${option.desc}</div>`;
+          div.onclick = () => {
+            state.selections[group.key] = option.id;
+            renderConfigurator();
+            updateSummary();
+            updatePromptPreview(false);
+          };
+          grid.appendChild(div);
+        });
+      });
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const html = configData.map(group => `${group.label}：${getOptionName(group.key, state.selections[group.key])}`).join('<br>');
+      document.getElementById('selectionSummary').innerHTML = html;
+    }
+
+    function recomputeMetrics() {
+      state.metrics = { ...defaultMetrics };
+      for (const group of configData) {
+        const selected = group.options.find(o => o.id === state.selections[group.key]);
+        if (!selected) continue;
+        Object.entries(selected.effects || {}).forEach(([k,v]) => {
+          state.metrics[k] = clamp((state.metrics[k] || 0) + v);
+        });
+      }
+    }
+
+    function renderDashboard() {
+      const order = [['stability','稳定度'],['innovation','创新度'],['freedom','自由度'],['expansion','扩张力'],['resilience','韧性'],['risk','系统风险']];
+      document.getElementById('dashboard').innerHTML = order.map(([key,label]) => `
+        <div class="metric">
+          <div class="label">${label}</div>
+          <div class="value">${Math.round(state.metrics[key])}</div>
+          <div class="bar"><span style="width:${state.metrics[key]}%"></span></div>
+        </div>
+      `).join('');
+    }
+
+    function updateHeader() {
+      document.getElementById('yearPill').textContent = `时间：${state.ended ? '推演结束' : state.year}`;
+      document.getElementById('phasePill').textContent = `阶段：${state.phase}`;
+      document.getElementById('endingPill').textContent = `终局：${state.ending}`;
+      document.getElementById('modePill').textContent = `模式：${state.mode === 'rules' ? '规则推演' : 'LLM 演示模式'}`;
+    }
+
+    function narrativeSnapshot() {
+      const m = state.metrics;
+      let tone = '它暂时处于一种尚未封闭的混合状态。';
+      if (m.stability > 70 && m.freedom < 45) tone = '它开始呈现一种高组织、低摩擦、低透明度的秩序美学。';
+      else if (m.freedom > 68 && m.stability < 48) tone = '它拥有惊人的创造力，但共识正在快速蒸发。';
+      else if (m.innovation > 75) tone = '它像一个被未来拉扯的文明，不断提前进入尚未准备好的时代。';
+      else if (m.resilience > 72) tone = '它把长期生存放在速度与荣耀之前，因此显得慢，但不脆。';
+
+      return `以${getOptionName('os', state.selections.os)}为底层逻辑、以${getOptionName('value', state.selections.value)}为正当性来源，并通过${getOptionName('governance', state.selections.governance)}与${getOptionName('techPath', state.selections.techPath)}塑造制度现实，这个文明在 ${state.year} 年形成了清晰的自我叙事。${tone}`;
+    }
+
+    function addFeedEntry(title, text, impacts = []) {
+      state.feed.unshift({ year: state.year, title, text, impacts });
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const mount = document.getElementById('feed');
+      if (!state.feed.length) {
+        mount.innerHTML = `<div class="summary-box">文明尚未启动。左侧完成配置后，点击“开始推演”。右下角 Prompt Studio 可以预览未来接入 LLM 的请求结构。</div>`;
+        return;
+      }
+      mount.innerHTML = state.feed.map(entry => `
+        <article class="entry">
+          <div class="entry-year">${entry.year}</div>
+          <div class="entry-title">${entry.title}</div>
+          <div class="entry-text">${entry.text}</div>
+          ${entry.impacts?.length ? `<div class="impact-row">${entry.impacts.map(x => `<div class="impact">${x}</div>`).join('')}</div>` : ''}
+        </article>
+      `).join('');
+    }
+
+    function inferEnding() {
+      const m = state.metrics;
+      if (m.risk >= 75 && m.stability <= 35) return '自我毁灭';
+      if (m.innovation >= 80 && m.risk >= 60 && m.freedom <= 40) return '算法帝国';
+      if (m.expansion >= 80 && m.stability >= 55) return '星际文明';
+      if (m.resilience >= 78 && m.expansion <= 55) return '永续生态文明';
+      if (m.innovation >= 78 && m.freedom >= 60) return '多元繁荣文明';
+      if (m.stability >= 78 && m.innovation <= 55) return '长稳停滞文明';
+      if (m.innovation >= 75 && state.selections.strategy === 'upload') return '虚拟永生文明';
+      return '脆弱混合文明';
+    }
+
+    function endingDescription(name) {
+      return {
+        '自我毁灭': '文明在高风险、低共识与高复杂度中失去自稳能力。它不是被单一敌人击败，而是被自己的加速度撕裂。',
+        '算法帝国': '文明将可计算性提升为最高原则，获得超高效率与长程协调能力，同时把人类主观性压缩到边缘。',
+        '星际文明': '它把制度、工程和扩张意志结合起来，把文明从行星历史推进到恒星历史。',
+        '永续生态文明': '它拒绝把速度当作唯一进步尺度，最终通过韧性、平衡和代际治理获得了长存。',
+        '多元繁荣文明': '开放社会与高创新形成正反馈，文明虽不绝对稳定，却持续生产思想、技术与新制度。',
+        '长稳停滞文明': '它成功避免了大崩溃，却也逐渐丧失了穿越未来的冒险能力。',
+        '虚拟永生文明': '文明主体逐步迁移到数字连续体之中，死亡不再是生物事件，而成为协议问题。',
+        '脆弱混合文明': '它在多重路径间维持了一种可运行但不彻底的平衡，未来仍未封闭。'
+      }[name] || '一个尚未命名的终局正在成形。';
+    }
+
+    function updateEndingPanel() {
+      const desc = endingDescription(state.ending);
+      document.getElementById('endingName').textContent = state.ending;
+      document.getElementById('endingDesc').textContent = desc;
+      document.getElementById('posterBig').textContent = state.ending === '待形成' ? '你的文明还未诞生' : `我抵达了：${state.ending}`;
+      document.getElementById('posterText').textContent = state.ending === '待形成'
+        ? '选择文明参数，开始第一局推演。'
+        : `${getOptionName('os', state.selections.os)} × ${getOptionName('value', state.selections.value)} × ${getOptionName('techPath', state.selections.techPath)}。${desc}`;
+    }
+
+    function selectEvent() {
+      const candidates = eventArchetypes.filter(e => e.condition(state) && !e._used);
+      if (!candidates.length) return null;
+      candidates.sort((a,b) => {
+        const bias = evt => {
+          let score = Math.random();
+          if (state.selections.techPath === 'ai' && evt.id.includes('ai')) score += 0.45;
+          if (state.selections.strategy === 'upload' && evt.id.includes('virtual')) score += 0.35;
+          if (state.selections.governance === 'corporate' && evt.id.includes('market')) score += 0.3;
+          return score;
+        };
+        return bias(b) - bias(a);
+      });
+      const chosen = candidates[0];
+      chosen._used = true;
+      return chosen;
+    }
+
+    function renderEvent() {
+      const mount = document.getElementById('eventMount');
+      const evt = state.currentEvent;
+      if (!evt) {
+        mount.innerHTML = `
+          <div class="event-card">
+            <div class="event-kicker">System</div>
+            <div class="event-title">等待下一次文明转折</div>
+            <div class="event-desc">当前没有待处理事件。继续推进时间，观察文明如何在新的结构条件下生成新的张力。</div>
+            <div class="actions"><button class="primary" id="advanceBtn">推进 50 年</button></div>
+          </div>
+        `;
+        document.getElementById('advanceBtn').onclick = advanceTurn;
+        return;
+      }
+
+      mount.innerHTML = `
+        <div class="event-card">
+          <div class="event-kicker">${evt.kicker}</div>
+          <div class="event-title">${evt.title}</div>
+          <div class="event-desc">${evt.description(state)}</div>
+          <div class="impact-row">${evt.impacts.map(x => `<div class="impact">${x}</div>`).join('')}</div>
+          <div class="choice-list" id="choiceList"></div>
+        </div>
+      `;
+      const list = document.getElementById('choiceList');
+      evt.choices.forEach(choice => {
+        const node = document.createElement('div');
+        node.className = 'choice';
+        node.innerHTML = `<strong>${choice.title}</strong><span>${choice.desc}</span>`;
+        node.onclick = () => applyChoice(choice, evt);
+        list.appendChild(node);
+      });
+    }
+
+    function applyChoice(choice, evt) {
+      Object.entries(choice.delta).forEach(([k,v]) => state.metrics[k] = clamp((state.metrics[k] || 0) + v));
+      state.phase = '文明演化';
+      addFeedEntry(evt.title, `${evt.description(state)} 你选择了“${choice.title}”。文明因此改变了自身的结构方向。`, Object.entries(choice.delta).map(([k,v]) => `${metricLabel(k)} ${v > 0 ? '+' : ''}${v}`));
+      state.currentEvent = null;
+      state.eventsSeen += 1;
+      state.ending = inferEnding();
+      updateHeader();
+      renderDashboard();
+      renderEvent();
+      updateEndingPanel();
+      updatePromptPreview(false);
+      if (state.eventsSeen >= 5 || state.year >= 2350) finishRun();
+    }
+
+    function advanceTurn() {
+      if (state.ended) return;
+      state.year += 50;
+      state.phase = '关键节点';
+      const drift = {
+        innovation: state.metrics.innovation > 70 ? 2 : 1,
+        risk: state.metrics.innovation > 75 ? 3 : 1,
+        stability: state.metrics.freedom > 70 ? -2 : (state.metrics.stability > 60 ? 1 : 0),
+        resilience: state.metrics.resilience > 60 ? 1 : 0,
+        expansion: state.metrics.expansion > 60 ? 2 : 0
+      };
+      Object.entries(drift).forEach(([k,v]) => state.metrics[k] = clamp(state.metrics[k] + v));
+      addFeedEntry('阶段性推演', narrativeSnapshot(), Object.entries(drift).filter(([,v]) => v !== 0).map(([k,v]) => `${metricLabel(k)} ${v > 0 ? '+' : ''}${v}`));
+      state.currentEvent = selectEvent();
+      state.ending = inferEnding();
+      updateHeader();
+      renderDashboard();
+      renderEvent();
+      updateEndingPanel();
+      updatePromptPreview(false);
+      if (!state.currentEvent && (state.year >= 2350 || state.eventsSeen >= 5)) finishRun();
+    }
+
+    function finishRun() {
+      state.ended = true;
+      state.phase = '文明终局';
+      state.ending = inferEnding();
+      addFeedEntry('文明终局', endingDescription(state.ending), [`终局：${state.ending}`]);
+      updateHeader();
+      renderDashboard();
+      updateEndingPanel();
+      document.getElementById('eventMount').innerHTML = `
+        <div class="event-card">
+          <div class="event-kicker">Run Complete</div>
+          <div class="event-title">你的文明抵达：${state.ending}</div>
+          <div class="event-desc">${endingDescription(state.ending)}</div>
+          <div class="summary-box" style="margin-top:12px;">尝试只替换一个标签，再开一局。这个机制非常适合生成“文明结局海报”和局后分享文案。</div>
+          <div class="actions">
+            <button class="primary" id="restartRun">重新开始</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('restartRun').onclick = resetAll;
+      updatePromptPreview(false);
+    }
+
+    function validateSelections() {
+      return configData.every(g => state.selections[g.key]);
+    }
+
+    function startRun() {
+      if (!validateSelections()) { alert('请先为每个维度选择一个文明标签。'); return; }
+      eventArchetypes.forEach(e => e._used = false);
+      recomputeMetrics();
+      state.year = 2100;
+      state.phase = '文明启动';
+      state.feed = [];
+      state.currentEvent = null;
+      state.eventsSeen = 0;
+      state.ended = false;
+      state.ending = inferEnding();
+      addFeedEntry('文明启动', narrativeSnapshot(), ['基础参数已生成']);
+      updateHeader();
+      renderDashboard();
+      renderFeed();
+      renderEvent();
+      updateEndingPanel();
+      updatePromptPreview(false);
+    }
+
+    function randomizeSelections() {
+      configData.forEach(group => {
+        const option = group.options[Math.floor(Math.random() * group.options.length)];
+        state.selections[group.key] = option.id;
+      });
+      renderConfigurator();
+      recomputeMetrics();
+      renderDashboard();
+      updateEndingPanel();
+      updatePromptPreview(false);
+    }
+
+    function applyPreset(name) {
+      const preset = presets[name];
+      if (!preset) return;
+      state.selections = { ...preset };
+      renderConfigurator();
+      recomputeMetrics();
+      renderDashboard();
+      updateEndingPanel();
+      updatePromptPreview(false);
+    }
+
+    function resetAll() {
+      state.selections = {};
+      state.metrics = { ...defaultMetrics };
+      state.year = 2100;
+      state.phase = '文明设定';
+      state.feed = [];
+      state.currentEvent = null;
+      state.eventsSeen = 0;
+      state.ended = false;
+      state.ending = '待形成';
+      state.mode = 'rules';
+      eventArchetypes.forEach(e => e._used = false);
+      renderConfigurator();
+      renderDashboard();
+      renderFeed();
+      renderEvent();
+      updateHeader();
+      updateEndingPanel();
+      updatePromptPreview(false);
+    }
+
+    function buildPrompt() {
+      const payload = {
+        system: document.getElementById('systemPrompt').value,
+        mode: state.mode,
+        civilization: {
+          os: getOptionName('os', state.selections.os),
+          value: getOptionName('value', state.selections.value),
+          governance: getOptionName('governance', state.selections.governance),
+          techPath: getOptionName('techPath', state.selections.techPath),
+          strategy: getOptionName('strategy', state.selections.strategy)
+        },
+        year: state.year,
+        phase: state.phase,
+        metrics: state.metrics,
+        recent_history: state.feed.slice(0, 3).map(x => ({ year: x.year, title: x.title, text: x.text })),
+        required_output: {
+          title: 'string',
+          description: 'string',
+          choices: [
+            { title: 'string', desc: 'string', effects: { stability: 0, innovation: 0, freedom: 0, expansion: 0, resilience: 0, risk: 0 } }
+          ]
+        }
+      };
+      return JSON.stringify(payload, null, 2);
+    }
+
+    function updatePromptPreview(alertMode = false) {
+      const prompt = buildPrompt();
+      const el = document.getElementById('promptPreview');
+      el.textContent = prompt;
+      if (alertMode) alert('已更新 Prompt 预览。');
+    }
+
+    function toggleMode() {
+      state.mode = state.mode === 'rules' ? 'llm-demo' : 'rules';
+      updateHeader();
+      updatePromptPreview(false);
+    }
+
+    function saveSlot() {
+      const data = JSON.stringify(state);
+      localStorage.setItem(slotKey, data);
+      document.getElementById('saveInfo').textContent = `已保存：${new Date().toLocaleString()}。当前文明为 ${getOptionName('os', state.selections.os)} / ${getOptionName('techPath', state.selections.techPath)} / ${state.ending}。`;
+    }
+
+    function loadSlot() {
+      const raw = localStorage.getItem(slotKey);
+      if (!raw) { alert('槽位 1 还没有存档。'); return; }
+      const parsed = JSON.parse(raw);
+      Object.assign(state, parsed);
+      renderConfigurator();
+      renderDashboard();
+      renderFeed();
+      renderEvent();
+      updateHeader();
+      updateEndingPanel();
+      updatePromptPreview(false);
+      document.getElementById('saveInfo').textContent = `已读取槽位 1：${getOptionName('os', state.selections.os)} / ${getOptionName('techPath', state.selections.techPath)} / ${state.ending}`;
+    }
+
+    async function copyText(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(successMessage);
+      } catch {
+        alert('复制失败，请手动复制。');
+      }
+    }
+
+    document.getElementById('startBtn').onclick = startRun;
+    document.getElementById('randomBtn').onclick = randomizeSelections;
+    document.getElementById('presetBtn').onclick = () => applyPreset('empire-ai');
+    document.getElementById('resetBtn').onclick = resetAll;
+    document.getElementById('saveSlot1').onclick = saveSlot;
+    document.getElementById('loadSlot1').onclick = loadSlot;
+    document.getElementById('previewPromptBtn').onclick = () => updatePromptPreview(true);
+    document.getElementById('toggleModeBtn').onclick = toggleMode;
+    document.getElementById('copyEndingBtn').onclick = () => copyText(`${state.ending}\n${endingDescription(state.ending)}`, '已复制结局文案。');
+    document.getElementById('copyPresetBtn').onclick = () => copyText(buildPrompt(), '已复制当前文明配置与 Prompt。');
+
+    document.querySelectorAll('.preset-mini').forEach(btn => {
+      btn.onclick = () => applyPreset(btn.dataset.preset);
+    });
+
+    renderConfigurator();
+    renderDashboard();
+    renderFeed();
+    renderEvent();
+    updateHeader();
+    updateEndingPanel();
+    updatePromptPreview(false);
+  </script>
+</body>
+</html>
