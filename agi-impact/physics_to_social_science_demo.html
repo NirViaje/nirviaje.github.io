@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>从物理到社会：交互式社会物理学演示</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.08);
+      --panel-2: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: #b7c0e0;
+      --accent: #7dd3fc;
+      --accent-2: #a78bfa;
+      --good: #86efac;
+      --warn: #fcd34d;
+      --bad: #fca5a5;
+      --line: rgba(255,255,255,0.12);
+      --shadow: 0 20px 40px rgba(0,0,0,0.25);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #16213c 0%, #0b1020 45%, #070b16 100%); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif; scroll-behavior: smooth; }
+    a { color: var(--accent); text-decoration: none; }
+    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: 56px 0 28px; }
+    .hero-card {
+      background: linear-gradient(135deg, rgba(125,211,252,0.14), rgba(167,139,250,0.14));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.05; margin: 0 0 14px; }
+    .lead { color: var(--muted); font-size: 18px; line-height: 1.75; max-width: 900px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .chip { padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid var(--line); color: var(--text); font-size: 14px; }
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(7,11,22,0.75); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 0; }
+    .nav a { padding: 10px 14px; background: rgba(255,255,255,0.06); border-radius: 999px; border: 1px solid var(--line); font-size: 14px; }
+    section { padding: 32px 0 12px; }
+    .section-title { font-size: clamp(24px, 3vw, 36px); margin: 0 0 10px; }
+    .section-sub { color: var(--muted); line-height: 1.75; margin: 0 0 20px; }
+    .grid { display: grid; gap: 18px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .card h3 { margin: 0 0 8px; font-size: 22px; }
+    .muted { color: var(--muted); }
+    .formula {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      font-family: "Times New Roman", Georgia, serif;
+      font-size: 22px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .bullets { margin: 12px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.75; }
+    .bullets li { margin: 6px 0; }
+    .tag { display: inline-block; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: rgba(125,211,252,0.14); border: 1px solid rgba(125,211,252,0.2); color: var(--accent); margin-bottom: 12px; }
+    .controls { display: grid; gap: 14px; margin-top: 12px; }
+    .control { display: grid; grid-template-columns: 140px 1fr 70px; gap: 12px; align-items: center; }
+    .control label { color: var(--muted); font-size: 14px; }
+    input[type="range"] { width: 100%; accent-color: #93c5fd; }
+    .value { font-variant-numeric: tabular-nums; text-align: right; color: var(--text); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    button {
+      background: linear-gradient(135deg, rgba(125,211,252,0.2), rgba(167,139,250,0.2));
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-top: 14px;
+    }
+    .two-col { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 18px; }
+    .statbar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .stat {
+      min-width: 120px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--line);
+    }
+    .stat .num { font-size: 22px; font-weight: 700; margin-top: 4px; }
+    .mini { font-size: 13px; color: var(--muted); }
+    .footer { padding: 32px 0 56px; color: var(--muted); }
+    .divider { height: 1px; background: var(--line); margin: 22px 0; }
+    @media (max-width: 980px) {
+      .grid-3, .grid-2, .two-col { grid-template-columns: 1fr; }
+      .control { grid-template-columns: 1fr; }
+      .value { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div class="tag">交互式 HTML 演示</div>
+        <h1>从物理到社会：<br>社会物理学与计算社会科学</h1>
+        <p class="lead">这不是把社会“硬套”成物理，而是用 K12 物理中最熟悉的模型——增长、扩散、引力、对齐、阈值、网络——去打开一种新的社会科学视角：为什么谣言会爆发、城市为何像超级生命体、意见为何会极化、为什么普通偏好会放大成隔离与分化。</p>
+        <div class="chips">
+          <div class="chip">物理母模型</div>
+          <div class="chip">社会翻译</div>
+          <div class="chip">可调参数模拟</div>
+          <div class="chip">课堂演示友好</div>
+          <div class="chip">可直接继续做课程原型</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="container nav-inner">
+      <a href="#models">模型卡片</a>
+      <a href="#sir">传播模拟</a>
+      <a href="#ising">极化模拟</a>
+      <a href="#gravity">城市引力</a>
+      <a href="#scaling">城市尺度律</a>
+      <a href="#threshold">阈值扩散</a>
+    </div>
+  </div>
+
+  <section id="models">
+    <div class="container">
+      <h2 class="section-title">一组最适合从 K12 物理导入的社会模型</h2>
+      <p class="section-sub">每张卡片都遵循同一个逻辑：<strong>物理原型 → 公式 → 社会翻译 → 为什么这件事震撼</strong>。先把这些看成“母模型”，再去看下面的可视化模拟，会更容易理解。</p>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="tag">传播 / 增长</div>
+          <h3>指数增长</h3>
+          <div class="formula">dI/dt = rI</div>
+          <p class="muted">早期传播中，已经传播的人越多，新增加的人也越多。热点、模因、平台增长在早期常近似符合这一形式。</p>
+          <ul class="bullets">
+            <li>物理对应：放射性衰变、充放电近似</li>
+            <li>社会对应：消息爆发、用户增长、观念扩散</li>
+            <li>关键直觉：复制率决定爆发速度</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tag">传播 / 疫病 / 舆情</div>
+          <h3>SIR 模型</h3>
+          <div class="formula">dS/dt = -βSI &nbsp; ; &nbsp; dI/dt = βSI - γI &nbsp; ; &nbsp; dR/dt = γI</div>
+          <p class="muted">一条消息、一个谣言、一个挑战赛，很多时候不是“大家都喜欢”，而是“接触传播 + 退出传播”的结果。</p>
+          <ul class="bullets">
+            <li>物理对应：粒子碰撞 / 接触改变状态</li>
+            <li>社会对应：谣言、爆款、流行文化、讨论热度</li>
+            <li>关键直觉：传播率 β 与退出率 γ 的竞赛</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tag">极化 / 从众</div>
+          <h3>Ising 意见模型</h3>
+          <div class="formula">H = -JΣsᵢsⱼ - hΣsᵢ</div>
+          <p class="muted">哪怕每个人只轻微受邻居影响，只要局部对齐足够强，整体就可能从混杂态跃迁到强极化态。</p>
+          <ul class="bullets">
+            <li>物理对应：磁性、自旋对齐、相变</li>
+            <li>社会对应：政治极化、规范形成、群体对立</li>
+            <li>关键直觉：社会撕裂有时是系统相变</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tag">空间流动</div>
+          <h3>城市引力模型</h3>
+          <div class="formula">Tᵢⱼ = k · PᵢPⱼ / dᵢⱼ^α</div>
+          <p class="muted">迁移、通勤、贸易和城市联系，往往并不是凭感觉，而像引力一样受到规模和距离共同支配。</p>
+          <ul class="bullets">
+            <li>物理对应：万有引力</li>
+            <li>社会对应：通勤、人流、贸易流、城际联系</li>
+            <li>关键直觉：空间不是背景，而是力量</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tag">城市 / 创新 / 规模</div>
+          <h3>城市尺度律</h3>
+          <div class="formula">Y = Y₀N^β</div>
+          <p class="muted">很多城市指标不是线性随人口增长，而是按幂律放大。创新、专利、互动往往超线性增长，基础设施常次线性增长。</p>
+          <ul class="bullets">
+            <li>物理对应：尺度、幂律、复杂系统</li>
+            <li>社会对应：城市代谢、知识生产、创新密度</li>
+            <li>关键直觉：城市真正生产的是相遇与连接</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tag">集体行动 / 跟风</div>
+          <h3>阈值扩散</h3>
+          <div class="formula">(Σaᵢⱼsⱼ / Σaᵢⱼ) ≥ θᵢ ⇒ sᵢ = 1</div>
+          <p class="muted">集体行动并不总靠“大家都很勇敢”，很多时候只是每个人心里有一条不同的点火线，临界一过就会连锁触发。</p>
+          <ul class="bullets">
+            <li>物理对应：导通阈值、相变阈值</li>
+            <li>社会对应：挑战赛、抢购、集体行动、规范扩散</li>
+            <li>关键直觉：爆发前，系统可能看上去很安静</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sir">
+    <div class="container">
+      <h2 class="section-title">传播模拟：谣言 / 热点为什么会爆发？</h2>
+      <p class="section-sub">调节 <strong>传播率 β</strong> 和 <strong>退出率 γ</strong>，看峰值什么时候出现、是否会快速爆开、最终有多少人卷入。你会发现，很多爆款现象并不只是“内容优秀”，更是动力学条件合适。</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="formula">dS/dt = -βSI &nbsp; ; &nbsp; dI/dt = βSI - γI &nbsp; ; &nbsp; dR/dt = γI</div>
+          <div class="controls">
+            <div class="control"><label for="beta">传播率 β</label><input id="beta" type="range" min="0.05" max="1.20" step="0.01" value="0.45"><div class="value" id="betaVal">0.45</div></div>
+            <div class="control"><label for="gamma">退出率 γ</label><input id="gamma" type="range" min="0.02" max="0.80" step="0.01" value="0.16"><div class="value" id="gammaVal">0.16</div></div>
+            <div class="control"><label for="infected0">初始传播者 I₀</label><input id="infected0" type="range" min="1" max="100" step="1" value="4"><div class="value" id="infected0Val">4</div></div>
+          </div>
+          <div class="toolbar">
+            <button id="sirPreset1">爆款热点</button>
+            <button id="sirPreset2">很快熄火</button>
+            <button id="sirPreset3">慢热长尾</button>
+          </div>
+          <div class="statbar">
+            <div class="stat"><div class="mini">峰值传播者</div><div class="num" id="sirPeak">—</div></div>
+            <div class="stat"><div class="mini">峰值时刻</div><div class="num" id="sirPeakT">—</div></div>
+            <div class="stat"><div class="mini">最终卷入比例</div><div class="num" id="sirFinal">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <canvas id="sirCanvas" width="760" height="430"></canvas>
+          <p class="muted">蓝线：易感者 S；紫线：传播者 I；绿色：退出传播者 R。课堂里可以直接问学生：<em>什么样的内容、平台机制或社会环境，会让 β 变大？什么会让 γ 变大？</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ising">
+    <div class="container">
+      <h2 class="section-title">极化模拟：为什么人群会突然“站队”？</h2>
+      <p class="section-sub">这里用一个简化的二维意见格子来模拟 Ising 型对齐。蓝色与粉色表示两种立场。调节 <strong>邻居影响 J</strong>、<strong>外场 h</strong> 和 <strong>社会温度 T</strong>，看系统是保持混杂、逐渐团块化，还是快速极化。</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="formula">ΔE = 2sᵢ(JΣ邻居 + h) &nbsp; ; &nbsp; P(翻转)=1/(1+e^(ΔE/T))</div>
+          <div class="controls">
+            <div class="control"><label for="J">邻居影响 J</label><input id="J" type="range" min="0.10" max="2.20" step="0.01" value="0.95"><div class="value" id="JVal">0.95</div></div>
+            <div class="control"><label for="h">外场 h</label><input id="h" type="range" min="-1.00" max="1.00" step="0.01" value="0.00"><div class="value" id="hVal">0.00</div></div>
+            <div class="control"><label for="T">社会温度 T</label><input id="T" type="range" min="0.20" max="4.00" step="0.01" value="2.10"><div class="value" id="TVal">2.10</div></div>
+          </div>
+          <div class="toolbar">
+            <button id="isingReset">重新随机</button>
+            <button id="isingPreset1">低温极化</button>
+            <button id="isingPreset2">高温混杂</button>
+            <button id="isingPreset3">外场偏置</button>
+          </div>
+          <div class="statbar">
+            <div class="stat"><div class="mini">平均立场</div><div class="num" id="magnet">—</div></div>
+            <div class="stat"><div class="mini">蓝色比例</div><div class="num" id="blueShare">—</div></div>
+            <div class="stat"><div class="mini">系统状态</div><div class="num" id="phaseLabel" style="font-size:18px">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <canvas id="isingCanvas" width="760" height="430"></canvas>
+          <p class="muted">观察两个现象：一是团块从噪声中长出来，二是系统可能突然“翻到一边”。这正是为什么社会里看似轻微的局部影响，也可能导向全局性的极化。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gravity">
+    <div class="container">
+      <h2 class="section-title">城市引力：规模越大、距离越近，联系越强</h2>
+      <p class="section-sub">调节两座城市的规模和距离，看看理论上的人流/联系强度如何变化。你可以把它类比成通勤、贸易、人才流、城市合作甚至社交联系。</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="formula">Tᵢⱼ = k · PᵢPⱼ / dᵢⱼ^α</div>
+          <div class="controls">
+            <div class="control"><label for="popA">城市 A 规模 Pᵢ</label><input id="popA" type="range" min="10" max="300" step="1" value="120"><div class="value" id="popAVal">120</div></div>
+            <div class="control"><label for="popB">城市 B 规模 Pⱼ</label><input id="popB" type="range" min="10" max="300" step="1" value="180"><div class="value" id="popBVal">180</div></div>
+            <div class="control"><label for="dist">距离 d</label><input id="dist" type="range" min="1" max="30" step="1" value="8"><div class="value" id="distVal">8</div></div>
+            <div class="control"><label for="alpha">距离衰减 α</label><input id="alpha" type="range" min="0.5" max="3.0" step="0.1" value="1.6"><div class="value" id="alphaVal">1.6</div></div>
+          </div>
+          <div class="toolbar">
+            <button id="gravityPreset1">双核心走廊</button>
+            <button id="gravityPreset2">远距弱联系</button>
+            <button id="gravityPreset3">超级中心吸附</button>
+          </div>
+          <div class="statbar">
+            <div class="stat"><div class="mini">联系强度 Tᵢⱼ</div><div class="num" id="gravityT">—</div></div>
+            <div class="stat"><div class="mini">直觉判断</div><div class="num" id="gravityLabel" style="font-size:18px">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <canvas id="gravityCanvas" width="760" height="430"></canvas>
+          <p class="muted">这个模型最震撼的地方在于：空间不是中性的背景。规模、距离、摩擦和可达性，本身就是社会力量。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scaling">
+    <div class="container">
+      <h2 class="section-title">城市尺度律：城市真正生产的是什么？</h2>
+      <p class="section-sub">调节人口规模 N 和指数 β。你会看到，当 β &gt; 1 时，城市的某些产出会超线性增长——人口翻倍，创新和互动可能翻得不止一倍。这是“城市像超级生命体”的核心直觉之一。</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="formula">Y = Y₀N^β</div>
+          <div class="controls">
+            <div class="control"><label for="N">人口规模 N</label><input id="N" type="range" min="10" max="1000" step="10" value="300"><div class="value" id="NVal">300</div></div>
+            <div class="control"><label for="betaScale">指数 β</label><input id="betaScale" type="range" min="0.70" max="1.30" step="0.01" value="1.12"><div class="value" id="betaScaleVal">1.12</div></div>
+            <div class="control"><label for="Y0">基准 Y₀</label><input id="Y0" type="range" min="0.5" max="5.0" step="0.1" value="1.0"><div class="value" id="Y0Val">1.0</div></div>
+          </div>
+          <div class="toolbar">
+            <button id="scalePreset1">创新超线性</button>
+            <button id="scalePreset2">基础设施次线性</button>
+            <button id="scalePreset3">线性对照</button>
+          </div>
+          <div class="statbar">
+            <div class="stat"><div class="mini">当前产出 Y</div><div class="num" id="YValStat">—</div></div>
+            <div class="stat"><div class="mini">人口翻倍倍数</div><div class="num" id="doubleEffect">—</div></div>
+            <div class="stat"><div class="mini">解释</div><div class="num" id="scaleLabel" style="font-size:18px">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <canvas id="scaleCanvas" width="760" height="430"></canvas>
+          <p class="muted">当 β = 1，人口翻倍，产出恰好翻倍；当 β &gt; 1，人口翻倍，产出增长超过 2 倍；当 β &lt; 1，规模变大反而更“省”。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="threshold">
+    <div class="container">
+      <h2 class="section-title">阈值扩散：为什么很多爆发前都很安静？</h2>
+      <p class="section-sub">每个人都有不同阈值：有人看到少数人行动就跟上，有人要看到半数以上才会动。调节“种子比例”和“平均阈值”，看看系统是零星响应，还是一路引发级联。</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="formula">若 邻居采用比例 ≥ θᵢ ，则 sᵢ = 1</div>
+          <div class="controls">
+            <div class="control"><label for="seedRate">初始种子比例</label><input id="seedRate" type="range" min="0.00" max="0.40" step="0.01" value="0.08"><div class="value" id="seedRateVal">0.08</div></div>
+            <div class="control"><label for="thresholdMean">平均阈值</label><input id="thresholdMean" type="range" min="0.05" max="0.80" step="0.01" value="0.28"><div class="value" id="thresholdMeanVal">0.28</div></div>
+            <div class="control"><label for="rewire">随机连接强度</label><input id="rewire" type="range" min="0.00" max="1.00" step="0.01" value="0.22"><div class="value" id="rewireVal">0.22</div></div>
+          </div>
+          <div class="toolbar">
+            <button id="threshRun">重新级联</button>
+            <button id="threshPreset1">安静社会</button>
+            <button id="threshPreset2">临界边缘</button>
+            <button id="threshPreset3">一路爆开</button>
+          </div>
+          <div class="statbar">
+            <div class="stat"><div class="mini">最终采用比例</div><div class="num" id="threshFinal">—</div></div>
+            <div class="stat"><div class="mini">轮次</div><div class="num" id="threshRounds">—</div></div>
+            <div class="stat"><div class="mini">状态</div><div class="num" id="threshLabel" style="font-size:18px">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <canvas id="threshCanvas" width="760" height="430"></canvas>
+          <p class="muted">这类模型特别适合解释：集体行动、挑战赛传播、抢购、校园风潮与某些社会规范的扩散。系统爆发之前，看起来可能并没有发生什么“大事”。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container footer">
+    <div class="divider"></div>
+    <p>这份演示把 K12 物理最熟悉的几类模型，重新翻译为社会物理学与计算社会科学中的核心直觉：<strong>增长、传播、对齐、引力、尺度与阈值</strong>。下一步可以继续扩展成课程版、研学版，或接入真实数据与 AI 生成交互作业。</p>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const format = (n, d=2) => Number(n).toFixed(d);
+
+    function drawAxes(ctx, w, h, pad, labels={x:'t', y:''}) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, h-pad);
+      ctx.lineTo(w-pad, h-pad);
+      ctx.moveTo(pad, h-pad);
+      ctx.lineTo(pad, pad);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(labels.x, w-pad-10, h-pad+20);
+      if (labels.y) ctx.fillText(labels.y, pad-6, pad-8);
+    }
+    function linePlot(canvas, series, colors, yMax=1, labels={x:'t', y:''}) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height, pad = 48;
+      ctx.clearRect(0,0,w,h);
+      drawAxes(ctx, w, h, pad, labels);
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.setLineDash([4,4]);
+      for (let i=1;i<=4;i++) {
+        const y = pad + (h-2*pad)*i/4;
+        ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      series.forEach((arr, idx) => {
+        ctx.strokeStyle = colors[idx];
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        arr.forEach((v,i) => {
+          const x = pad + (w-2*pad) * (i/(arr.length-1));
+          const y = h-pad - (Math.max(0, v)/yMax)*(h-2*pad);
+          if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+      });
+    }
+
+    // SIR
+    function runSIR() {
+      const beta = parseFloat($('beta').value), gamma = parseFloat($('gamma').value), I0 = parseInt($('infected0').value,10);
+      $('betaVal').textContent = format(beta);
+      $('gammaVal').textContent = format(gamma);
+      $('infected0Val').textContent = I0;
+      const N = 1000;
+      let S = N - I0, I = I0, R = 0;
+      const dt = 0.2, steps = 220;
+      const sA=[], iA=[], rA=[];
+      let peak=I, peakT=0;
+      for (let t=0;t<steps;t++) {
+        sA.push(S/N); iA.push(I/N); rA.push(R/N);
+        if (I > peak) { peak = I; peakT = t*dt; }
+        const dS = -beta * S * I / N * dt;
+        const dI = (beta * S * I / N - gamma * I) * dt;
+        const dR = gamma * I * dt;
+        S += dS; I += dI; R += dR;
+        S = Math.max(0,S); I = Math.max(0,I); R = Math.max(0,R);
+      }
+      linePlot($('sirCanvas'), [sA, iA, rA], ['#7dd3fc', '#a78bfa', '#86efac'], 1, {x:'时间', y:'比例'});
+      $('sirPeak').textContent = (peak/N*100).toFixed(1) + '%';
+      $('sirPeakT').textContent = peakT.toFixed(1);
+      $('sirFinal').textContent = (rA[rA.length-1]*100).toFixed(1) + '%';
+    }
+    ['beta','gamma','infected0'].forEach(id => $(id).addEventListener('input', runSIR));
+    $('sirPreset1').onclick = () => { $('beta').value=0.75; $('gamma').value=0.12; $('infected0').value=6; runSIR(); };
+    $('sirPreset2').onclick = () => { $('beta').value=0.18; $('gamma').value=0.35; $('infected0').value=4; runSIR(); };
+    $('sirPreset3').onclick = () => { $('beta').value=0.28; $('gamma').value=0.08; $('infected0').value=2; runSIR(); };
+
+    // Ising
+    const gSize = 55;
+    let spins = [];
+    function initSpins() {
+      spins = Array.from({length:gSize}, () => Array.from({length:gSize}, () => Math.random() < 0.5 ? 1 : -1));
+    }
+    function isingStep() {
+      const J = parseFloat($('J').value), h = parseFloat($('h').value), T = parseFloat($('T').value);
+      $('JVal').textContent = format(J);
+      $('hVal').textContent = format(h);
+      $('TVal').textContent = format(T);
+      for (let k=0;k<gSize*gSize;k++) {
+        const i = (Math.random()*gSize)|0, j = (Math.random()*gSize)|0;
+        const s = spins[i][j];
+        const up = spins[(i-1+gSize)%gSize][j], down = spins[(i+1)%gSize][j], left = spins[i][(j-1+gSize)%gSize], right = spins[i][(j+1)%gSize];
+        const neigh = up+down+left+right;
+        const dE = 2*s*(J*neigh + h);
+        if (dE <= 0 || Math.random() < 1/(1+Math.exp(dE/Math.max(T,0.001)))) spins[i][j] = -s;
+      }
+    }
+    function drawIsing() {
+      const canvas = $('isingCanvas'), ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const cell = Math.min(w,h)/gSize;
+      let sum=0, blue=0;
+      for (let i=0;i<gSize;i++) for (let j=0;j<gSize;j++) {
+        const s = spins[i][j]; sum += s; if (s===1) blue++;
+        ctx.fillStyle = s===1 ? '#60a5fa' : '#f472b6';
+        ctx.fillRect(j*cell, i*cell, cell+0.5, cell+0.5);
+      }
+      const m = sum/(gSize*gSize), b = blue/(gSize*gSize);
+      $('magnet').textContent = format(m);
+      $('blueShare').textContent = (b*100).toFixed(1)+'%';
+      $('phaseLabel').textContent = Math.abs(m) > 0.75 ? '强极化' : Math.abs(m) > 0.35 ? '团块化' : '混杂';
+    }
+    function animateIsing() {
+      isingStep();
+      drawIsing();
+      requestAnimationFrame(animateIsing);
+    }
+    ['J','h','T'].forEach(id => $(id).addEventListener('input', ()=>{}));
+    $('isingReset').onclick = () => initSpins();
+    $('isingPreset1').onclick = () => { $('J').value=1.35; $('h').value=0; $('T').value=0.75; };
+    $('isingPreset2').onclick = () => { $('J').value=0.60; $('h').value=0; $('T').value=3.20; };
+    $('isingPreset3').onclick = () => { $('J').value=1.05; $('h').value=0.38; $('T').value=1.35; };
+
+    // Gravity
+    function drawGravity() {
+      const PA = parseFloat($('popA').value), PB = parseFloat($('popB').value), d = parseFloat($('dist').value), alpha = parseFloat($('alpha').value);
+      $('popAVal').textContent = PA.toFixed(0);
+      $('popBVal').textContent = PB.toFixed(0);
+      $('distVal').textContent = d.toFixed(0);
+      $('alphaVal').textContent = alpha.toFixed(1);
+      const T = (PA*PB) / Math.pow(d, alpha);
+      $('gravityT').textContent = T.toFixed(0);
+      $('gravityLabel').textContent = T > 2500 ? '强联系' : T > 1000 ? '中等联系' : '弱联系';
+      const canvas = $('gravityCanvas'), ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const x1 = 140, x2 = w - 140, y = h/2;
+      const r1 = 24 + PA*0.18, r2 = 24 + PB*0.18;
+      ctx.fillStyle = 'rgba(96,165,250,0.95)'; ctx.beginPath(); ctx.arc(x1,y,r1,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(167,139,250,0.95)'; ctx.beginPath(); ctx.arc(x2,y,r2,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(125,211,252,0.7)';
+      ctx.lineWidth = Math.max(2, Math.min(18, T/260));
+      ctx.beginPath(); ctx.moveTo(x1+r1, y); ctx.lineTo(x2-r2, y); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('城市 A', x1-24, y-r1-12);
+      ctx.fillText('城市 B', x2-24, y-r2-12);
+      ctx.fillText('距离 d = ' + d.toFixed(0), w/2-26, y-18);
+      ctx.fillText('联系强度 T = ' + T.toFixed(0), w/2-48, y+36);
+    }
+    ['popA','popB','dist','alpha'].forEach(id => $(id).addEventListener('input', drawGravity));
+    $('gravityPreset1').onclick = () => { $('popA').value=220; $('popB').value=200; $('dist').value=6; $('alpha').value=1.2; drawGravity(); };
+    $('gravityPreset2').onclick = () => { $('popA').value=140; $('popB').value=160; $('dist').value=22; $('alpha').value=2.3; drawGravity(); };
+    $('gravityPreset3').onclick = () => { $('popA').value=300; $('popB').value=80; $('dist').value=7; $('alpha').value=1.4; drawGravity(); };
+
+    // Scaling
+    function drawScaling() {
+      const N = parseFloat($('N').value), beta = parseFloat($('betaScale').value), Y0 = parseFloat($('Y0').value);
+      $('NVal').textContent = N.toFixed(0);
+      $('betaScaleVal').textContent = beta.toFixed(2);
+      $('Y0Val').textContent = Y0.toFixed(1);
+      const Y = Y0 * Math.pow(N, beta);
+      $('YValStat').textContent = Y.toFixed(1);
+      $('doubleEffect').textContent = Math.pow(2,beta).toFixed(2) + '×';
+      $('scaleLabel').textContent = beta > 1.02 ? '超线性' : beta < 0.98 ? '次线性' : '近线性';
+      const xs = [], ys = [];
+      for (let n=10;n<=1000;n+=10) { xs.push(n); ys.push(Y0*Math.pow(n,beta)); }
+      const canvas = $('scaleCanvas'), ctx = canvas.getContext('2d');
+      const w=canvas.width, h=canvas.height, pad=48, yMax=Math.max(...ys)*1.05;
+      ctx.clearRect(0,0,w,h); drawAxes(ctx,w,h,pad,{x:'人口 N', y:'产出 Y'});
+      ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.setLineDash([4,4]);
+      for(let i=1;i<=4;i++){ const y=pad+(h-2*pad)*i/4; ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke(); }
+      ctx.setLineDash([]);
+      ctx.strokeStyle='#a78bfa'; ctx.lineWidth=3; ctx.beginPath();
+      xs.forEach((x,i)=>{ const px=pad+(w-2*pad)*(x-10)/990; const py=h-pad-(ys[i]/yMax)*(h-2*pad); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); });
+      ctx.stroke();
+      const px=pad+(w-2*pad)*(N-10)/990; const py=h-pad-(Y/yMax)*(h-2*pad);
+      ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.82)'; ctx.fillText('当前城市', px+10, py-10);
+    }
+    ['N','betaScale','Y0'].forEach(id => $(id).addEventListener('input', drawScaling));
+    $('scalePreset1').onclick = () => { $('N').value=420; $('betaScale').value=1.15; $('Y0').value=1.0; drawScaling(); };
+    $('scalePreset2').onclick = () => { $('N').value=420; $('betaScale').value=0.88; $('Y0').value=1.0; drawScaling(); };
+    $('scalePreset3').onclick = () => { $('N').value=420; $('betaScale').value=1.00; $('Y0').value=1.0; drawScaling(); };
+
+    // Threshold cascade
+    function randomNormal(mean, sd) {
+      let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+      return mean + sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    }
+    function runThreshold() {
+      const seedRate = parseFloat($('seedRate').value), mean = parseFloat($('thresholdMean').value), rewire = parseFloat($('rewire').value);
+      $('seedRateVal').textContent = format(seedRate);
+      $('thresholdMeanVal').textContent = format(mean);
+      $('rewireVal').textContent = format(rewire);
+      const n = 180;
+      const neighbors = Array.from({length:n}, (_,i)=> new Set([(i-1+n)%n, (i+1)%n, (i-2+n)%n, (i+2)%n]));
+      for (let i=0;i<n;i++) {
+        if (Math.random() < rewire) neighbors[i].add((Math.random()*n)|0);
+        if (Math.random() < rewire) neighbors[i].add((Math.random()*n)|0);
+      }
+      const thresholds = Array.from({length:n}, ()=> Math.max(0.02, Math.min(0.95, randomNormal(mean, 0.12))));
+      let adopted = Array.from({length:n}, ()=> Math.random() < seedRate ? 1 : 0);
+      let rounds = 0;
+      while (rounds < 25) {
+        rounds++;
+        let changed = false;
+        const next = adopted.slice();
+        for (let i=0;i<n;i++) {
+          if (adopted[i]) continue;
+          const neigh = Array.from(neighbors[i]);
+          const frac = neigh.reduce((acc,j)=> acc + adopted[j], 0) / neigh.length;
+          if (frac >= thresholds[i]) { next[i] = 1; changed = true; }
+        }
+        adopted = next;
+        if (!changed) break;
+      }
+      const final = adopted.reduce((a,b)=>a+b,0)/n;
+      $('threshFinal').textContent = (final*100).toFixed(1)+'%';
+      $('threshRounds').textContent = rounds;
+      $('threshLabel').textContent = final > 0.75 ? '级联爆发' : final > 0.25 ? '部分扩散' : '零星响应';
+
+      const canvas = $('threshCanvas'), ctx = canvas.getContext('2d');
+      const w=canvas.width,h=canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const cx = w/2, cy = h/2, R = Math.min(w,h)*0.35;
+      for (let i=0;i<n;i++) {
+        const ang = i/n*Math.PI*2;
+        const x = cx + R*Math.cos(ang), y = cy + R*Math.sin(ang);
+        ctx.fillStyle = adopted[i] ? '#86efac' : '#475569';
+        ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
+      }
+      ctx.fillStyle='rgba(255,255,255,0.8)';
+      ctx.font='15px sans-serif';
+      ctx.fillText('绿色：被触发；灰色：未触发', 24, 32);
+    }
+    ['seedRate','thresholdMean','rewire'].forEach(id => $(id).addEventListener('input', runThreshold));
+    $('threshRun').onclick = runThreshold;
+    $('threshPreset1').onclick = () => { $('seedRate').value=0.04; $('thresholdMean').value=0.45; $('rewire').value=0.10; runThreshold(); };
+    $('threshPreset2').onclick = () => { $('seedRate').value=0.08; $('thresholdMean').value=0.27; $('rewire').value=0.22; runThreshold(); };
+    $('threshPreset3').onclick = () => { $('seedRate').value=0.14; $('thresholdMean').value=0.16; $('rewire').value=0.35; runThreshold(); };
+
+    // init
+    runSIR();
+    initSpins();
+    animateIsing();
+    drawGravity();
+    drawScaling();
+    runThreshold();
+  </script>
+</body>
+</html>
