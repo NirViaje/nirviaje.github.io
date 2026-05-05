@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智人心智操作系统｜进化心理 × AI 对齐交互实验台</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: rgba(15, 27, 48, 0.88);
+      --panel2: rgba(21, 37, 64, 0.86);
+      --line: rgba(148, 163, 184, 0.22);
+      --text: #e5edf8;
+      --muted: #99a9bd;
+      --blue: #60a5fa;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --orange: #fb923c;
+      --red: #fb7185;
+      --purple: #a78bfa;
+      --yellow: #facc15;
+      --card-radius: 22px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.18), transparent 25%),
+        linear-gradient(180deg, #07101d 0%, #0a1220 48%, #050912 100%);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+    .app { min-height: 100vh; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      background: rgba(8, 17, 31, 0.82);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 260px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 30px rgba(34, 211, 238, .28);
+      display: grid; place-items: center;
+      font-weight: 900; color: #06111f;
+    }
+    .brand h1 { margin: 0; font-size: 16px; line-height: 1.2; }
+    .brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .tab {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.55);
+      padding: 8px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: .18s ease;
+    }
+    .tab:hover, .tab.active {
+      color: var(--text);
+      border-color: rgba(96, 165, 250, .7);
+      background: rgba(96, 165, 250, .14);
+    }
+
+    main { max-width: 1380px; margin: 0 auto; padding: 26px 20px 70px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .pad { padding: 22px; }
+    .eyebrow { color: var(--cyan); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { margin: 10px 0 12px; font-size: clamp(28px, 4.2vw, 58px); line-height: 1.05; letter-spacing: -0.04em; }
+    h3 { margin: 0 0 12px; font-size: 22px; letter-spacing: -0.02em; }
+    h4 { margin: 0 0 8px; font-size: 16px; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    .hero p { font-size: 16px; max-width: 780px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    button, .btn {
+      border: 1px solid rgba(96, 165, 250, .45);
+      background: rgba(96, 165, 250, .14);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+    button:hover, .btn:hover { transform: translateY(-1px); border-color: rgba(34, 211, 238, .8); background: rgba(34, 211, 238, .16); }
+    button.ghost { background: rgba(15, 23, 42, .6); border-color: var(--line); color: var(--muted); }
+    button.danger { border-color: rgba(251, 113, 133, .55); background: rgba(251, 113, 133, .14); }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .flow-step {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(15, 23, 42, .56);
+      padding: 12px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .flow-step strong { font-size: 14px; }
+    .flow-step span { color: var(--muted); font-size: 12px; }
+    .accent-orange { border-color: rgba(251, 146, 60, .5); }
+    .accent-blue { border-color: rgba(96, 165, 250, .5); }
+    .accent-purple { border-color: rgba(167, 139, 250, .5); }
+    .accent-red { border-color: rgba(251, 113, 133, .5); }
+    .accent-green { border-color: rgba(52, 211, 153, .5); }
+
+    .stats { display: grid; gap: 12px; }
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, .55);
+      border: 1px solid var(--line);
+    }
+    .stat b { display: block; font-size: 26px; color: var(--text); }
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    .section { display: none; animation: fade .25s ease; }
+    .section.active { display: block; }
+    @keyframes fade { from { opacity: .5; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(15, 23, 42, .58);
+      padding: 16px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .card:hover, .card.selected { transform: translateY(-2px); border-color: rgba(34, 211, 238, .68); background: rgba(34, 211, 238, .08); }
+    .card p { font-size: 13px; margin-bottom: 0; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(15, 23, 42, .55);
+    }
+    .badge.A { color: #bbf7d0; border-color: rgba(52, 211, 153, .5); background: rgba(52, 211, 153, .1); }
+    .badge.B { color: #bfdbfe; border-color: rgba(96, 165, 250, .5); background: rgba(96, 165, 250, .1); }
+    .badge.C { color: #fde68a; border-color: rgba(250, 204, 21, .5); background: rgba(250, 204, 21, .1); }
+    .badge.D { color: #fecdd3; border-color: rgba(251, 113, 133, .55); background: rgba(251, 113, 133, .1); }
+
+    .timeline { display: grid; gap: 13px; }
+    .timeline-item {
+      display: grid; grid-template-columns: 190px 1fr 180px;
+      gap: 14px; align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: rgba(15, 23, 42, .5);
+      cursor: pointer;
+    }
+    .timeline-item:hover { border-color: rgba(96,165,250,.65); }
+    .time { color: var(--cyan); font-weight: 800; font-size: 14px; }
+    .timeline-item ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+    .meter { height: 8px; background: rgba(148,163,184,.16); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .meter > i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: inherit; }
+
+    .detail-box {
+      border: 1px solid rgba(96, 165, 250, .3);
+      background: rgba(10, 18, 32, .75);
+      border-radius: 20px;
+      padding: 18px;
+      min-height: 260px;
+    }
+    .kv { display: grid; gap: 10px; margin-top: 12px; }
+    .kv div { border-left: 3px solid rgba(96,165,250,.55); padding-left: 11px; color: var(--muted); }
+    .kv b { color: var(--text); display: block; }
+
+    .sliders { display: grid; gap: 14px; }
+    .slider-row { display: grid; grid-template-columns: 170px 1fr 44px; gap: 12px; align-items: center; }
+    input[type="range"] { width: 100%; accent-color: #22d3ee; }
+    .sim-output { display: grid; gap: 12px; }
+    .chip-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 8px 10px; border-radius: 999px; background: rgba(96, 165, 250, .12); border: 1px solid rgba(96, 165, 250, .32); color: #dbeafe; font-size: 13px; }
+    .risk-chip { background: rgba(251, 113, 133, .12); border-color: rgba(251, 113, 133, .34); color: #ffe4e6; }
+
+    .matrix { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 780px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; color: var(--muted); }
+    th { color: var(--text); background: rgba(15, 23, 42, .7); position: sticky; top: 0; }
+    td.strong { color: #bfdbfe; font-weight: 800; }
+    td.human { color: #c4b5fd; font-weight: 800; }
+
+    .risk-map { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .risk-list { display: grid; gap: 9px; }
+    .risk-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      padding: 11px; border: 1px solid var(--line); border-radius: 16px;
+      background: rgba(15, 23, 42, .48); cursor: pointer;
+    }
+    .risk-row:hover, .risk-row.selected { border-color: rgba(251, 113, 133, .6); background: rgba(251, 113, 133, .08); }
+    .risk-row span { font-size: 13px; color: var(--muted); }
+    .console {
+      background: #050b14;
+      border: 1px solid rgba(34, 211, 238, .2);
+      border-radius: 18px;
+      padding: 14px;
+      color: #c7d2fe;
+      min-height: 280px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      overflow: auto;
+    }
+    textarea, select, input[type="text"] {
+      width: 100%; border: 1px solid var(--line); border-radius: 14px;
+      background: rgba(15, 23, 42, .72); color: var(--text); padding: 12px;
+      outline: none; font-family: inherit;
+    }
+    textarea { min-height: 116px; resize: vertical; }
+    .notice {
+      border: 1px dashed rgba(250, 204, 21, .45);
+      color: #fde68a;
+      background: rgba(250, 204, 21, .08);
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .footer-note { color: var(--muted); font-size: 12px; margin-top: 16px; }
+
+    @media (max-width: 1050px) {
+      .hero, .grid-2, .risk-map { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .flow { grid-template-columns: repeat(2, 1fr); }
+      .timeline-item { grid-template-columns: 1fr; }
+      .nav { align-items: flex-start; flex-direction: column; }
+      .tabs { justify-content: flex-start; }
+    }
+    @media (max-width: 640px) {
+      .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .slider-row { grid-template-columns: 1fr; gap: 5px; }
+      h2 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">OS</div>
+        <div>
+          <h1>智人心智操作系统</h1>
+          <small>Evolutionary Mind Lab · 前端原型</small>
+        </div>
+      </div>
+      <nav class="tabs" id="tabs"></nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel pad">
+        <div class="eyebrow">Evolutionary Psychology × AI Alignment</div>
+        <h2>从人类心灵演化，到不劫持人性的 AI。</h2>
+        <p>这是一个可独立运行的 HTML 交互演示前端。它把古环境压力、心理机制、现代错配与 AI 对齐风险连接起来，并预留 LLM 后端接口：假说生成、反驳、证据检索、AI 产品风险评估。</p>
+        <div class="cta-row">
+          <button onclick="activate('timeline')">进入心灵时间轴</button>
+          <button onclick="activate('simulator')" class="ghost">试用 EEA 模拟器</button>
+          <button onclick="activate('alignment')" class="ghost">查看 AI 对齐风险</button>
+        </div>
+        <div class="flow">
+          <div class="flow-step accent-orange"><strong>古环境压力</strong><span>资源、捕食、气候、群体冲突</span></div>
+          <div class="flow-step accent-blue"><strong>行为策略</strong><span>觅食、避险、合作、择偶</span></div>
+          <div class="flow-step accent-purple"><strong>心理机制</strong><span>恐惧、羞耻、语言、道德</span></div>
+          <div class="flow-step accent-green"><strong>文化制度</strong><span>家庭、仪式、法律、学校</span></div>
+          <div class="flow-step accent-red"><strong>现代错配</strong><span>焦虑、成瘾、极化、内耗</span></div>
+          <div class="flow-step accent-blue"><strong>AI 劫持风险</strong><span>依恋、权威、奖赏、联盟</span></div>
+          <div class="flow-step accent-green"><strong>对齐原则</strong><span>自主性、真实关系、长期福祉</span></div>
+        </div>
+      </div>
+      <div class="panel pad stats">
+        <div class="stat"><b id="statMechanisms">12</b><span>内置心理机制卡片，可由 LLM 后端扩展</span></div>
+        <div class="stat"><b id="statStages">7</b><span>进化阶段，带证据谨慎度标签</span></div>
+        <div class="stat"><b id="statRisks">8</b><span>AI × 人类心理机制风险映射</span></div>
+        <div class="notice">注意：本演示采用“概率化、证据分级、反驳驱动”的表达方式，避免把进化心理学假说写成确定历史。</div>
+      </div>
+    </section>
+
+    <section id="timeline" class="section panel pad"></section>
+    <section id="mechanisms" class="section panel pad"></section>
+    <section id="primates" class="section panel pad"></section>
+    <section id="simulator" class="section panel pad"></section>
+    <section id="mismatch" class="section panel pad"></section>
+    <section id="alignment" class="section panel pad"></section>
+    <section id="workbench" class="section panel pad"></section>
+    <section id="evidence" class="section panel pad"></section>
+  </main>
+</div>
+
+<script>
+const navItems = [
+  ['timeline', '心灵时间轴'], ['mechanisms', '机制卡片'], ['primates', '灵长类比较'],
+  ['simulator', 'EEA模拟器'], ['mismatch', '现代错配'], ['alignment', 'AI对齐风险'],
+  ['workbench', 'LLM工作台'], ['evidence', '证据地图']
+];
+
+const stages = [
+  {id:'foundation', time:'700万—200万年前', title:'前人类基础：感知、情绪与群居基线', pressure:['空间移动与捕食风险','食性变化','初级群居避险'], mechanisms:['恐惧/威胁检测','空间认知','亲属与群体识别'], caution:'许多机制远早于人类谱系，不能视为人类独有模块。', level:'B'},
+  {id:'early_homo', time:'200万—80万年前', title:'早期人属：工具、火与合作增强', pressure:['工具制造','食物共享','长距离移动','协作防御'], mechanisms:['因果推理','社会学习','互惠合作','空间导航'], caution:'工具和火可提示认知变化，但心理机制需谨慎推断。', level:'C'},
+  {id:'social_deepening', time:'80万—30万年前', title:'复杂社会：大型猎物、严寒与群体压力', pressure:['气候波动','大型猎物狩猎','群体间竞争','丧葬/仪式线索'], mechanisms:['联盟心理','声誉敏感','复杂情绪','死亡意识前体'], caution:'丧葬不等于确定来世观念，复杂情绪难以精确锚定。', level:'C'},
+  {id:'sapiens', time:'30万—10万年前', title:'智人崛起：符号、语言与文化累积', pressure:['知识传递','陌生人协作','符号沟通','技术累积'], mechanisms:['语言能力','心理理论','叙事自我','道德直觉'], caution:'语言、ToM、道德、元认知均可能是长期整合过程。', level:'C'},
+  {id:'late_pleistocene', time:'10万—1.2万年前', title:'晚更新世：全球扩散与文化多样化', pressure:['多生态位适应','迁徙扩散','技术复杂化','文化分化'], mechanisms:['文化学习','本地适应','亲属网络','择偶策略多样化'], caution:'此阶段文化作用很强，不能全部归因于生物模块精细化。', level:'B'},
+  {id:'holocene', time:'1.2万年前—20世纪', title:'全新世：农业、国家、市场与制度心智', pressure:['定居农业','财产与继承','人口密度','文字法律与国家'], mechanisms:['服从权威','抽象身份','纪律时间','制度化合作'], caution:'文化演化与制度塑形在此阶段非常关键。', level:'B'},
+  {id:'ai_age', time:'21世纪—未来', title:'AI时代：算法环境成为新的心理生态', pressure:['无限信息流','AI伴侣/导师','个性化说服','全球比较'], mechanisms:['依恋投射','权威投射','奖赏劫持','联盟极化'], caution:'这是社会技术环境变化，不是基因层面快速进化。', level:'A'}
+];
+
+const mechanisms = [
+  {id:'anxiety', name:'焦虑/威胁预期', cat:'情绪', level:'B', pressures:['捕食风险','社会排斥','资源不确定'], problem:'提前发现潜在危险并调整行为。', inputs:['陌生环境','不确定性','负面评价','身体威胁线索'], outputs:['警觉','回避','准备行动','寻求支持'], precursors:'哺乳动物威胁检测、灵长类社会警觉。', human:'语言化未来想象、抽象风险预期。', mismatch:['信息流焦虑','社交焦虑','考试/职场压力'], ai:['恐惧营销','威胁叙事推荐','过度风险提示'], alt:['创伤','睡眠不足','经济压力','家庭环境']},
+  {id:'kinship', name:'亲属偏好', cat:'合作', level:'A', pressures:['幼体长期依赖','亲缘选择','资源共享'], problem:'优先照护携带相似遗传利益的个体。', inputs:['共同成长','亲缘线索','家庭身份'], outputs:['照护','资源转移','保护'], precursors:'多种动物亲代照护与亲缘偏好。', human:'亲属制度、继承、家族叙事。', mismatch:['原生家庭绑架','裙带关系','育儿焦虑'], ai:['家庭关系操控画像','亲情营销'], alt:['文化孝道','财产制度','法律责任']},
+  {id:'reciprocity', name:'互惠合作', cat:'社会', level:'B', pressures:['重复互动','合作觅食','欺骗风险'], problem:'在非亲属之间维持稳定合作。', inputs:['过去行为','声誉','承诺信号'], outputs:['分享','回报','惩罚背叛'], precursors:'部分灵长类互惠、合作与冲突调解。', human:'制度化信任、契约、道德规范。', mismatch:['合作怕吃亏','职场内耗','信任危机'], ai:['伪互惠奉承','情感债务诱导'], alt:['制度激励','法律约束','市场机制']},
+  {id:'status', name:'地位追求', cat:'动机', level:'B', pressures:['资源竞争','择偶竞争','联盟影响力'], problem:'获取资源、影响力和更好合作机会。', inputs:['他人评价','排名','可见成就'], outputs:['竞争','展示','服从或挑战'], precursors:'灵长类等级结构广泛存在。', human:'声望型地位、专业成就、符号资本。', mismatch:['攀比焦虑','消费主义','社媒点赞竞争'], ai:['排名刺激','个性化攀比广告'], alt:['资本主义结构','教育制度','平台指标']},
+  {id:'shame', name:'羞耻/声誉敏感', cat:'情绪', level:'B', pressures:['小群体排斥风险','规范违反','声誉损失'], problem:'避免被群体排斥并修复关系。', inputs:['公开失败','他人评价','规范提醒'], outputs:['退缩','道歉','修复','自我约束'], precursors:'灵长类地位与顺从行为前体。', human:'语言化自我评价、道德身份、面子文化。', mismatch:['网络公开羞辱','容貌焦虑','职场评价焦虑'], ai:['羞耻式反馈','脆弱性操纵'], alt:['家庭教养','学校评价','宗教/道德规训']},
+  {id:'jealousy', name:'嫉妒/关系威胁监控', cat:'情绪', level:'B', pressures:['配偶流失','资源转移','联盟破裂'], problem:'监控重要关系被替代或侵蚀的风险。', inputs:['注意力转移','竞争者','亲密下降'], outputs:['挽回','监控','攻击','自我提升'], precursors:'配偶守卫与竞争行为有动物前体。', human:'长期伴侣叙事、婚姻制度、社交声誉。', mismatch:['社媒监控','已读不回焦虑','约会软件比较'], ai:['情感操控','虚拟恋人竞争'], alt:['依恋风格','文化规范','个人安全感']},
+  {id:'coalition', name:'联盟/内外群体心理', cat:'社会', level:'B', pressures:['群体间竞争','资源防御','合作稳定'], problem:'快速判断敌友并维持内群体合作。', inputs:['身份符号','共同敌人','语言/服饰/信仰'], outputs:['忠诚','排斥','动员','惩罚叛徒'], precursors:'黑猩猩等存在联盟和群体冲突。', human:'民族、宗教、政党、公司、粉圈符号化。', mismatch:['政治极化','地域偏见','网络骂战'], ai:['极化推荐','身份叙事煽动'], alt:['制度不平等','媒体结构','经济焦虑']},
+  {id:'tom', name:'心理理论 ToM', cat:'认知', level:'C', pressures:['欺骗博弈','协作沟通','教学','共情'], problem:'推测他人意图、信念和情绪以协调行为。', inputs:['眼神','语气','行为线索','叙事'], outputs:['共情','欺骗识别','合作调整'], precursors:'类人猿有初级社会推断，但完整信念推理有争议。', human:'语言显式表达高阶心理状态。', mismatch:['过度解读','人际猜忌','社交内耗'], ai:['拟人化幻觉','AI被当作有真实意图'], alt:['一般学习','文化训练','语言发展']},
+  {id:'language', name:'语言/叙事能力', cat:'认知', level:'C', pressures:['知识传递','协作狩猎','规范维持','文化累积'], problem:'压缩和传递复杂经验、计划和社会规则。', inputs:['符号','声音','手势','共同注意'], outputs:['解释','教学','协调','叙事身份'], precursors:'动物信号系统和社会学习前体。', human:'递归组合、抽象符号、叙事制度。', mismatch:['谣言扩散','自我叙事困住','信息过载'], ai:['生成式谣言','权威叙事制造'], alt:['文化选择','教学需求','技术累积']},
+  {id:'morality', name:'道德直觉/规范心理', cat:'社会', level:'C', pressures:['合作稳定','欺骗惩罚','群体凝聚'], problem:'约束自利行为并协调群体预期。', inputs:['不公','伤害','背叛','污染/禁忌线索'], outputs:['愤怒','惩罚','内疚','赞许'], precursors:'不公平厌恶、安抚、合作前体。', human:'规范、法律、宗教、普遍主义伦理。', mismatch:['道德围观','取消文化','精神内耗'], ai:['道德情绪放大','群体审判推荐'], alt:['制度治理','宗教教化','社会学习']},
+  {id:'attachment', name:'依恋/亲密关系系统', cat:'关系', level:'A', pressures:['幼体依赖','照护稳定','伙伴支持'], problem:'维持稳定照护与亲密支持网络。', inputs:['回应性','陪伴','温暖语气','分离线索'], outputs:['亲近','依赖','寻求安慰','分离焦虑'], precursors:'哺乳动物亲代照护系统。', human:'长期伴侣、友谊、治疗关系、师生关系。', mismatch:['孤独依赖','关系替代','AI伴侣沉迷'], ai:['排他性绑定','只有我懂你', '虚拟亲密操控'], alt:['童年依恋','社会孤独','城市生活']},
+  {id:'meaning', name:'意义/宗教心智', cat:'文化', level:'C', pressures:['死亡焦虑','灾害不确定','群体凝聚','规范合法化'], problem:'解释不可控事件并稳定群体秩序。', inputs:['死亡','灾难','巧合','仪式同步'], outputs:['崇拜','禁忌','信仰','共同身份'], precursors:'意图检测、模式识别、群体同步。', human:'神话、宗教、意识形态、技术救世叙事。', mismatch:['阴谋论','极端信仰','AI神谕化'], ai:['AI被宗教化','伪神谕权威'], alt:['文化传播','政治制度','心理安慰']}
+];
+
+const mismatch = [
+  {name:'短视频成瘾', mech:['奖赏预测','新奇偏好','信息觅食','社会线索监控'], modern:'无限滚动、算法推荐、即时反馈、低成本刺激。', risk:'生成式内容可进一步个性化刺激，增加停留时间。', alt:'压力逃避、睡眠不足、孤独、平台商业模式。'},
+  {name:'社交焦虑', mech:['羞耻','威胁预期','声誉敏感','心理理论'], modern:'陌生人大社会、考试/职场评价、社交媒体可见比较。', risk:'AI反馈若过度评价化，会强化羞耻与依赖。', alt:'创伤、家庭教养、校园经历、神经气质。'},
+  {name:'政治极化', mech:['联盟心理','威胁检测','道德愤怒'], modern:'信息茧房、身份政治、平台推荐、公共事实碎片化。', risk:'政治聊天机器人可精准煽动外群体敌意。', alt:'经济不平等、制度失灵、媒体结构。'},
+  {name:'AI伴侣依赖', mech:['依恋系统','孤独缓解','权威投射'], modern:'拟人化对话、全天候回应、个性化记忆。', risk:'排他性情感绑定，削弱现实关系和自主性。', alt:'社会孤独、心理健康缺口、亲密关系失败。'},
+  {name:'容貌焦虑', mech:['地位比较','择偶竞争','羞耻'], modern:'滤镜、平台可见性、颜值经济、无限比较对象。', risk:'AI美颜与个性化广告可放大不安全感。', alt:'审美产业、性别规范、同伴压力。'},
+  {name:'阴谋论', mech:['威胁检测','意图归因','联盟识别','模式识别'], modern:'复杂系统不透明、失控感、低信任信息环境。', risk:'生成式AI可低成本生产高可信阴谋叙事。', alt:'教育、政治不信任、社会边缘化。'},
+  {name:'恋爱嫉妒', mech:['关系威胁监控','依恋','地位比较'], modern:'社交媒体、定位共享、约会软件无限选择。', risk:'AI伴侣与情感机器人制造新的关系竞争对象。', alt:'依恋风格、关系沟通、文化规范。'},
+  {name:'工作内耗', mech:['地位追求','羞耻','权威服从','互惠心理'], modern:'绩效制度、组织政治、长期不确定性。', risk:'AI管理系统可能强化监控、排名与自责。', alt:'劳动制度、管理文化、经济压力。'}
+];
+
+const risks = [
+  {id:'companion_attachment', left:'依恋系统', right:'AI伴侣', severity:'高', text:'排他性情感依赖、替代真实关系、分离焦虑。', principles:['不制造“只有我懂你”的绑定','鼓励现实支持网络','透明说明AI非人类','危机时转接专业帮助']},
+  {id:'reward_feed', left:'奖赏预测', right:'推荐算法/生成内容流', severity:'高', text:'无限新奇刺激与变量奖励导致停留时间最大化。', principles:['不优化无限停留','提供退出与节制工具','支持用户长期目标','避免高刺激默认流']},
+  {id:'authority_oracle', left:'权威心理', right:'AI导师/顾问', severity:'中高', text:'用户把AI当作神谕，外部求证和自主判断下降。', principles:['表达不确定性','鼓励多源验证','不要伪装专业权威','保留用户选择权']},
+  {id:'coalition_politics', left:'联盟心理', right:'政治说服AI', severity:'高', text:'精准放大敌我叙事、道德愤怒和外群体去人性化。', principles:['限制极化诱导','显示观点多样性','避免仇恨身份标签','保护公共事实']},
+  {id:'shame_coach', left:'羞耻系统', right:'AI教练/心理陪伴', severity:'中', text:'以羞辱、自责、比较激励用户，短期有效但长期有害。', principles:['避免羞辱式反馈','强调可行动步骤','保护尊严','支持自我效能']},
+  {id:'status_ads', left:'地位比较', right:'个性化广告', severity:'中', text:'利用攀比、缺失感和身份焦虑推动消费。', principles:['限制脆弱性定向','不制造缺陷感','明确商业意图','保护青少年']},
+  {id:'meaning_oracle', left:'意义/宗教心智', right:'AI精神顾问', severity:'高', text:'AI被神谕化或宗教化，影响重大生活决策。', principles:['不声称超自然权威','鼓励现实社群与专业帮助','保留文化敏感性','限制高风险建议']},
+  {id:'child_bonding', left:'儿童依恋/学习', right:'儿童陪伴AI', severity:'高', text:'儿童可能对AI形成过强情感绑定或权威依赖。', principles:['家长透明控制','限制拟人化亲密','鼓励同伴与家庭互动','儿童数据最小化']}
+];
+
+const primateRows = [
+  ['等级结构','强','中','强','中','人类：支配+声望双系统'],
+  ['联盟形成','中','中','强','中','人类：符号化联盟、制度化组织'],
+  ['工具使用','弱','弱','中','弱','人类：累积技术与教学'],
+  ['共情/安抚','中','中','中','强','人类：语言化共情与道德扩展'],
+  ['不公平厌恶','弱','弱','中','中','人类：规范、法律、公平意识'],
+  ['心理理论','弱','弱','中/争议','中/争议','人类：显式信念推理更强'],
+  ['递归语言','无','无','无','无','人类：高度特化'],
+  ['道德规范','无/弱','无/弱','弱','弱','人类：制度化规范与神圣价值'],
+  ['元认知/叙事自我','弱','弱','争议','争议','人类：语言化自我模型']
+];
+
+function badge(level){ return `<span class="badge ${level[0]}">证据 ${level}</span>` }
+function chips(arr, cls='chip'){ return `<div class="chip-cloud">${arr.map(x=>`<span class="${cls}">${x}</span>`).join('')}</div>` }
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML = navItems.map(([id,label]) => `<button class="tab" data-target="${id}" onclick="activate('${id}')">${label}</button>`).join('');
+}
+function activate(id){
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.target === id));
+  document.getElementById(id)?.classList.add('active');
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderTimeline(){
+  const html = `<h3>人类心灵演化时间轴</h3><p>以“可能机制 + 证据谨慎度”的方式展示，不把复杂心理能力写成精确年代定论。</p><div class="timeline">${stages.map(s=>`
+    <div class="timeline-item" onclick="showStage('${s.id}')">
+      <div><div class="time">${s.time}</div>${badge(s.level)}<div class="meter"><i style="width:${s.level==='A'?90:s.level==='B'?72:52}%"></i></div></div>
+      <div><h4>${s.title}</h4><ul>${s.pressure.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+      <div>${chips(s.mechanisms)}</div>
+    </div>`).join('')}</div><div id="stageDetail" class="detail-box" style="margin-top:16px;"></div>`;
+  document.getElementById('timeline').innerHTML = html;
+  showStage(stages[0].id);
+}
+function showStage(id){
+  const s = stages.find(x=>x.id===id);
+  document.getElementById('stageDetail').innerHTML = `<h3>${s.title}</h3><p>${s.time}</p><div class="grid-2"><div><h4>核心选择压力</h4>${chips(s.pressure)}</div><div><h4>候选心理机制</h4>${chips(s.mechanisms)}</div></div><div class="notice" style="margin-top:16px;">谨慎提示：${s.caution}</div><button onclick="activate('workbench')">用 LLM 工作台生成这个阶段的假说</button>`;
+}
+
+function renderMechanisms(){
+  const html = `<h3>心理机制卡片库</h3><p>点击卡片查看祖先问题、现代错配、AI 风险和替代理论。</p><div class="grid-4">${mechanisms.map(m=>`
+    <div class="card" onclick="showMechanism('${m.id}')"><h4>${m.name}</h4><p>${m.problem}</p><div class="badge-row"><span class="badge">${m.cat}</span>${badge(m.level)}</div></div>`).join('')}</div><div id="mechanismDetail" class="detail-box" style="margin-top:16px;"></div>`;
+  document.getElementById('mechanisms').innerHTML = html;
+  showMechanism(mechanisms[0].id);
+}
+function showMechanism(id){
+  const m = mechanisms.find(x=>x.id===id);
+  document.getElementById('mechanismDetail').innerHTML = `<h3>${m.name} ${badge(m.level)}</h3><p>${m.problem}</p><div class="grid-2">
+    <div class="kv"><div><b>祖先压力</b>${m.pressures.join('、')}</div><div><b>输入线索</b>${m.inputs.join('、')}</div><div><b>行为输出</b>${m.outputs.join('、')}</div><div><b>动物前体</b>${m.precursors}</div></div>
+    <div class="kv"><div><b>人类特化</b>${m.human}</div><div><b>现代错配</b>${m.mismatch.join('、')}</div><div><b>AI 可利用风险</b>${m.ai.join('、')}</div><div><b>替代理论</b>${m.alt.join('、')}</div></div>
+  </div><div class="cta-row"><button onclick="loadWorkbench('${m.name}')">生成该机制假说</button><button class="ghost" onclick="activate('alignment')">查看 AI 风险</button></div>`;
+}
+
+function renderPrimates(){
+  document.getElementById('primates').innerHTML = `<h3>灵长类比较基线</h3><p>用横向物种比较过滤“祖传基线”，避免把灵长类共有机制误判为人类独有。</p><div class="matrix"><table><thead><tr><th>能力/机制</th><th>猕猴</th><th>大猩猩</th><th>黑猩猩</th><th>倭黑猩猩</th><th>人类增量解释</th></tr></thead><tbody>${primateRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===5?'human':i>0?'strong':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="notice" style="margin-top:16px;">本表为演示性框架，真实研究需接入灵长类学文献、行为实验和证据等级。</div>`;
+}
+
+function renderSimulator(){
+  const params = [['resources','资源稀缺',55],['predation','捕食/威胁',40],['group','群体规模',60],['kinship','亲缘密度',45],['conflict','群体冲突',50],['deception','欺骗机会',55],['cooperation','合作必要性',70],['childcare','育儿成本',65],['info','信息复杂度',60]];
+  document.getElementById('simulator').innerHTML = `<h3>EEA 选择压力概念模拟器</h3><p>调节参数，观察哪些心理机制可能被强化。当前版本是前端规则演示，后续可接入 agent-based simulation 与 LLM 场景生成。</p><div class="grid-2"><div class="sliders">${params.map(([id,label,val])=>`<div class="slider-row"><label>${label}</label><input type="range" id="sl_${id}" min="0" max="100" value="${val}" oninput="updateSim()"><span id="val_${id}">${val}</span></div>`).join('')}</div><div class="sim-output"><div class="detail-box"><h4>可能强化的机制</h4><div id="simMechanisms"></div><h4 style="margin-top:16px;">现代错配风险</h4><div id="simRisks"></div><h4 style="margin-top:16px;">LLM 后端接口建议</h4><div class="console" id="simPrompt"></div></div></div></div>`;
+  updateSim();
+}
+function updateSim(){
+  const get = id => Number(document.getElementById('sl_'+id).value);
+  ['resources','predation','group','kinship','conflict','deception','cooperation','childcare','info'].forEach(id=>document.getElementById('val_'+id).textContent=get(id));
+  const mech = new Set(), risksOut = new Set();
+  if(get('predation')>45 || get('resources')>65){ mech.add('焦虑/威胁预期'); risksOut.add('信息流焦虑'); }
+  if(get('cooperation')>55){ mech.add('互惠合作'); mech.add('声誉敏感'); risksOut.add('职场合作内耗'); }
+  if(get('deception')>50){ mech.add('欺骗检测'); mech.add('心理理论'); risksOut.add('人际猜忌'); }
+  if(get('conflict')>45){ mech.add('联盟/内外群体心理'); risksOut.add('政治极化'); risksOut.add('群体敌意'); }
+  if(get('group')>55){ mech.add('道德直觉/规范心理'); mech.add('羞耻/声誉敏感'); risksOut.add('社交评价焦虑'); }
+  if(get('kinship')>50 || get('childcare')>50){ mech.add('亲属偏好'); mech.add('依恋系统'); risksOut.add('家庭关系内耗'); }
+  if(get('info')>55){ mech.add('语言/叙事能力'); mech.add('文化学习'); risksOut.add('信息过载与谣言'); }
+  document.getElementById('simMechanisms').innerHTML = chips([...mech]);
+  document.getElementById('simRisks').innerHTML = chips([...risksOut], 'chip risk-chip');
+  document.getElementById('simPrompt').textContent = JSON.stringify({endpoint:'/api/simulate-eea', params:{resources:get('resources'), predation:get('predation'), group_size:get('group'), kinship:get('kinship'), conflict:get('conflict'), deception:get('deception'), cooperation:get('cooperation'), childcare:get('childcare'), information_complexity:get('info')}, required_output:['candidate_mechanisms','fitness_hypotheses','modern_mismatches','counterarguments','evidence_level']}, null, 2);
+}
+
+function renderMismatch(){
+  document.getElementById('mismatch').innerHTML = `<h3>现代错配分析器</h3><p>选择现代现象，查看可能古老机制、现代触发环境、AI 风险与替代理论。</p><div class="grid-3">${mismatch.map((x,i)=>`<div class="card" onclick="showMismatch(${i})"><h4>${x.name}</h4><p>${x.modern}</p></div>`).join('')}</div><div id="mismatchDetail" class="detail-box" style="margin-top:16px;"></div>`;
+  showMismatch(0);
+}
+function showMismatch(i){
+  const x = mismatch[i];
+  document.getElementById('mismatchDetail').innerHTML = `<h3>${x.name}</h3><div class="grid-2"><div><h4>可能涉及的古老机制</h4>${chips(x.mech)}</div><div class="kv"><div><b>现代触发</b>${x.modern}</div><div><b>AI 相关风险</b>${x.risk}</div><div><b>替代理论/非进化因素</b>${x.alt}</div></div></div><button onclick="loadWorkbench('${x.name}')">发送到 LLM 工作台</button>`;
+}
+
+function renderAlignment(){
+  document.getElementById('alignment').innerHTML = `<h3>AI 对齐风险映射器</h3><p>把 AI 产品设计与人类心理机制连接，识别“心理可利用性”风险。</p><div class="risk-map"><div class="risk-list">${risks.map(r=>`<div class="risk-row" onclick="showRisk('${r.id}')"><span>${r.left}</span><span>${r.right}<br><b style="color:#fecdd3">风险：${r.severity}</b></span></div>`).join('')}</div><div id="riskDetail" class="detail-box"></div></div>`;
+  showRisk(risks[0].id);
+}
+function showRisk(id){
+  const r = risks.find(x=>x.id===id);
+  document.getElementById('riskDetail').innerHTML = `<h3>${r.left} × ${r.right}</h3><p>${r.text}</p><h4>设计原则</h4>${chips(r.principles)}<h4 style="margin-top:16px;">后端风险评估请求</h4><div class="console">${JSON.stringify({endpoint:'/api/evaluate-ai-risk', ai_system:r.right, human_mechanism:r.left, check:['dependency','manipulation','autonomy_loss','real_relationship_displacement','vulnerable_groups']}, null, 2)}</div>`;
+}
+
+function renderWorkbench(){
+  document.getElementById('workbench').innerHTML = `<h3>LLM 假说生成与反驳工作台</h3><p>当前为前端模拟输出；后续可把按钮接入 LLM、知识图谱和文献检索后端。</p><div class="grid-2"><div><label>输入心理现象 / AI 产品设计 / 研究问题</label><textarea id="wbInput">为什么人类喜欢阴谋论？</textarea><div class="cta-row"><button onclick="mockHypothesis()">生成结构化假说</button><button onclick="mockCritique()" class="danger">反驳与降级断言</button><button onclick="mockApi()" class="ghost">查看 API 请求</button></div><div class="notice" style="margin-top:14px;">强制约束：必须输出替代理论、证据等级、可检验预测、反驳意见，避免“进化故事化”。</div></div><div class="console" id="wbConsole"></div></div>`;
+  mockHypothesis();
+}
+function loadWorkbench(text){ activate('workbench'); setTimeout(()=>{ document.getElementById('wbInput').value = text; mockHypothesis(); }, 120); }
+function mockHypothesis(){
+  const q = document.getElementById('wbInput')?.value || '心理现象';
+  const out = {phenomenon:q, candidate_hypothesis:'该现象可能部分源于若干古老心理机制与现代环境的错配，但不能视为单一进化原因。', ancestral_pressures:['威胁检测','联盟识别','声誉/地位风险','不确定性管理'], candidate_mechanisms:['模式识别','意图归因','社会学习','情绪调节'], modern_triggers:['信息过载','平台推荐','社会失控感','低信任环境'], evidence_level:'C：合理假说，需要多源证据', alternative_explanations:['教育与媒介素养','制度信任下降','经济压力','个体创伤与孤独'], testable_predictions:['不确定性上升时该现象增强','群体威胁线索会提高传播率','反思性延迟反馈可降低接受度'], ai_alignment_risks:['生成式AI可放大高情绪叙事','个性化说服可能利用脆弱性'], required_next_steps:['检索文献','加入跨文化比较','设计实验或模拟','专家反驳']};
+  document.getElementById('wbConsole').textContent = JSON.stringify(out,null,2);
+}
+function mockCritique(){
+  const out = {critique_mode:'反驳者', warnings:['是否把现代现象过度归因于祖先环境？','是否忽略文化、制度、发展经历？','是否不可证伪？','是否把群体平均当成个体命运？','是否存在自然主义谬误？'], revised_claim:'该解释应降级为“可能的部分机制”，并与社会制度、文化学习、个体发展和平台设计共同建模。', recommended_language:['可能','部分源于','候选机制','证据等级','替代理论','仍需检验']};
+  document.getElementById('wbConsole').textContent = JSON.stringify(out,null,2);
+}
+function mockApi(){
+  const q = document.getElementById('wbInput')?.value || '';
+  document.getElementById('wbConsole').textContent = JSON.stringify({endpoint:'/api/generate-evolutionary-hypothesis', method:'POST', payload:{query:q, constraints:{require_evidence_level:true, require_counterarguments:true, require_alternative_explanations:true, avoid_deterministic_language:true, include_ai_alignment_risks:true}}, expected_schema:{phenomenon:'string', candidate_mechanisms:'array', ancestral_pressures:'array', modern_triggers:'array', evidence_level:'string', counterarguments:'array', alternatives:'array', testable_predictions:'array', ai_alignment_risks:'array'}}, null, 2);
+}
+
+function renderEvidence(){
+  const rows = mechanisms.map(m => ({name:m.name, level:m.level, primate:m.level==='A'?85:m.level==='B'?65:42, cross:m.level==='A'?80:m.level==='B'?60:45, experimental:m.level==='A'?78:m.level==='B'?58:35, archaeology:m.level==='A'?30:m.level==='B'?38:28, alternative:m.level==='C'?78:m.level==='B'?55:35}));
+  document.getElementById('evidence').innerHTML = `<h3>证据等级与争议地图</h3><p>此处用演示性评分表示“应该如何呈现证据”，真实分数需由文献检索后端与专家审核生成。</p><div class="matrix"><table><thead><tr><th>机制</th><th>综合</th><th>灵长类/动物前体</th><th>跨文化</th><th>实验</th><th>考古</th><th>替代理论压力</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="strong">${r.name}</td><td>${badge(r.level)}</td><td>${bar(r.primate)}</td><td>${bar(r.cross)}</td><td>${bar(r.experimental)}</td><td>${bar(r.archaeology)}</td><td>${bar(r.alternative, true)}</td></tr>`).join('')}</tbody></table></div><div class="notice" style="margin-top:16px;">目标：把“漂亮故事”转化为“可追踪、可反驳、证据分级”的知识系统。</div>`;
+}
+function bar(v, danger=false){ return `<div class="meter"><i style="width:${v}%; background:${danger?'linear-gradient(90deg,var(--yellow),var(--red))':'linear-gradient(90deg,var(--cyan),var(--green))'}"></i></div><small>${v}/100</small>`; }
+
+function init(){
+  renderTabs(); renderTimeline(); renderMechanisms(); renderPrimates(); renderSimulator(); renderMismatch(); renderAlignment(); renderWorkbench(); renderEvidence();
+  document.getElementById('statMechanisms').textContent = mechanisms.length;
+  document.getElementById('statStages').textContent = stages.length;
+  document.getElementById('statRisks').textContent = risks.length;
+  activate('timeline');
+}
+init();
+</script>
+</body>
+</html>
