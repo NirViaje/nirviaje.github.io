@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>热弹性飞轮 · 蒙特卡罗树式选择题训练系统</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --panel:#ffffff; --text:#1d2433; --muted:#667085; --line:#d9e2ef;
+      --primary:#2557d6; --primary2:#0ea5e9; --good:#0f9f6e; --bad:#d92d20; --warn:#f79009;
+      --purple:#7c3aed; --orange:#ea580c; --teal:#0f766e; --red:#be123c;
+      --shadow:0 14px 40px rgba(16,24,40,.10); --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Inter","Noto Sans SC","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,#eef4ff 0%,#f8fbff 42%,#fff7ed 100%);color:var(--text);}
+    .app{min-height:100vh;display:grid;grid-template-columns:290px 1fr;}
+    aside{background:rgba(255,255,255,.78);backdrop-filter: blur(18px);border-right:1px solid var(--line);padding:22px;position:sticky;top:0;height:100vh;overflow:auto;}
+    main{padding:28px;overflow:auto;}
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:22px;}
+    .logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:white;font-weight:900;display:grid;place-items:center;box-shadow:var(--shadow)}
+    .brand h1{font-size:18px;margin:0;line-height:1.2}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .nav button{width:100%;border:0;background:transparent;color:var(--text);padding:12px 14px;border-radius:14px;text-align:left;font-weight:700;cursor:pointer;margin:4px 0;display:flex;justify-content:space-between;align-items:center;}
+    .nav button:hover{background:#eef4ff}.nav button.active{background:#e4ecff;color:var(--primary)}
+    .pill{font-size:12px;padding:3px 8px;border-radius:999px;background:#edf2f7;color:var(--muted)}
+    .side-card{border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:18px;background:#fff;}
+    .side-card h3{font-size:14px;margin:0 0 8px}.side-card p{font-size:13px;color:var(--muted);line-height:1.55;margin:0}
+    .bar{height:9px;border-radius:999px;background:#e6edf7;overflow:hidden;margin:10px 0}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--good));transition:.4s}
+    .hero{background:linear-gradient(135deg,#123b8f,#0e7490);border-radius:28px;padding:30px;color:white;box-shadow:var(--shadow);position:relative;overflow:hidden;margin-bottom:22px;}
+    .hero:after{content:"";position:absolute;right:-70px;top:-80px;width:280px;height:280px;border-radius:999px;background:rgba(255,255,255,.13)}
+    .hero h2{margin:0 0 10px;font-size:32px}.hero p{max-width:920px;line-height:1.8;margin:0;color:#e8f2ff}.hero .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tag{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.17);font-size:13px;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}.card h3{margin:0 0 12px;font-size:21px}.card p,.card li{line-height:1.75;color:#344054}.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+    .formula{font-family:"Cambria Math","Times New Roman",serif;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:18px;overflow:auto;color:#0f172a}
+    .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.flow .box{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px;padding:8px 10px;font-weight:800;color:#1d4ed8}.arrow{color:#94a3b8;font-weight:900}
+    .quiz-wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px}.question-card{min-height:520px}.node-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}.node-id{font-weight:900;color:white;background:linear-gradient(135deg,var(--primary),var(--purple));border-radius:14px;padding:9px 12px}.difficulty{font-size:13px;font-weight:900;padding:7px 10px;border-radius:999px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}.question{font-size:24px;line-height:1.45;margin:18px 0;font-weight:900}.ability{display:inline-flex;gap:8px;align-items:center;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:800}.options{display:grid;gap:12px;margin-top:18px}.option{border:2px solid #e5e7eb;background:#fff;border-radius:18px;padding:15px 16px;cursor:pointer;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;text-align:left;font-size:16px;line-height:1.55;transition:.15s}.option:hover{border-color:#93c5fd;transform:translateY(-1px)}.option .letter{width:30px;height:30px;border-radius:10px;background:#f1f5f9;display:grid;place-items:center;font-weight:900}.option.correct{border-color:#22c55e;background:#f0fdf4}.option.correct .letter{background:#16a34a;color:white}.option.wrong{border-color:#ef4444;background:#fff1f2}.option.wrong .letter{background:#dc2626;color:white}.feedback{margin-top:18px;border-radius:18px;padding:16px;border:1px solid var(--line);background:#f8fafc;display:none}.feedback.show{display:block}.feedback h4{margin:0 0 8px}.feedback.good{border-color:#86efac;background:#f0fdf4}.feedback.bad{border-color:#fecaca;background:#fff1f2}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:14px;padding:11px 14px;font-weight:900;cursor:pointer;background:#e2e8f0;color:#0f172a}.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white}.btn.good{background:var(--good);color:white}.btn.warn{background:var(--warn);color:white}.btn:disabled{opacity:.45;cursor:not-allowed}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.mini{font-size:12px;color:var(--muted)}
+    .path-list{display:grid;gap:8px;max-height:260px;overflow:auto}.path-item{padding:9px 10px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;display:flex;justify-content:space-between;gap:10px;font-size:13px}.path-item.ok{border-color:#bbf7d0;background:#f0fdf4}.path-item.no{border-color:#fecaca;background:#fff1f2}.branch-note{border-left:4px solid var(--primary);padding:10px 12px;background:#f8fafc;border-radius:12px;margin-top:12px;color:#344054;line-height:1.6}.tree{display:grid;gap:10px}.tree-section{border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px}.tree-section h4{margin:0 0 10px}.node-chip{display:inline-flex;gap:6px;align-items:center;margin:4px;padding:7px 9px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc;font-size:12px;font-weight:800;cursor:pointer}.node-chip.done{background:#dcfce7;border-color:#86efac;color:#166534}.node-chip.current{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8}.node-chip.wronged{background:#fee2e2;border-color:#fca5a5;color:#991b1b}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.stat b{font-size:30px}.stat p{margin:5px 0 0;color:var(--muted)}table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden}th,td{border-bottom:1px solid #edf2f7;padding:12px;text-align:left;vertical-align:top}th{background:#f8fafc;color:#475467}.hidden{display:none!important}.route{display:none}.route.active{display:block}.kbd{font-family:ui-monospace,Menlo,monospace;background:#f1f5f9;border-radius:6px;padding:2px 6px;color:#334155}
+    @media(max-width:980px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.quiz-wrap{grid-template-columns:1fr}.span-4,.span-6,.span-8{grid-column:span 12}.hero h2{font-size:25px}main{padding:18px}.question{font-size:20px}}
+    @media print{aside,.actions,.nav{display:none}.app{display:block}main{padding:0}.card,.hero{box-shadow:none}.route{display:block}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="logo">M</div>
+      <div><h1>热弹性飞轮 MCTS</h1><p>选择题树 · 元认知训练</p></div>
+    </div>
+    <div class="nav">
+      <button data-route="about" class="active">About 分析页 <span class="pill">导读</span></button>
+      <button data-route="quiz">开始闯关 <span class="pill" id="navProgress">0%</span></button>
+      <button data-route="map">节点地图 <span class="pill" id="navNodes">0/0</span></button>
+      <button data-route="stats">学习统计 <span class="pill" id="navScore">0</span></button>
+      <button data-route="bank">题库总览 <span class="pill">MCQ</span></button>
+    </div>
+    <div class="side-card">
+      <h3>当前进度</h3>
+      <div class="bar"><span id="progressBar"></span></div>
+      <p id="progressText">尚未开始。建议先读 About，再从 Root 节点开始。</p>
+    </div>
+    <div class="side-card">
+      <h3>玩法说明</h3>
+      <p>每个选择题是一个决策节点。选对进入主路径，选错会显示诊断，并可进入补救节点或重试。你也可以随机抽取节点做“蒙特卡罗式”训练。</p>
+    </div>
+  </aside>
+  <main>
+    <section id="about" class="route active">
+      <div class="hero">
+        <h2>热弹性飞轮：从复杂建模题到决策树训练</h2>
+        <p>本系统把一道包含摩擦、热传导、弹簧约束、稳态、线性稳定性和 von Mises 强度校核的综合题，改造成一棵可交互的选择题树。目标不是背公式，而是训练学生面对复杂题时的分析路径、错误诊断和元认知监控。</p>
+        <div class="tags"><span class="tag">系统分解</span><span class="tag">摩擦力矩</span><span class="tag">热弹性耦合</span><span class="tag">线性稳定性</span><span class="tag">强度校核</span></div>
+      </div>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>1. 本题的核心闭环</h3>
+          <p>这道题真正难的地方不在单个公式，而在变量之间形成闭环反馈：</p>
+          <div class="flow"><span class="box">ω↑</span><span class="arrow">→</span><span class="box">Pf=τfω↑</span><span class="arrow">→</span><span class="box">θ↑</span><span class="arrow">→</span><span class="box">N↑ / μ↓</span><span class="arrow">→</span><span class="box">τf 改变</span></div>
+          <p>其中，热膨胀使法向力上升，是正反馈；摩擦系数随温升下降，是负反馈。</p>
+        </div>
+        <div class="card span-6">
+          <h3>2. 标准解题主路径</h3>
+          <ol>
+            <li>系统分解：飞轮、轴、摩擦面、弹簧、热边界。</li>
+            <li>摩擦建模：由压强积分求总压力和摩擦力矩。</li>
+            <li>热弹性约束：推出 <b>N=N0+Kθ̄</b>。</li>
+            <li>稳态热传导：求 θ0、θ̄ 与 τfω 的关系。</li>
+            <li>稳态转速：先解 β=0，再解 β&gt;0。</li>
+            <li>稳定性：围绕稳态点线性化，分析特征根。</li>
+            <li>强度校核：求 von Mises 应力最大值。</li>
+          </ol>
+        </div>
+        <div class="card span-4">
+          <h3>3. 摩擦力矩入口</h3>
+          <p>先用总压力反求压强系数，再算力矩。</p>
+          <div class="formula">N=∫<sub>b</sub><sup>a</sup>p(r)·2πrdr</div>
+          <div class="formula">τ<sub>f</sub>=∫<sub>b</sub><sup>a</sup> μp(r)·r·2πrdr</div>
+          <p>最常见错误：漏掉力臂 r，把力积分误当成力矩积分。</p>
+        </div>
+        <div class="card span-4">
+          <h3>4. 热弹性关键式</h3>
+          <p>轴的机械压缩和热膨胀通过弹簧约束耦合。</p>
+          <div class="formula">N=N<sub>0</sub>+Kθ̄</div>
+          <p>K 表示平均温升引起法向力变化的等效灵敏度。</p>
+        </div>
+        <div class="card span-4">
+          <h3>5. 稳定性判断</h3>
+          <p>围绕稳态点展开：</p>
+          <div class="formula">ω=ω*+δω，θ̄=θ̄*+δθ̄</div>
+          <p>稳定性看特征根实部；是否振荡看是否出现共轭复根。</p>
+        </div>
+        <div class="card span-12">
+          <h3>6. 这套选择题树如何使用？</h3>
+          <p>点击“开始闯关”，系统从 Root 节点开始。每个节点对应一次关键判断。选对后进入下一主路径；选错后会显示错误诊断，并指出这类错误属于读题、建模、耦合、稳定性还是强度判断问题。点击“节点地图”可以自由跳转；点击“随机训练”可以模拟蒙特卡罗式抽样，随机暴露薄弱节点。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="route">
+      <div class="quiz-wrap">
+        <div class="card question-card">
+          <div class="node-head">
+            <div><div class="node-id" id="nodeId">R0</div><div style="height:8px"></div><span class="ability" id="ability">系统分解能力</span></div>
+            <div class="difficulty" id="difficulty">难度：低</div>
+          </div>
+          <div class="question" id="questionText"></div>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+          <div class="actions">
+            <button class="btn" id="backBtn">← 上一步</button>
+            <button class="btn primary" id="nextBtn" disabled>下一节点 →</button>
+            <button class="btn warn" id="retryBtn">重答本题</button>
+            <button class="btn good" id="randomBtn">随机训练</button>
+            <button class="btn" id="resetBtn">重置全部</button>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="panel-title"><h3>路径记录</h3><span class="mini" id="attemptCount">0 次作答</span></div>
+            <div class="path-list" id="pathList"></div>
+          </div>
+          <div class="card" style="margin-top:18px">
+            <h3>当前节点提示</h3>
+            <div class="branch-note" id="nodeHint">先识别系统，再计算。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="route">
+      <div class="hero"><h2>节点地图</h2><p>这是整棵选择题树。绿色表示已答对，红色表示曾答错，蓝色表示当前节点。点击任意节点可跳转练习。</p></div>
+      <div class="tree" id="treeMap"></div>
+    </section>
+
+    <section id="stats" class="route">
+      <div class="hero"><h2>学习统计与薄弱点诊断</h2><p>系统按能力维度统计答题情况，帮助学生定位自己到底卡在读题、建模、耦合、动态稳定还是强度校核。</p></div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="card" style="margin-top:18px"><h3>错误诊断记录</h3><div id="diagnostics"></div></div>
+    </section>
+
+    <section id="bank" class="route">
+      <div class="hero"><h2>题库总览</h2><p>这里列出全部选择题节点、所属分支、能力目标和难度。可用于教师备课或学生复习。</p></div>
+      <div class="card"><table id="bankTable"></table></div>
+    </section>
+  </main>
+</div>
+<script>
+const nodes = {
+R0:{section:'Root', diff:'低', ability:'系统分解能力', hint:'复杂题第一步不是算，而是建立系统结构。', q:'这道题文字很长，变量很多。作为解题第一步，最合理的策略是什么？', a:'B', next:'A1', choices:{A:'直接从第一个公式开始积分，先算出 p0',B:'先画出系统结构，识别飞轮、轴、摩擦面、弹簧、热边界',C:'先查 von Mises 应力公式，因为最后一问最难',D:'先假设温度均匀，这样可以减少变量'}, explain:{B:'正确。复杂工程建模题要先识别系统边界和子系统，再进入公式。',A:'过早计算，容易不知道 p0 后面服务于什么。',C:'被最终难点牵引，破坏题目递进关系。',D:'擅自简化，可能破坏题设的一维传热模型。'}},
+A1:{section:'A 系统分解', diff:'低', ability:'读题识别', hint:'把装置分成产生力、产生热、传热、约束、储能几个模块。', q:'本题的主要物理子系统有哪些？', a:'A', next:'A2', choices:{A:'电机、飞轮、弹性轴、摩擦接触、弹簧、环境冷却',B:'只有飞轮和电机',C:'只有弹性轴和弹簧',D:'只有热传导系统，与力学无关'}, explain:{A:'正确。它们共同构成热—机—摩擦耦合系统。',B:'忽略了热、摩擦和弹簧约束。',C:'忽略转动和摩擦热源。',D:'忽略力学反馈和转动方程。'}},
+A2:{section:'A 系统分解', diff:'低-中', ability:'主变量识别', hint:'几何和材料参数很多，但主线变量只有少数几个。', q:'以下哪组变量最能代表本题的耦合主线？', a:'B', next:'A3', choices:{A:'a, b, L, ρ, c',B:'N, θ0, θ̄, τf, ω',C:'E, G, I, Jp',D:'ha, hb, κ, T0'}, explain:{B:'正确。这组变量贯穿压力、温度、摩擦力矩和角速度。',A:'这些是参数，不是耦合状态主线。',C:'这些是材料/强度参数，不是主反馈链。',D:'这些是热边界参数，不是完整主线。'}},
+A3:{section:'A 系统分解', diff:'中', ability:'反馈方向判断', hint:'先判断每个箭头是增大还是减小。', q:'本题最核心的正反馈链是哪一个？', a:'A', next:'B1', choices:{A:'ω↑ → Pf↑ → θ↑ → N↑ → τf↑',B:'θ↑ → μ↑ → τf↑',C:'N↑ → ω↑ → Pf↓',D:'θ↑ → N↓ → τf↓'}, explain:{A:'正确。温升通过热膨胀提高 N，从而提高摩擦力矩和发热。',B:'题设 μ=μ0(1−βθ0)，温升使 μ 降低。',C:'摩擦阻力矩增大通常阻碍角速度，不是使 ω 上升。',D:'温升导致轴热膨胀，在约束下使 N 增大。'}},
+B1:{section:'B 摩擦力矩', diff:'低', ability:'环形积分', hint:'总压力是压强在接触面积上的积分。', q:'由压强分布求总压力 N，正确积分形式是？', a:'B', next:'B2', choices:{A:'N=∫ p(r)dr',B:'N=∫ p(r)·2πrdr',C:'N=∫ p(r)·r²dr',D:'N=p0(a−b)'}, explain:{B:'正确。环形面积微元是 2πrdr。',A:'漏掉面积微元。',C:'面积微元写错。',D:'把压强当成一维线密度。'}},
+B2:{section:'B 摩擦力矩', diff:'中', ability:'力矩微元', hint:'摩擦力矩 = 摩擦力 × 力臂。', q:'摩擦力矩微元 dτ 应该如何写？', a:'B', next:'B3', choices:{A:'dτ=μp(r)·2πrdr',B:'dτ=μp(r)·r·2πrdr',C:'dτ=p(r)·rdr',D:'dτ=μNr'}, explain:{B:'正确。μp(r)2πrdr 是摩擦力，再乘力臂 r。',A:'这是摩擦力微元，不是力矩微元。',C:'既漏掉 μ，也漏掉面积。',D:'N 是总力，不能直接代替局部压力分布。'}},
+B3:{section:'B 摩擦力矩', diff:'中', ability:'量纲归一化', hint:'力矩量纲必须是力乘长度。', q:'为什么最终要求把 τf 写成 μNa × 无量纲因子？', a:'A', next:'B4', choices:{A:'因为摩擦力矩量纲应为力乘长度',B:'因为这样可以消除所有温度影响',C:'因为 a 是唯一变量',D:'因为 N 与 μ 不影响摩擦力矩'}, explain:{A:'正确。μN 是摩擦力尺度，乘 a 得到力矩尺度。',B:'温度仍通过 μ 和 N 影响 τf。',C:'a 不是唯一变量，b、χ 也影响无量纲因子。',D:'恰好相反，N 与 μ 是摩擦力矩核心因素。'}},
+B4:{section:'B 摩擦力矩', diff:'低', ability:'功率识别', hint:'转动功率等于力矩乘角速度。', q:'摩擦功率应写为？', a:'C', next:'C1', choices:{A:'Pf=Nω',B:'Pf=μNω',C:'Pf=τfω',D:'Pf=Jω²'}, explain:{C:'正确。转动系统功率 P=τω。',A:'N 是力，不是力矩。',B:'μN 是摩擦力尺度，不是力矩。',D:'Jω² 与转动动能相关，缺少 1/2，且不是功率。'}},
+C1:{section:'C 热弹性约束', diff:'低', ability:'变形来源', hint:'轴既受压力又受温升。', q:'轴的长度变化由哪些部分组成？', a:'C', next:'C2', choices:{A:'只有热膨胀',B:'只有机械压缩',C:'机械压缩与热膨胀共同作用',D:'只有弹簧伸长'}, explain:{C:'正确。轴长变化 = 机械压缩 + 自由热膨胀。',A:'忽略压力引起的压缩。',B:'忽略热膨胀。',D:'弹簧变形不是轴自身长度变化。'}},
+C2:{section:'C 热弹性约束', diff:'低', ability:'物理方向', hint:'线膨胀系数为正。', q:'温升 θ̄ 增大时，若其他条件不变，轴倾向于？', a:'A', next:'C3', choices:{A:'变长',B:'变短',C:'长度不变',D:'半径消失'}, explain:{A:'正确。正线膨胀系数意味着温升导致伸长。',B:'方向相反。',C:'只有在额外约束抵消时才可能长度不变。',D:'无物理意义。'}},
+C3:{section:'C 热弹性约束', diff:'低', ability:'应变方向', hint:'法向接触压力对轴是压缩作用。', q:'压力 N 增大时，轴向机械变形倾向于？', a:'B', next:'C4', choices:{A:'拉长',B:'压短',C:'不变',D:'只发生扭转，不发生轴向变形'}, explain:{B:'正确。轴向压力产生压缩应变。',A:'方向相反。',C:'忽略弹性变形。',D:'题中明确考虑轴向正应力。'}},
+C4:{section:'C 热弹性约束', diff:'中', ability:'几何约束', hint:'热膨胀通过固定距离约束转化为弹簧压缩。', q:'为什么可以得到 N=N0+Kθ̄？', a:'A', next:'C5', choices:{A:'因为温升使轴膨胀，几何约束使弹簧进一步压缩，从而法向力增大',B:'因为温升会降低材料密度',C:'因为温升会直接增加摩擦系数',D:'因为 N 是常量'}, explain:{A:'正确。这是热弹性—弹簧串联约束的结果。',B:'密度不是这里的主因。',C:'题设反而让摩擦系数随温升下降。',D:'本题 N 会随平均温升变化。'}},
+C5:{section:'C 热弹性约束', diff:'中', ability:'参数意义', hint:'观察 N=N0+Kθ̄ 中 K 的位置。', q:'K 的物理意义最接近什么？', a:'A', next:'D1', choices:{A:'温升引起法向力变化的等效刚度/灵敏度',B:'轴的扭转刚度',C:'摩擦系数',D:'热导率'}, explain:{A:'正确。K=dN/dθ̄。',B:'扭转刚度与 G、Jp、L 有关。',C:'摩擦系数是 μ。',D:'热导率是 κ。'}},
+D1:{section:'D 稳态热传导', diff:'低', ability:'稳态识别', hint:'稳态意味着场变量不随时间变化。', q:'稳态热方程中为什么没有时间导数？', a:'A', next:'D2', choices:{A:'因为稳态下温度不再随时间变化',B:'因为忽略了热量',C:'因为轴没有热容',D:'因为摩擦功率为零'}, explain:{A:'正确。稳态热传导无蓄热项。',B:'热量没有被忽略。',C:'轴有热容，只是在稳态方程中不出现时间项。',D:'摩擦功率通常不为零。'}},
+D2:{section:'D 稳态热传导', diff:'中', ability:'边界条件', hint:'下端是摩擦热进入轴的位置。', q:'下端边界条件为什么是热流边界？', a:'A', next:'D3', choices:{A:'因为摩擦热从下端进入轴',B:'因为下端温度固定为零',C:'因为下端没有热交换',D:'因为下端速度为零'}, explain:{A:'正确。−κAθ′(0)=ητfω 表示输入热流。',B:'题设固定温度的是上端环境边界。',C:'下端正是热输入端。',D:'速度不是热边界条件。'}},
+D3:{section:'D 稳态热传导', diff:'低', ability:'边界意义', hint:'温升 θ 是相对环境温度的差。', q:'上端边界条件 θs(L)=0 表示什么？', a:'A', next:'D4', choices:{A:'上端温度等于环境温度',B:'上端绝热',C:'上端温度无限大',D:'上端没有材料'}, explain:{A:'正确。θ=T−T0，因此 θ=0 表示等于环境温度。',B:'绝热对应导数为零。',C:'没有依据。',D:'没有物理意义。'}},
+D4:{section:'D 稳态热传导', diff:'中-高', ability:'微分方程结构', hint:'θ″−m²θ=0 的解是指数/双曲函数。', q:'稳态温度分布为什么与 sinh 函数有关？', a:'A', next:'D5', choices:{A:'因为方程是二阶常系数齐次微分方程，形式为 θ″−m²θ=0',B:'因为温度必须周期振荡',C:'因为飞轮在旋转',D:'因为摩擦力矩是二次函数'}, explain:{A:'正确。双曲函数来自指数型解的组合。',B:'周期振荡对应 sin/cos，不是 sinh。',C:'旋转不是 sinh 的直接原因。',D:'无直接关系。'}},
+D5:{section:'D 稳态热传导', diff:'中', ability:'热阻思想', hint:'线性热方程导致温升与输入热功率成正比。', q:'平均温升 θ̄ 与摩擦功率 τfω 的关系是什么？', a:'A', next:'E1', choices:{A:'成正比',B:'成反比',C:'无关',D:'一定为零'}, explain:{A:'正确。稳态线性传热中 θ̄=Rth·ητfω。',B:'方向错误。',C:'摩擦功率正是热源。',D:'只有无热源或无限散热才可能为零。'}},
+E1:{section:'E 稳态速度', diff:'低', ability:'稳态转动', hint:'稳态角速度意味着角加速度为零。', q:'稳态转动时，转动方程变成什么？', a:'B', next:'E2', choices:{A:'Jω˙=M0+τf',B:'M0=τf',C:'Jω=M0−τf',D:'ω=0'}, explain:{B:'正确。Jω˙=M0−τf，稳态时 ω˙=0。',A:'摩擦力矩方向是阻力矩。',C:'左侧应是 Jω˙。',D:'稳态转动不等于静止。'}},
+E2:{section:'E 稳态速度', diff:'低', ability:'参数简化', hint:'β=0 表示温度项消失。', q:'当 β=0 时，摩擦系数如何变化？', a:'A', next:'E3', choices:{A:'与温度无关，等于 μ0',B:'随温度升高而增大',C:'随温度升高而减小',D:'变成负数'}, explain:{A:'正确。μ=μ0(1−βθ0)，β=0 时 μ=μ0。',B:'没有温度依赖。',C:'这是 β>0 时的趋势。',D:'不成立。'}},
+E3:{section:'E 稳态速度', diff:'中', ability:'正反馈理解', hint:'临界速度来自分母趋零的热—机正反馈。', q:'当 β=0 时，为什么可能出现临界角速度 ωc？', a:'A', next:'E4', choices:{A:'因为热膨胀增加法向力，法向力又增加摩擦生热，形成正反馈',B:'因为摩擦系数随温度降低',C:'因为电机转矩自动变大',D:'因为热导率为零'}, explain:{A:'正确。β=0 时负反馈消失，热膨胀正反馈可能导致稳态不存在。',B:'β=0 时摩擦系数不随温度变。',C:'题设 M0 恒定。',D:'热导率不为零。'}},
+E4:{section:'E 稳态速度', diff:'中', ability:'临界条件识别', hint:'表达式的奇异点常代表稳态丧失。', q:'临界角速度出现时，数学上通常对应什么？', a:'A', next:'E5', choices:{A:'某个分母趋近于零，稳态解发散或不存在',B:'分子为零，摩擦力矩为零',C:'所有温升消失',D:'轴完全不受力'}, explain:{A:'正确。临界速度来自 τf(ω) 的分母为零。',B:'分子为零不是热失稳临界。',C:'临界时温升不是消失。',D:'仍有接触法向力。'}},
+E5:{section:'E 稳态速度', diff:'中', ability:'双反馈判断', hint:'β>0 后有一条负反馈加入。', q:'考虑 β>0 后，摩擦力矩对温度的依赖包含哪两种相反影响？', a:'A', next:'E6', choices:{A:'N 随温升增大使 τf 增大，μ 随温升增大使 τf 减小',B:'N 和 μ 都随温升增大',C:'N 和 μ 都随温升减小',D:'温度对摩擦力矩没有影响'}, explain:{A:'正确。这就是正反馈与负反馈竞争。',B:'μ 不随温升增大。',C:'N 不随温升减小。',D:'N 和 μ 都与温度有关。'}},
+E6:{section:'E 稳态速度', diff:'高', ability:'非线性来源', hint:'一个一次因子乘另一个一次因子，会产生二次项。', q:'为什么 β>0 情况下会得到关于 ω* 的二次方程？', a:'A', next:'E7', choices:{A:'因为 (N0+Kθ̄)(1−βζθ̄) 中含 θ̄²，而 θ̄*∝ω*',B:'因为角速度本身一定平方出现',C:'因为热方程是二阶微分方程',D:'因为转动惯量 J 是二阶张量'}, explain:{A:'正确。θ̄ 的二次非线性转化为 ω* 的二次方程。',B:'不是所有角速度问题都会平方。',C:'微分方程阶数不是这里二次代数方程的原因。',D:'无关。'}},
+E7:{section:'E 稳态速度', diff:'专家', ability:'物理根筛选', hint:'数学根必须通过极限检查筛选。', q:'二次方程有两个根，如何判断哪个是物理根？', a:'A', next:'F1', choices:{A:'看 β→0 时是否连续退化到有限解',B:'永远取较大的根',C:'永远取正号根',D:'任意一个根都可以'}, explain:{A:'正确。物理解应在 β→0 时回到 β=0 模型。',B:'较大根可能发散。',C:'正号/负号要结合极限判断。',D:'数学根不一定有物理意义。'}},
+F1:{section:'F 线性稳定', diff:'中', ability:'平衡点选择', hint:'稳定性分析针对平衡点附近的小扰动。', q:'线性稳定性分析应围绕哪个点展开？', a:'B', next:'F2', choices:{A:'初始点 (0,0)',B:'稳态点 (ω*, θ̄*)',C:'任意点',D:'最大应力点'}, explain:{B:'正确。线性稳定性分析围绕稳态工作点。',A:'初始点不一定是平衡点。',C:'任意点线性化不能判断平衡稳定性。',D:'强度最大点不是动态平衡点。'}},
+F2:{section:'F 线性稳定', diff:'中', ability:'状态变量选择', hint:'平均热模型只有一个热状态，转动方程提供一个机械状态。', q:'适合选作状态变量的是哪一组？', a:'A', next:'F3', choices:{A:'ω, θ̄',B:'a, b, L',C:'E, G, κ',D:'p0, χ, ρ'}, explain:{A:'正确。它们描述角速度和平均温升的动态。',B:'几何参数不是动态状态。',C:'材料参数不是状态变量。',D:'压强参数和密度不是主要动态状态。'}},
+F3:{section:'F 线性稳定', diff:'中', ability:'线性化操作', hint:'非线性函数用导数表示一阶灵敏度。', q:'线性化时，应如何处理 τf(θ̄)？', a:'A', next:'F4', choices:{A:'在稳态点附近展开，只保留一阶项',B:'完整保留所有非线性项',C:'直接令其为零',D:'把它看成常数且不求导'}, explain:{A:'正确。δτf=(dτf/dθ̄)*δθ̄。',B:'那就不是线性化。',C:'摩擦力矩不是零。',D:'会漏掉温度对摩擦的反馈。'}},
+F4:{section:'F 线性稳定', diff:'中', ability:'小量阶次', hint:'两个小量相乘是二阶小量。', q:'线性化中若出现 δω·δθ̄，应该如何处理？', a:'A', next:'F5', choices:{A:'舍去，因为它是二阶小量',B:'保留，因为它最重要',C:'改写成常数',D:'令它等于 1'}, explain:{A:'正确。一阶线性化只保留一阶扰动。',B:'会得到非线性扰动方程。',C:'没有依据。',D:'破坏小扰动假设。'}},
+F5:{section:'F 线性稳定', diff:'中', ability:'振荡判据', hint:'振荡来自复数特征根。', q:'判断是否振荡，关键看什么？', a:'A', next:'F6', choices:{A:'特征方程是否有共轭复根',B:'温度是否大于零',C:'摩擦力是否大于零',D:'轴长是否为零'}, explain:{A:'正确。复根虚部导致振荡。',B:'温度正不代表振荡。',C:'摩擦力正不代表振荡。',D:'无关。'}},
+F6:{section:'F 线性稳定', diff:'中', ability:'稳定判据', hint:'实部决定扰动衰减还是增长。', q:'判断平衡是否稳定，关键看什么？', a:'A', next:'F7', choices:{A:'特征根实部是否小于零',B:'特征根是否为整数',C:'特征根是否大于一',D:'特征根是否没有单位'}, explain:{A:'正确。实部小于零表示扰动衰减。',B:'整数性无关。',C:'大小不是唯一标准，符号和实部才关键。',D:'特征根通常有时间倒数单位。'}},
+F7:{section:'F 线性稳定', diff:'高', ability:'稳定振荡辨析', hint:'振荡和不稳定不是同一个概念。', q:'稳定振荡与发散振荡的区别是什么？', a:'A', next:'F8', choices:{A:'稳定振荡的特征根实部小于零，发散振荡的实部大于零',B:'稳定振荡没有虚部',C:'发散振荡没有虚部',D:'二者没有区别'}, explain:{A:'正确。虚部决定振荡，实部决定衰减或发散。',B:'没有虚部就不振荡。',C:'发散振荡也有虚部。',D:'二者工程意义完全不同。'}},
+F8:{section:'F 线性稳定', diff:'中', ability:'频率识别', hint:'复特征根 λ=σ±iΩ。', q:'振荡角频率 Ω 来自哪里？', a:'A', next:'G1', choices:{A:'特征根的虚部',B:'特征根的实部',C:'转动惯量的平方',D:'弹簧刚度的倒数'}, explain:{A:'正确。Ω 是复根的虚部大小。',B:'实部代表衰减/增长率。',C:'J 会影响频率，但不是定义来源。',D:'k 只是影响参数之一。'}},
+G1:{section:'G 强度校核', diff:'低', ability:'应力分量识别', hint:'题目明确只考虑两个分量。', q:'第 5 问中保留了哪些应力分量？', a:'A', next:'G2', choices:{A:'轴向正应力和扭转剪应力',B:'只有径向正应力',C:'只有环向正应力',D:'所有应力分量都保留'}, explain:{A:'正确。σxx 与 τxθ 是保留项。',B:'径向正应力被忽略。',C:'环向正应力被忽略。',D:'题目明确忽略其他应力。'}},
+G2:{section:'G 强度校核', diff:'中', ability:'稳态力矩', hint:'强度校核在稳态工作点进行。', q:'稳态时为什么可以令 τf=M0？', a:'A', next:'G3', choices:{A:'因为稳态转动时 ω˙=0，驱动转矩等于阻力矩',B:'因为摩擦力矩永远等于驱动转矩',C:'因为热量为零',D:'因为轴不变形'}, explain:{A:'正确。来自稳态转动方程。',B:'非稳态时不成立。',C:'稳态仍有热流。',D:'轴仍有应力和微小变形。'}},
+G3:{section:'G 强度校核', diff:'低', ability:'危险趋势', hint:'τxθ 与 r 成正比。', q:'扭转剪应力 τxθ(r) 随半径如何变化？', a:'A', next:'G4', choices:{A:'随 r 增大而增大',B:'随 r 增大而减小',C:'与 r 无关',D:'在 r=0 最大'}, explain:{A:'正确。τxθ=M0r/Jp。',B:'方向相反。',C:'明显含 r。',D:'空心轴没有 r=0 接触区域，且公式在 r=0 为零。'}},
+G4:{section:'G 强度校核', diff:'中', ability:'最大危险点', hint:'等效应力中随 r 变化的是扭转剪应力项。', q:'von Mises 等效应力最大值发生在哪里？', a:'A', next:'G5', choices:{A:'外表面 r=a',B:'内表面 r=b',C:'中心 r=0',D:'任意位置都一样'}, explain:{A:'正确。随 r 单调增大，最大在外半径。',B:'内表面不是最大。',C:'空心轴不含中心材料。',D:'剪应力项随 r 变化。'}},
+G5:{section:'G 强度校核', diff:'中', ability:'设计约束', hint:'强度约束限制最大等效应力。', q:'强度约束最终限制的是什么？', a:'A', next:'G6', choices:{A:'驱动转矩 M0、稳态温升和法向力共同决定的最大等效应力',B:'只有温度',C:'只有热导率',D:'只有转动惯量'}, explain:{A:'正确。σvm,max 同时含 N* 和 M0。',B:'温度通过 N* 间接影响强度，但不是唯一因素。',C:'热导率影响稳态温升，不是直接强度约束唯一量。',D:'J 不直接进入最终 von Mises 约束。'}},
+G6:{section:'G 强度校核', diff:'高', ability:'综合应力判断', hint:'von Mises 应力是组合应力指标。', q:'为什么不能只用扭转剪应力判断强度？', a:'A', next:'H1', choices:{A:'因为轴还承受轴向压缩应力，von Mises 应力同时包含正应力和剪应力贡献',B:'因为剪应力不存在',C:'因为压缩应力一定为零',D:'因为 von Mises 应力只适用于热学'}, explain:{A:'正确。强度校核需要组合轴向正应力和扭转剪应力。',B:'剪应力正是重要分量。',C:'轴向正应力为 −N*/A。',D:'von Mises 是力学强度准则。'}},
+H1:{section:'H 元认知检查', diff:'中', ability:'变量区分', hint:'θ0 影响 μ，θ̄ 影响 N。', q:'如果学生把 θ0 和 θ̄ 混用，最可能导致什么问题？', a:'A', next:'H2', choices:{A:'摩擦系数变化和热膨胀约束混乱',B:'压强积分错误',C:'转动惯量消失',D:'半径单位错误'}, explain:{A:'正确。θ0 是下端温升，θ̄ 是平均温升，作用位置不同。',B:'压强积分主要与 r 有关。',C:'无关。',D:'无关。'}},
+H2:{section:'H 元认知检查', diff:'中', ability:'错误诊断', hint:'力矩比力多一个力臂。', q:'如果学生忘记摩擦力矩积分中的力臂 r，结果会怎样？', a:'A', next:'H3', choices:{A:'得到的是摩擦力而不是摩擦力矩',B:'得到正确答案',C:'得到温度分布',D:'得到弹簧刚度'}, explain:{A:'正确。这是本题第 1 问最典型错误。',B:'量纲会错误。',C:'与热方程无关。',D:'与约束方程无关。'}},
+H3:{section:'H 元认知检查', diff:'高', ability:'极限检查', hint:'复杂解必须回到简单模型。', q:'如果 β→0，β>0 的稳态解应该怎样？', a:'A', next:'H4', choices:{A:'回到摩擦系数不随温度变化的解',B:'发散才合理',C:'变成负角速度',D:'与原问题无关'}, explain:{A:'正确。这是筛选物理根的重要标准。',B:'发散根通常不是物理解。',C:'题设取 ω>0。',D:'β=0 是一般模型的特例。'}},
+H4:{section:'H 元认知检查', diff:'中', ability:'符号检查', hint:'摩擦生热进入轴，温升通常应为正。', q:'如果稳态解中 θ0<0，应该怀疑什么？', a:'A', next:'H5', choices:{A:'物理方向或符号可能出错，因为摩擦生热通常导致温升为正',B:'结果一定正确',C:'说明飞轮在制冷',D:'说明压强为零'}, explain:{A:'正确。除非有额外制冷机制，否则温升负值不合理。',B:'不能不检查。',C:'题设没有制冷。',D:'温升符号不能说明压强为零。'}},
+H5:{section:'H 元认知检查', diff:'高', ability:'合理性检查', hint:'热失稳一定与散热能力有关。', q:'如果求得的临界角速度与散热能力无关，应该怀疑什么？', a:'A', next:'H6', choices:{A:'可能漏掉了热阻或热传导参数',B:'这是必然正确的',C:'临界角速度本来只由半径决定',D:'临界角速度只由密度决定'}, explain:{A:'正确。ωc 应受 H、κ、A、L 等散热/导热能力影响。',B:'复杂结果必须做物理检查。',C:'半径只是一部分。',D:'密度主要影响热容和动态，不是稳态临界的唯一因素。'}},
+H6:{section:'H 元认知检查', diff:'中', ability:'危险点检查', hint:'强度题最后必须找最大危险位置。', q:'如果强度约束中没有 r=a，应该怀疑什么？', a:'A', next:null, choices:{A:'可能没有判断最大危险位置',B:'说明强度与半径无关',C:'说明内外半径相等',D:'说明剪应力为零'}, explain:{A:'正确。最大 von Mises 应力发生在外表面 r=a。',B:'剪应力项与 r 有关。',C:'题设 b<a。',D:'稳态 M0 一般不为零，剪应力不为零。'}}
+};
+const order = Object.keys(nodes);
+let state = JSON.parse(localStorage.getItem('flywheel_mcts_state')||'{}');
+state.current = state.current || 'R0'; state.done = state.done || {}; state.wrong = state.wrong || {}; state.history = state.history || []; state.attempts = state.attempts || 0; state.diags = state.diags || [];
+function save(){localStorage.setItem('flywheel_mcts_state', JSON.stringify(state)); updateGlobal();}
+function route(name){document.querySelectorAll('.route').forEach(r=>r.classList.remove('active'));document.getElementById(name).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.route===name)); if(name==='map') renderMap(); if(name==='stats') renderStats(); if(name==='bank') renderBank();}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>route(b.dataset.route));
+function renderQuiz(){const n=nodes[state.current];document.getElementById('nodeId').textContent=state.current+' · '+n.section;document.getElementById('ability').textContent=n.ability;document.getElementById('difficulty').textContent='难度：'+n.diff;document.getElementById('questionText').textContent=n.q;document.getElementById('nodeHint').textContent=n.hint;const opts=document.getElementById('options');opts.innerHTML='';Object.entries(n.choices).forEach(([k,v])=>{let btn=document.createElement('button');btn.className='option';btn.innerHTML=`<span class="letter">${k}</span><span>${v}</span>`;btn.onclick=()=>answer(k);opts.appendChild(btn);});let fb=document.getElementById('feedback');fb.className='feedback';fb.innerHTML='';document.getElementById('nextBtn').disabled=true;document.getElementById('nextBtn').textContent=n.next?'下一节点 →':'完成训练';renderPath(); updateGlobal();}
+function answer(k){const n=nodes[state.current];state.attempts++;const correct=k===n.a; if(correct){state.done[state.current]=true;} else {state.wrong[state.current]=true; state.diags.unshift({node:state.current, ability:n.ability, choice:k, msg:n.explain[k], time:new Date().toLocaleString()}); state.diags=state.diags.slice(0,30);} state.history.push({node:state.current, choice:k, correct, ability:n.ability}); state.history=state.history.slice(-80);[...document.querySelectorAll('.option')].forEach(btn=>{const letter=btn.querySelector('.letter').textContent;if(letter===n.a)btn.classList.add('correct'); if(letter===k && !correct)btn.classList.add('wrong'); btn.disabled=true;});const fb=document.getElementById('feedback');fb.className='feedback show '+(correct?'good':'bad');fb.innerHTML=`<h4>${correct?'✅ 判断正确':'❌ 判断偏差'}</h4><p>${n.explain[k]}</p>${!correct?`<p><b>正确选项：</b>${n.a}. ${n.choices[n.a]}</p><p><b>诊断：</b>这类错误属于「${n.ability}」薄弱点，建议回到节点提示重新思考。</p>`:''}`;document.getElementById('nextBtn').disabled=false;save();renderPath();}
+document.getElementById('nextBtn').onclick=()=>{const n=nodes[state.current]; if(n.next){state.current=n.next; renderQuiz();} else {route('stats'); renderStats();}};
+document.getElementById('backBtn').onclick=()=>{let idx=order.indexOf(state.current); if(idx>0){state.current=order[idx-1]; renderQuiz(); save();}};
+document.getElementById('retryBtn').onclick=()=>renderQuiz();
+document.getElementById('randomBtn').onclick=()=>{state.current=order[Math.floor(Math.random()*order.length)]; route('quiz'); renderQuiz(); save();};
+document.getElementById('resetBtn').onclick=()=>{if(confirm('确定清空全部答题记录？')){localStorage.removeItem('flywheel_mcts_state'); state={current:'R0',done:{},wrong:{},history:[],attempts:0,diags:[]}; renderQuiz(); save();}};
+function renderPath(){const list=document.getElementById('pathList');list.innerHTML='';state.history.slice(-18).reverse().forEach(h=>{let div=document.createElement('div');div.className='path-item '+(h.correct?'ok':'no');div.innerHTML=`<span><b>${h.node}</b> · ${h.ability}</span><span>${h.correct?'✓':'×'} ${h.choice}</span>`;list.appendChild(div);});document.getElementById('attemptCount').textContent=state.attempts+' 次作答';}
+function updateGlobal(){const done=Object.keys(state.done).length,total=order.length;const pct=Math.round(done/total*100);document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressText').textContent=`已掌握 ${done}/${total} 个节点，当前：${state.current}`;document.getElementById('navProgress').textContent=pct+'%';document.getElementById('navNodes').textContent=done+'/'+total;document.getElementById('navScore').textContent=done;}
+function renderMap(){const root=document.getElementById('treeMap');root.innerHTML='';const groups={};order.forEach(id=>{const s=nodes[id].section;groups[s]=groups[s]||[];groups[s].push(id);});Object.entries(groups).forEach(([sec,ids])=>{let box=document.createElement('div');box.className='tree-section';box.innerHTML=`<h4>${sec}</h4>`;ids.forEach(id=>{let chip=document.createElement('span');chip.className='node-chip '+(state.done[id]?'done ':'')+(state.wrong[id]?'wronged ':'')+(state.current===id?'current ':'');chip.textContent=id+' · '+nodes[id].ability;chip.onclick=()=>{state.current=id;route('quiz');renderQuiz();save();};box.appendChild(chip);});root.appendChild(box);});}
+function renderStats(){const grid=document.getElementById('statsGrid');grid.innerHTML='';const total=order.length, done=Object.keys(state.done).length, wrong=Object.keys(state.wrong).length;const acc=state.attempts?Math.round(state.history.filter(x=>x.correct).length/state.history.length*100):0;[{k:'已掌握节点',v:done+'/'+total},{k:'曾出错节点',v:wrong},{k:'最近正确率',v:acc+'%'},{k:'总作答次数',v:state.attempts}].forEach(s=>{let d=document.createElement('div');d.className='stat';d.innerHTML=`<b>${s.v}</b><p>${s.k}</p>`;grid.appendChild(d);});const by={};state.history.forEach(h=>{by[h.ability]=by[h.ability]||{a:0,c:0};by[h.ability].a++; if(h.correct)by[h.ability].c++;});let diag=document.getElementById('diagnostics');let html='<table><tr><th>能力维度</th><th>作答</th><th>正确率</th><th>建议</th></tr>';Object.entries(by).forEach(([k,v])=>{let rate=Math.round(v.c/v.a*100);html+=`<tr><td>${k}</td><td>${v.a}</td><td>${rate}%</td><td>${rate<70?'建议回到节点地图重练该类节点。':'表现较好，可继续挑战高难节点。'}</td></tr>`});html+='</table>';if(state.diags.length){html+='<h3 style="margin-top:20px">最近错误</h3><table><tr><th>节点</th><th>选择</th><th>诊断</th><th>时间</th></tr>'+state.diags.map(d=>`<tr><td>${d.node}</td><td>${d.choice}</td><td>${d.msg}</td><td>${d.time}</td></tr>`).join('')+'</table>';}diag.innerHTML=html;}
+function renderBank(){let t=document.getElementById('bankTable');let html='<tr><th>节点</th><th>分支</th><th>难度</th><th>能力</th><th>问题</th><th>正确</th></tr>';order.forEach(id=>{let n=nodes[id];html+=`<tr><td><button class="btn" onclick="state.current='${id}';route('quiz');renderQuiz();save();">${id}</button></td><td>${n.section}</td><td>${n.diff}</td><td>${n.ability}</td><td>${n.q}</td><td>${n.a}</td></tr>`});t.innerHTML=html;}
+renderQuiz();updateGlobal();
+</script>
+</body>
+</html>
