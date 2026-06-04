@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>“尖尖”物理图像 · 认知卡牌自适应解题系统</title>
+<style>
+:root{--bg:#0f1221;--panel:#171b31;--panel2:#202640;--ink:#eef2ff;--muted:#aeb7d6;--line:#3a4368;--accent:#8cc7ff;--gold:#ffd479;--green:#86efac;--red:#ff9aa2;--purple:#c4b5fd;--cyan:#67e8f9;--shadow:0 18px 50px rgba(0,0,0,.35);--radius:22px}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:radial-gradient(circle at 20% 0%,#25335b 0,#101426 38%,#090b15 100%);color:var(--ink);line-height:1.6}.app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}.side{position:sticky;top:0;height:100vh;padding:22px;background:rgba(12,15,29,.82);backdrop-filter:blur(12px);border-right:1px solid rgba(255,255,255,.08);overflow:auto}.brand{font-weight:800;letter-spacing:.5px;font-size:20px;margin:4px 0 8px}.subtitle{color:var(--muted);font-size:13px}.tabs{display:grid;gap:10px;margin-top:22px}.tab{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:var(--ink);padding:12px 14px;border-radius:14px;cursor:pointer;text-align:left;font-size:14px}.tab:hover,.tab.active{background:linear-gradient(135deg,rgba(140,199,255,.23),rgba(196,181,253,.14));border-color:rgba(140,199,255,.45)}.stats{margin-top:20px;padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:13px;color:var(--muted)}.bar{height:9px;background:#0a0d18;border-radius:99px;overflow:hidden;margin:8px 0 12px}.bar>span{display:block;height:100%;width:35%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:99px;transition:.4s}.main{padding:34px;max-width:1250px}.page{display:none;animation:fade .25s ease}.page.active{display:block}@keyframes fade{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:none}}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch}.panel{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.11);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}h1{font-size:36px;line-height:1.12;margin:0 0 14px}h2{font-size:26px;margin:0 0 16px}h3{font-size:19px;margin:0 0 10px}.muted{color:var(--muted)}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.chip{font-size:12px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.05);padding:5px 9px;border-radius:999px;color:#dce7ff}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}.card{position:relative;min-height:300px;border-radius:24px;padding:18px;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.14);box-shadow:var(--shadow)}.card:before{content:"";position:absolute;inset:-70px -70px auto auto;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(140,199,255,.32),transparent 65%)}.card .tag{font-size:12px;color:#0d1324;background:var(--gold);display:inline-block;padding:3px 8px;border-radius:999px;font-weight:700}.card h3{margin-top:12px}.mini{font-size:13px;color:var(--muted)}.svgbox{background:rgba(7,10,20,.55);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px;min-height:240px}.caseBtns{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.btn{border:0;border-radius:13px;background:linear-gradient(135deg,#4969ff,#8b5cf6);color:white;padding:10px 14px;cursor:pointer;font-weight:700}.btn.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--ink)}.btn:disabled{opacity:.45;cursor:not-allowed}.slider{width:100%}.formula{font-family:"Times New Roman",serif;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1);padding:10px 12px;border-radius:12px;color:#f8fbff}.quizWrap{display:grid;grid-template-columns:1fr 330px;gap:18px}.qCard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:22px;padding:22px}.option{display:block;width:100%;text-align:left;margin:9px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:var(--ink);cursor:pointer}.option:hover{border-color:rgba(140,199,255,.6);background:rgba(140,199,255,.08)}.option.correct{border-color:rgba(134,239,172,.8);background:rgba(34,197,94,.13)}.option.wrong{border-color:rgba(255,154,162,.8);background:rgba(239,68,68,.12)}.feedback{margin-top:12px;padding:13px;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08)}.nodeMap{display:flex;flex-wrap:wrap;gap:7px}.node{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:11px;color:var(--muted);border:1px solid rgba(255,255,255,.1)}.node.done{background:rgba(134,239,172,.18);color:#dcffe8;border-color:rgba(134,239,172,.5)}.node.now{background:rgba(140,199,255,.23);color:#fff;border-color:rgba(140,199,255,.8)}.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#dbe5ff}.tree{overflow:auto}.tree svg text{fill:#e8eeff;font-size:12px}.tree .edge{stroke:#556080;stroke-width:2}.tree .box{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.22)}.tree .hard{stroke:#c4b5fd}.tree .easy{stroke:#86efac}.tree .mid{stroke:#8cc7ff}.summaryList{display:grid;gap:12px}.step{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start}.num{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--purple));font-weight:900;color:#08101f}.footer{margin-top:22px;color:var(--muted);font-size:12px}svg{max-width:100%;height:auto}.glow{filter:drop-shadow(0 0 8px rgba(140,199,255,.35))}.rubric{border-left:3px solid var(--accent);padding-left:12px;color:#dbe5ff}.badgeEasy{color:#bbf7d0}.badgeMid{color:#bae6fd}.badgeHard{color:#ddd6fe}@media(max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:relative}.hero,.quizWrap,.g2,.g3{grid-template-columns:1fr}.main{padding:20px}.tabs{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">尖尖 · 自适应卡牌树</div>
+    <div class="subtitle">从物理图像到元认知诊断：一边答题，一边让系统调整难度。</div>
+    <div class="tabs">
+      <button class="tab active" data-page="about">About｜题目与物理图像</button>
+      <button class="tab" data-page="cards">能力卡牌｜代表性卡牌</button>
+      <button class="tab" data-page="path">解题路径｜消息图</button>
+      <button class="tab" data-page="quiz">自适应选择题系统</button>
+      <button class="tab" data-page="tree">蒙特卡罗式题目树</button>
+      <button class="tab" data-page="summary">解题总结</button>
+    </div>
+    <div class="stats">
+      <b>学习画像</b>
+      <div>当前层级：<span id="levelName">基础观察</span></div>
+      <div class="bar"><span id="levelBar"></span></div>
+      <div>已答：<span id="answered">0</span>　正确：<span id="correct">0</span></div>
+      <div>稳定度：<span id="stability">尚未估计</span></div>
+      <div class="chips"><span class="chip">自由度</span><span class="chip">约束</span><span class="chip">小量展开</span><span class="chip">能量法</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section id="about" class="page active">
+      <div class="hero">
+        <div class="panel">
+          <h1>把“尖尖”题拆成可观察、可选择、可诊断的思维系统</h1>
+          <p class="muted">题目装置：两根质量为 m、长度为 l 的匀质细棒固连成夹角 2θ，孔沿角平分线方向；尖尖放在半径 R 的光滑圆柱上，细杆穿过孔。三问改变细杆方向，要求判断小扰动周期或非周期运动。</p>
+          <div class="rubric">本网页不直接把答案作为显眼“终点”，而把答案拆成一系列认知动作：看图、识别自由度、判断约束是否对称、选择受力/能量方法、检查碰撞与能量损失。</div>
+          <div class="caseBtns">
+            <button class="btn" onclick="setCase(1)">情形 1：竖直杆</button>
+            <button class="btn secondary" onclick="setCase(2)">情形 2：横截面倾斜 α</button>
+            <button class="btn secondary" onclick="setCase(3)">情形 3：轴线-竖直平面倾斜 β</button>
+          </div>
+          <label class="muted">扰动角 φ：<span id="phiVal">0.25</span> rad</label>
+          <input class="slider" id="phi" type="range" min="-0.65" max="0.65" value="0.25" step="0.01" oninput="drawScene()" />
+          <p id="caseText" class="formula"></p>
+        </div>
+        <div class="panel svgbox">
+          <svg id="scene" viewBox="0 0 620 430" role="img" aria-label="尖尖物理图像"></svg>
+        </div>
+      </div>
+      <div class="grid g3" style="margin-top:18px">
+        <div class="panel"><h3>学生容易卡住的位置</h3><p class="muted">把三维接触误认为普通单摆；把“看起来小扰动”误认为一定周期；把 α、β 仅当作公式参数替换。</p></div>
+        <div class="panel"><h3>正确切入点</h3><p class="muted">先问：自由度是什么？约束是否左右对称？接触点是否仍然双侧成立？高度如何随 φ 变化？</p></div>
+        <div class="panel"><h3>核心元认知</h3><p class="muted">每写一个公式前，都要知道它来自哪一个物理图像；每一次类比前，都要检查约束机制有没有变。</p></div>
+      </div>
+    </section>
+
+    <section id="cards" class="page">
+      <div class="panel"><h2>代表性分析能力卡牌</h2><p class="muted">卡牌不是公式卡，而是“解题动作卡”。每张卡都对应一个可训练的认知技能。</p></div>
+      <div class="cards" style="margin-top:18px" id="cardDeck"></div>
+    </section>
+
+    <section id="path" class="page">
+      <div class="panel">
+        <h2>解题路径消息图</h2>
+        <p class="muted">这张图可以放在最后总结中，也可以作为学生复盘时的导航图。</p>
+        <div class="svgbox"><svg id="messageMap" viewBox="0 0 1050 620"></svg></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="page">
+      <div class="panel"><h2>自适应选择题系统</h2><p class="muted">系统会根据答题表现自动选择更基础或更高阶的问题。答错会下探到“看图/概念辨析”，连续答对会上升到“方法选择/反事实判断/元认知检查”。</p></div>
+      <div class="quizWrap" style="margin-top:18px">
+        <div class="qCard">
+          <div><span class="pill" id="qTier">层级</span> <span class="pill" id="qSkill">技能</span></div>
+          <h2 id="qTitle" style="margin-top:14px"></h2>
+          <p id="qStem"></p>
+          <div id="options"></div>
+          <div id="feedback" class="feedback" style="display:none"></div>
+          <div class="caseBtns">
+            <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>下一题</button>
+            <button class="btn secondary" onclick="resetQuiz()">重置路径</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>路径节点</h3>
+          <div class="nodeMap" id="nodeMap"></div>
+          <h3 style="margin-top:18px">系统如何调难度</h3>
+          <p class="muted">正确且反应稳定：向上探索。错误：转入相邻基础节点。连续错误：回到物理图像和自由度。连续正确：进入反事实与方法迁移。</p>
+          <div class="formula" id="diagnosis">等待第一题。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tree" class="page">
+      <div class="panel tree">
+        <h2>“类似蒙特卡罗树”的选择题结构</h2>
+        <p class="muted">节点不是线性排列，而是根据学生回答在不同分支间跳转。绿色偏基础，蓝色为主路径，紫色为高阶迁移。</p>
+        <svg id="treeSvg" viewBox="0 0 1300 760"></svg>
+      </div>
+    </section>
+
+    <section id="summary" class="page">
+      <div class="panel">
+        <h2>解题总结：从学生认知角度看这道题</h2>
+        <div class="summaryList">
+          <div class="step"><div class="num">1</div><div><b>先压缩自由度</b><br><span class="muted">尖尖作为刚体，孔沿角平分线，被细杆穿过。主要广义坐标是绕杆转角 φ。</span></div></div>
+          <div class="step"><div class="num">2</div><div><b>再看约束是否对称</b><br><span class="muted">前两问仍可形成稳定小振动；第三问一侧离开圆柱并发生非弹性碰撞，周期性被破坏。</span></div></div>
+          <div class="step"><div class="num">3</div><div><b>方法选择依赖图像</b><br><span class="muted">第一问受力或能量均可；第二问能量法更清晰；第三问先判定能否周期，再考虑高度表达。</span></div></div>
+          <div class="step"><div class="num">4</div><div><b>小量展开不是机械保留一阶</b><br><span class="muted">周期来自势能二阶项；高度变化与非对称性可能从一阶项就出现。</span></div></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:18px"><h2>附：消息图</h2><div class="svgbox"><svg id="summaryMap" viewBox="0 0 1050 620"></svg></div></div>
+    </section>
+
+    <div class="footer">本系统用于学习诊断，不用选项长度暗示答案；每题选项尽量保持长度、抽象层级与迷惑性均衡。</div>
+  </main>
+</div>
+<script>
+let currentCase=1;
+const scene=document.getElementById('scene');
+function el(tag,attrs={},children=[]){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in attrs){n.setAttribute(k,attrs[k])}children.forEach(c=>n.appendChild(c));return n}
+function text(x,y,t,cls='',size=16){const n=el('text',{x,y,'font-size':size,fill:'#eaf0ff','class':cls});n.textContent=t;return n}
+function line(x1,y1,x2,y2,stroke='#8cc7ff',w=5,extra={}){return el('line',Object.assign({x1,y1,x2,y2,stroke,'stroke-width':w,'stroke-linecap':'round'},extra))}
+function drawScene(){const phi=parseFloat(document.getElementById('phi').value);document.getElementById('phiVal').textContent=phi.toFixed(2);scene.innerHTML='';
+ scene.appendChild(el('rect',{x:0,y:0,width:620,height:430,rx:24,fill:'#090d19'}));
+ scene.appendChild(el('ellipse',{cx:315,cy:250,rx:210,ry:85,fill:'#17213d',stroke:'#60709e','stroke-width':3}));
+ scene.appendChild(line(105,250,525,250,'#394766',2,{'stroke-dasharray':'9 9'}));
+ scene.appendChild(text(518,244,'圆柱轴线','',13));
+ scene.appendChild(el('ellipse',{cx:160,cy:250,rx:45,ry:85,fill:'none',stroke:'#50658f','stroke-width':2}));
+ scene.appendChild(el('ellipse',{cx:470,cy:250,rx:45,ry:85,fill:'none',stroke:'#50658f','stroke-width':2}));
+ const cx=315, cy=135, len=230, theta=.42;
+ let rodAng=-Math.PI/2;
+ if(currentCase===2) rodAng=-Math.PI/2+0.35; if(currentCase===3) rodAng=-Math.PI/2+0.55;
+ scene.appendChild(line(cx+Math.cos(rodAng)*-70,cy+Math.sin(rodAng)*-70,cx+Math.cos(rodAng)*210,cy+Math.sin(rodAng)*210,'#f3f7ff',5));
+ scene.appendChild(text(cx+Math.cos(rodAng)*160+10,cy+Math.sin(rodAng)*160,'细杆','',14));
+ const base=rodAng+Math.PI/2+phi;
+ const a1=base+theta, a2=base-theta;
+ const x1=cx+Math.cos(a1)*len, y1=cy+Math.sin(a1)*len;
+ const x2=cx+Math.cos(a2)*len, y2=cy+Math.sin(a2)*len;
+ scene.appendChild(line(cx,cy,x1,y1,'#ffd479',9));scene.appendChild(line(cx,cy,x2,y2,'#ffd479',9));
+ scene.appendChild(el('circle',{cx,cy,r:10,fill:'#67e8f9'}));
+ scene.appendChild(el('path',{d:`M ${cx} ${cy} A 70 70 0 0 1 ${cx+70*Math.cos(base)} ${cy+70*Math.sin(base)}`,fill:'none',stroke:'#c4b5fd','stroke-width':3,'marker-end':''}));
+ scene.appendChild(text(cx+52,cy-18,'φ','',20));
+ scene.appendChild(line(cx,35,cx,385,'#ffffff',1,{'stroke-dasharray':'5 8',opacity:.35}));
+ if(currentCase===1){document.getElementById('caseText').innerHTML='情形 1：左右约束对称，小扰动形成简谐振动；关键是 I 与回复力矩。';}
+ if(currentCase===2){document.getElementById('caseText').innerHTML='情形 2：投影几何仍类似，但势能有效项乘上 cos α；能量法更自然。';}
+ if(currentCase===3){document.getElementById('caseText').innerHTML='情形 3：一侧可能离开圆柱，重新接触时发生非弹性碰撞；先判断“不能周期”。';
+ scene.appendChild(el('circle',{cx:x2,cy:y2,r:13,fill:'none',stroke:'#ff9aa2','stroke-width':3,'stroke-dasharray':'5 5'}));scene.appendChild(text(x2+15,y2,'离开/碰撞风险','',13));}
+ scene.appendChild(text(28,38,`当前情形 ${currentCase} · 拖动 φ 观察尖尖绕杆转动`,'',16));
+}
+function setCase(c){currentCase=c;document.querySelectorAll('.caseBtns .btn').forEach(()=>{});drawScene()}
+const cards=[['自由度识别','我到底能怎么动？','先把复杂装置压缩成一个广义坐标 φ。没有自由度，就没有方程。','观察与抽象'],['约束对称','左右是否等价？','判断两根棒是否同时接触圆柱；这是区分前两问和第三问的关键。','结构比较'],['有效惯量','哪段距离贡献转动？','绕杆转动时只有垂直转轴距离起作用，因此出现 sin²θ。','空间想象'],['方法选择','受力还是能量？','受力法适合第一问；第二问能量法更清晰；第三问先判周期。','策略调度'],['小量展开','保留到几阶？','求周期看势能二阶；求高度时非对称项可能一阶就有效。','近似控制'],['周期判定','能量还守恒吗？','第三问中非弹性碰撞损失机械能，不能套小振动周期公式。','元认知检查']];
+function renderCards(){const deck=document.getElementById('cardDeck');deck.innerHTML='';cards.forEach((c,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<span class="tag">CARD ${i+1}</span><h3>${c[0]}｜${c[1]}</h3><div class="svgbox" style="min-height:120px">${miniSvg(i)}</div><p>${c[2]}</p><p class="mini">训练能力：${c[3]}</p>`;deck.appendChild(d)})}
+function miniSvg(i){const icons=[`<svg viewBox="0 0 220 120"><circle cx="110" cy="35" r="8" fill="#67e8f9"/><line x1="110" y1="35" x2="50" y2="100" stroke="#ffd479" stroke-width="8"/><line x1="110" y1="35" x2="170" y2="100" stroke="#ffd479" stroke-width="8"/><text x="92" y="25" fill="#fff">φ</text></svg>`,`<svg viewBox="0 0 220 120"><line x1="110" y1="10" x2="110" y2="110" stroke="#fff"/><line x1="110" y1="30" x2="40" y2="100" stroke="#ffd479" stroke-width="7"/><line x1="110" y1="30" x2="180" y2="100" stroke="#ffd479" stroke-width="7"/><text x="70" y="70" fill="#86efac">对称?</text></svg>`,`<svg viewBox="0 0 220 120"><line x1="30" y1="90" x2="190" y2="90" stroke="#556080"/><line x1="110" y1="20" x2="110" y2="100" stroke="#fff"/><line x1="110" y1="35" x2="170" y2="95" stroke="#ffd479" stroke-width="8"/><line x1="110" y1="35" x2="50" y2="95" stroke="#ffd479" stroke-width="8"/><text x="126" y="60" fill="#fff">r⊥</text></svg>`,`<svg viewBox="0 0 220 120"><rect x="25" y="28" width="70" height="55" rx="10" fill="none" stroke="#8cc7ff"/><rect x="125" y="28" width="70" height="55" rx="10" fill="none" stroke="#c4b5fd"/><text x="38" y="60" fill="#fff">力</text><text x="139" y="60" fill="#fff">能量</text><path d="M95 55 L125 55" stroke="#fff"/></svg>`,`<svg viewBox="0 0 220 120"><path d="M30 85 Q110 20 190 85" fill="none" stroke="#67e8f9" stroke-width="4"/><text x="55" y="98" fill="#fff">φ²</text><text x="145" y="98" fill="#fff">一阶?</text></svg>`,`<svg viewBox="0 0 220 120"><path d="M35 80 C80 30 140 30 185 80" fill="none" stroke="#86efac" stroke-width="4"/><path d="M125 55 L175 100" stroke="#ff9aa2" stroke-width="4" stroke-dasharray="5 5"/><text x="58" y="35" fill="#fff">周期?</text></svg>`];return icons[i]}
+const questions=[
+{id:'Q1',tier:1,skill:'看图识别',title:'第一步应先确定什么？',stem:'面对“尖尖+圆柱+细杆”的三维装置，列方程之前最应先确认哪件事？',opts:['广义坐标与主要运动方式','圆柱材料的弹性模量','两棒末端的绝对速度','空气阻力是否可忽略'],ans:0,fb:['对。先确认尖尖主要绕穿孔细杆转动，变量是 φ。','这不是题设核心，圆柱光滑且作为约束。','速度要等自由度和几何关系确定后才能谈。','空气阻力不是本题难点。'],next:{right:'Q2',wrong:'Q1a'}},
+{id:'Q1a',tier:0,skill:'基础补救',title:'孔的位置有什么作用？',stem:'孔沿两棒夹角的角平分线方向，细杆穿过孔。这个信息主要用来说明什么？',opts:['尖尖绕细杆转动','两棒夹角会自动变小','圆柱会随尖尖转动','棒长不再参与计算'],ans:0,fb:['对，这就是自由度压缩的来源。','两棒夹角固定为 2θ。','圆柱水平固定。','棒长进入转动惯量。'],next:{right:'Q2',wrong:'Q1'}},
+{id:'Q2',tier:1,skill:'约束判断',title:'三问之间最大的结构差异是什么？',stem:'比较三种细杆放置方式，第三问最需要警惕哪种变化？',opts:['接触约束可能不再双侧同时成立','重力方向被重新定义','两根棒质量不再相等','细杆突然变得粗糙'],ans:0,fb:['对。第三问会出现一侧离开、之后碰撞的机制。','竖直方向没有改变。','质量仍相同。','题设仍为光滑细杆。'],next:{right:'Q3',wrong:'Q2a'}},
+{id:'Q2a',tier:0,skill:'对称性补救',title:'什么叫“左右等价”？',stem:'在这道题里，判断“左右等价”主要是看什么？',opts:['两根棒是否以对称方式受圆柱约束','两根棒颜色是否一样','两根棒是否都竖直','两根棒是否没有重力'],ans:0,fb:['对。对称接触决定能否形成类似的回复机制。','颜色不参与物理。','棒并不要求都竖直。','重力当然存在。'],next:{right:'Q3',wrong:'Q1'}},
+{id:'Q3',tier:2,skill:'转动惯量',title:'为什么惯量中有 sin²θ？',stem:'尖尖绕孔方向的细杆转动，转动惯量与 θ 的关系来自哪里？',opts:['质量元到转轴的垂直距离含 sinθ','重力沿圆柱轴线的分量含 sinθ','圆柱半径 R 被投影成 Rsinθ','小角度 φ 自动等于 sinθ'],ans:0,fb:['对。转动惯量看的是到转轴的垂直距离平方。','重力竖直向下，与这个因子不是同一来源。','R 影响势能/力矩，不是棒自身惯量的来源。','φ 是扰动角，θ 是结构角。'],next:{right:'Q4',wrong:'Q3a'}},
+{id:'Q3a',tier:1,skill:'惯量补救',title:'转动惯量看什么距离？',stem:'刚体绕固定轴转动时，质量元贡献的是哪种距离？',opts:['到转轴的垂直距离','到圆柱轴线的水平距离','到地面的竖直距离','到另一根棒末端的距离'],ans:0,fb:['对。I=∫r⊥²dm。','这可能与几何有关，但不是转动惯量定义。','高度对应势能。','不是定义。'],next:{right:'Q3',wrong:'Q1'}},
+{id:'Q4',tier:2,skill:'方法选择',title:'第二问为什么适合能量法？',stem:'细杆与竖直方向夹角为 α 且与圆柱轴线垂直。求小振动周期时，为什么能量法更自然？',opts:['高度变化可由投影几何直接展开','支持力必定为零','转动惯量不再存在','能量法不需要几何关系'],ans:0,fb:['对。关键是把势能写成 φ 的二阶函数。','支持力是约束力，不为零。','刚体仍有转动惯量。','能量法仍需要几何关系。'],next:{right:'Q5',wrong:'Q4a'}},
+{id:'Q4a',tier:1,skill:'能量补救',title:'能量法的核心输入是什么？',stem:'用能量法求小振动周期时，最关键的是找到什么？',opts:['势能随 φ 的小量展开','细杆对孔的全部约束力','每个接触点的瞬时加速度','圆柱表面的微观粗糙度'],ans:0,fb:['对。势能二阶项给出等效回复系数。','约束力通常不做功，难以直接求。','不一定需要逐点加速度。','题设光滑。'],next:{right:'Q5',wrong:'Q3'}},
+{id:'Q5',tier:3,skill:'小量展开',title:'求周期时势能应看哪一项？',stem:'小振动周期来自等效“势能曲率”。因此势能展开时最关键的是哪一项？',opts:['关于 φ 的二阶项','仅常数项','只保留 φ 的三阶项','忽略所有 φ 相关项'],ans:0,fb:['对。二阶项对应等效弹簧系数。','常数项不影响运动。','三阶项不是线性小振动主项。','那就没有回复机制了。'],next:{right:'Q6',wrong:'Q5a'}},
+{id:'Q5a',tier:1,skill:'近似补救',title:'为什么不是只保留一阶？',stem:'很多题说“小量保留一阶”。但求小振动周期时，为什么势能不能只看一阶？',opts:['稳定平衡附近一阶项通常为零，二阶项决定回复','一阶项总是比二阶项更精确','周期只由常数项决定','二阶项只用于非保守力'],ans:0,fb:['对。平衡点附近的势能曲率决定频率。','一阶项不是周期的核心。','常数项不影响力。','二阶项正是保守势能常用展开。'],next:{right:'Q6',wrong:'Q4'}},
+{id:'Q6',tier:3,skill:'公式辨析',title:'第二问相对第一问的变化是什么？',stem:'若第一问周期结构已知，第二问由于细杆倾斜 α，最自然的变化应体现在哪里？',opts:['势能有效项出现 cosα 因子','转动惯量增加 cosα 因子','棒长 l 被替换为 R','重力加速度消失'],ans:0,fb:['对。竖直高度变化对应投影，势能项乘 cosα。','转动惯量由刚体与转轴几何决定，不因重力投影改变。','l 和 R 含义不同。','重力仍是势能来源。'],next:{right:'Q7',wrong:'Q6a'}},
+{id:'Q6a',tier:2,skill:'公式补救',title:'α 主要影响什么？',stem:'角 α 描述细杆方向与竖直方向的关系。它最直接影响哪一类量？',opts:['重力势能中的竖直高度变化','棒绕细杆的质量分布','两棒之间固定夹角','圆柱是否光滑'],ans:0,fb:['对。α 影响高度投影。','质量分布没有改变。','夹角仍为 2θ。','光滑性仍由题设给出。'],next:{right:'Q7',wrong:'Q5'}},
+{id:'Q7',tier:3,skill:'周期判定',title:'第三问先问什么？',stem:'第三问问“能否做周期运动”。在计算高度前，首先应检查什么？',opts:['是否存在离开接触与非弹性碰撞','周期公式中 β 应放在哪里','是否能把 β 改写成 α','圆柱半径是否约掉'],ans:0,fb:['对。非弹性碰撞直接破坏周期性。','先套公式会误入陷阱。','β 与 α 对应的空间情形不同。','R 不会成为判定核心。'],next:{right:'Q8',wrong:'Q7a'}},
+{id:'Q7a',tier:1,skill:'周期补救',title:'什么会破坏周期运动？',stem:'理想周期运动要求回来时状态可重复。下面哪项最容易破坏这一点？',opts:['非弹性碰撞损失机械能','坐标名字叫 φ','题目中出现三角函数','圆柱是水平放置'],ans:0,fb:['对。能量损失后振幅/状态不能复原。','变量名不影响物理。','三角函数只是几何表达。','水平放置不是破坏原因。'],next:{right:'Q8',wrong:'Q6'}},
+{id:'Q8',tier:4,skill:'反事实迁移',title:'若碰撞完全弹性会怎样？',stem:'假设第三问其他条件不变，但碰撞完全弹性。下面哪种判断最谨慎？',opts:['仍需重新分析接触切换，不能直接套前两问公式','必然得到第二问同一周期','必然静止不动','所有几何关系都失效'],ans:0,fb:['对。能量损失问题消失，但约束切换仍使运动非光滑。','空间约束不同，不能直接套。','没有依据。','几何关系仍可用。'],next:{right:'Q9',wrong:'Q7'}},
+{id:'Q9',tier:4,skill:'元认知检查',title:'哪句话最像高水平解题者的自检？',stem:'完成推导后，下面哪一句最能避免“会算但误判”？',opts:['我先检查所用周期模型是否满足连续约束和能量守恒','我只要结果维度正确就一定对','我把 α 换成 β 就完成第三问','我优先寻找最长的选项'],ans:0,fb:['对。这是物理机制层面的自检。','维度正确只是必要不充分。','第三问机制变了。','本系统已避免长度提示。'],next:{right:'Q10',wrong:'Q8'}},
+{id:'Q10',tier:5,skill:'综合表达',title:'如何向同学讲清本题？',stem:'如果要用一句话概括这道题的思维主线，哪一句最好？',opts:['先由孔和细杆确定 φ，再由圆柱接触几何决定势能或周期性','先背小振动公式，再把所有角度代进去','先假设三问都周期，再逐个求频率','先忽略约束，只看重力'],ans:0,fb:['对。这句话同时包含自由度、约束、方法和判定。','背公式不能处理第三问。','第三问正是不周期。','约束是本题核心。'],next:{right:'Q10',wrong:'Q9'}}
+];
+let qid='Q1',answered=0,correct=0,streak=0,history=[];
+function getQ(id){return questions.find(q=>q.id===id)}
+function renderQuiz(){const q=getQ(qid);document.getElementById('qTier').textContent=['基础补救','观察层','建模层','方法层','迁移层','综合层'][q.tier]||'节点';document.getElementById('qSkill').textContent=q.skill;document.getElementById('qTitle').textContent=q.title;document.getElementById('qStem').textContent=q.stem;document.getElementById('feedback').style.display='none';document.getElementById('nextBtn').disabled=true;const opts=document.getElementById('options');opts.innerHTML='';q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='option';b.textContent=String.fromCharCode(65+i)+'. '+o;b.onclick=()=>answer(i);opts.appendChild(b)});renderNodes();updateStats()}
+function answer(i){const q=getQ(qid);const buttons=[...document.querySelectorAll('.option')];buttons.forEach(b=>b.disabled=true);const ok=i===q.ans;buttons[i].classList.add(ok?'correct':'wrong');if(!ok)buttons[q.ans].classList.add('correct');answered++; if(ok){correct++;streak=Math.max(1,streak+1)}else{streak=Math.min(-1,streak-1)}history.push(qid);document.getElementById('feedback').style.display='block';document.getElementById('feedback').innerHTML='<b>'+(ok?'诊断：通过':'诊断：需要回看')+'</b><br>'+q.fb[i]+'<br><span class="muted">下一步：'+(ok?'向更高层节点探索。':'转入相邻基础节点，补足前置图像。')+'</span>';q._next=ok?q.next.right:q.next.wrong;document.getElementById('nextBtn').disabled=false;updateStats();renderNodes();}
+function nextQuestion(){const q=getQ(qid);qid=q._next||q.next.right;renderQuiz()}
+function resetQuiz(){qid='Q1';answered=0;correct=0;streak=0;history=[];renderQuiz()}
+function updateStats(){document.getElementById('answered').textContent=answered;document.getElementById('correct').textContent=correct;const acc=answered?correct/answered:0;let name='基础观察',w=30;if(acc>.78&&answered>3){name='高阶迁移';w=88}else if(acc>.58&&answered>2){name='建模推进';w=62}else if(answered>0){name='补救巩固';w=42}document.getElementById('levelName').textContent=name;document.getElementById('levelBar').style.width=w+'%';document.getElementById('stability').textContent=answered<3?'样本不足':(streak>=2?'连续上探':streak<=-2?'回到基础':'震荡调整');document.getElementById('diagnosis').textContent= answered?`正确率 ${(acc*100).toFixed(0)}%，当前策略：${streak>=2?'提高抽象层级':streak<=-1?'降低难度并补图像':'维持主路径'}`:'等待第一题。'}
+function renderNodes(){const m=document.getElementById('nodeMap');m.innerHTML='';questions.forEach((q,idx)=>{const d=document.createElement('div');d.className='node '+(history.includes(q.id)?'done ':'')+(q.id===qid?'now':'');d.textContent=idx+1;m.appendChild(d)})}
+function drawMessageMap(id){const svg=document.getElementById(id);svg.innerHTML='';svg.appendChild(el('rect',{x:0,y:0,width:1050,height:620,rx:24,fill:'#09101f'}));const nodes=[['读题',70,70,'装置、三问、变量'],['自由度',260,70,'绕杆转角 φ'],['几何投影',450,70,'从圆柱轴线看'],['约束判定',640,70,'双侧接触?'],['方法选择',830,70,'受力/能量/先判定'],['第1问',190,265,'对称小振动'],['第2问',440,265,'势能乘 cosα'],['第3问',690,265,'离开与碰撞'],['总结',440,470,'周期来自二阶势能；非周期来自能量损失']];function box(n){const [a,x,y,b]=n;svg.appendChild(el('rect',{x,y,width:150,height:82,rx:18,fill:'rgba(255,255,255,.06)',stroke:'rgba(140,199,255,.6)'}));svg.appendChild(text(x+18,y+30,a,'',18));const tt=text(x+18,y+57,b,'',12);tt.setAttribute('fill','#aeb7d6');svg.appendChild(tt)}function arrow(x1,y1,x2,y2){svg.appendChild(line(x1,y1,x2,y2,'#556080',3,{'marker-end':'url(#arr)'}))}const defs=el('defs');defs.innerHTML='<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#556080"/></marker>';svg.appendChild(defs);nodes.forEach(box);arrow(220,111,260,111);arrow(410,111,450,111);arrow(600,111,640,111);arrow(790,111,830,111);arrow(715,152,255,265);arrow(715,152,505,265);arrow(715,152,755,265);arrow(265,347,475,470);arrow(515,347,515,470);arrow(765,347,595,470)}
+function drawTree(){const svg=document.getElementById('treeSvg');svg.innerHTML='';svg.appendChild(el('rect',{x:0,y:0,width:1300,height:760,rx:24,fill:'#09101f'}));const ns=[['Q1 自由度',580,40,'mid'],['Q1a 孔的作用',240,150,'easy'],['Q2 约束差异',580,150,'mid'],['Q2a 对称补救',910,150,'easy'],['Q3 惯量来源',420,270,'mid'],['Q4 方法选择',740,270,'mid'],['Q5 展开阶数',420,390,'mid'],['Q6 α 的影响',740,390,'mid'],['Q7 周期判定',580,510,'mid'],['Q8 反事实',300,630,'hard'],['Q9 元认知',580,630,'hard'],['Q10 综合表达',860,630,'hard']];function drawBox(label,x,y,type){svg.appendChild(el('rect',{x,y,width:170,height:58,rx:15,fill:'rgba(255,255,255,.055)',stroke:type==='easy'?'#86efac':type==='hard'?'#c4b5fd':'#8cc7ff','stroke-width':2}));svg.appendChild(text(x+15,y+35,label,'',14))}function edge(a,b,label){const A=ns[a],B=ns[b];svg.appendChild(line(A[1]+85,A[2]+58,B[1]+85,B[2],'#556080',2));if(label)svg.appendChild(text((A[1]+B[1])/2+82,(A[2]+B[2])/2+45,label,'',11))}edge(0,2,'正确');edge(0,1,'错误下探');edge(2,4,'主线');edge(2,3,'误判补救');edge(4,5,'通过');edge(5,6,'推进');edge(6,7,'推进');edge(7,8,'进入判定');edge(8,9,'连续正确');edge(8,10,'高阶自检');edge(10,11,'综合');edge(1,2,'补足后回主线');edge(3,4,'回主线');ns.forEach(n=>drawBox(...n));svg.appendChild(text(40,45,'节点跳转规则：答对→上探；答错→相邻基础节点；连续答对→迁移与元认知；连续答错→回到物理图像。','',18));}
+function nav(){document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.page).classList.add('active')}))}
+nav();drawScene();renderCards();drawMessageMap('messageMap');drawMessageMap('summaryMap');renderQuiz();drawTree();
+</script>
+</body>
+</html>
