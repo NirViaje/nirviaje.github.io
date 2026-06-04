@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>尖尖 Three.js 碰撞约束测试版（修复 import + 防穿模）</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#0d1220;color:#eef3ff;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55} .wrap{max-width:1450px;margin:0 auto;padding:18px} header{padding:18px 20px;background:linear-gradient(135deg,#1b2341,#11182b);border:1px solid rgba(255,255,255,.08);border-radius:22px;margin-bottom:14px} h1{margin:0 0 8px;font-size:28px}.sub{color:#b9c3e2}.grid{display:grid;grid-template-columns:320px 1fr;gap:14px}.panel{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.25)}.controls{padding:16px}.control{padding:12px;background:rgba(255,255,255,.04);border-radius:14px;margin-bottom:12px}.control label{display:flex;justify-content:space-between;gap:12px;color:#dfe8ff;font-size:14px;margin-bottom:7px}select,input[type=range],button{width:100%}select,button{background:#202947;color:#eef3ff;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px}input[type=range]{accent-color:#7bc0ff}.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.primary{background:linear-gradient(135deg,#2d66cb,#27478e)}.warn{background:linear-gradient(135deg,#9a6d10,#6d4f10)}.small{font-size:13px;color:#b9c3e2}.stage{padding:12px;position:relative}#view{width:100%;height:660px;display:block;border-radius:16px;background:#eaf3ff}.hud{position:absolute;left:24px;top:24px;max-width:540px;background:rgba(12,16,28,.78);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 14px;backdrop-filter:blur(6px)}.status{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.box{padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.box strong{display:block;margin-bottom:4px}.ok{color:#79f2c0}.bad{color:#ff8a8a}.note{margin-top:12px;padding:12px;border-radius:14px;background:rgba(123,192,255,.08);border:1px solid rgba(123,192,255,.16);color:#dfeeff}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}@media(max-width:900px){.grid{grid-template-columns:1fr}.status{grid-template-columns:1fr 1fr}#view{height:560px}}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>尖尖 Three.js 碰撞约束测试版</h1>
+  <div class="sub">修复了 <span class="mono">Failed to resolve module specifier "three"</span>：本页使用 import map 映射 three 与 addons。并把圆柱建成真实半径碰撞体，尖尖两棒按“外点到圆的切线”放置，不再穿模。</div>
+</header>
+<div class="grid">
+  <div class="panel controls">
+    <div class="control"><label>场景<select id="scenario"><option value="1">(1) 竖直杆，双侧接触</option><option value="2">(2) 倾斜 α，双侧接触</option><option value="3">(3) 倾斜 β，单侧接触 + 脱离侧</option></select></label></div>
+    <div class="control"><label><span>半角 θ</span><span id="thetaTxt">28°</span></label><input id="theta" type="range" min="14" max="65" step="1" value="28"></div>
+    <div class="control" id="alphaBox"><label><span>α</span><span id="alphaTxt">20°</span></label><input id="alpha" type="range" min="0" max="75" step="1" value="20"></div>
+    <div class="control" id="betaBox"><label><span>β</span><span id="betaTxt">18°</span></label><input id="beta" type="range" min="5" max="65" step="1" value="18"></div>
+    <div class="control"><label><span>φ</span><span id="phiTxt">0.0°</span></label><input id="phi" type="range" min="-70" max="70" step="0.1" value="0"></div>
+    <div class="control"><label><span>脱离侧间隙</span><span id="gapTxt">0.060</span></label><input id="gap" type="range" min="0.015" max="0.18" step="0.005" value="0.06"><div class="small">第 3 问中红色透明棒会被抬离圆柱，显示“脱离侧”，而不是穿进圆柱。</div></div>
+    <div class="control"><label><span>动画速度</span><span id="speedTxt">1.0x</span></label><input id="speed" type="range" min="0.2" max="2.2" step="0.1" value="1.0"></div>
+    <div class="btnrow"><button id="release" class="primary">从当前 φ 释放</button><button id="reset" class="warn">重置</button></div>
+    <div class="note"><strong>测试重点：</strong><br>绿色点是真实切触点；状态栏显示每根棒到圆柱轴线的最小距离。若小于 R，会标红。当前建模按切线约束强制 <span class="mono">min distance ≥ R</span>。</div>
+  </div>
+  <div class="panel stage">
+    <canvas id="view"></canvas>
+    <div class="hud">
+      <strong>Three.js 场景</strong>
+      <div class="small">鼠标拖动旋转，滚轮缩放。圆柱轴线为 X 轴。尖尖两棒不是自由穿过圆柱，而是由切线碰撞约束放置。</div>
+      <div class="legend">
+        <span><i class="dot" style="background:#b6d1ff"></i>圆柱碰撞体 R</span>
+        <span><i class="dot" style="background:#151922"></i>接触棒</span>
+        <span><i class="dot" style="background:#ff7777"></i>第 3 问脱离侧</span>
+        <span><i class="dot" style="background:#52e6a7"></i>切触点</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="status">
+  <div class="box"><strong>左棒最小距</strong><span id="d1">-</span></div>
+  <div class="box"><strong>右棒最小距</strong><span id="d2">-</span></div>
+  <div class="box"><strong>接触状态</strong><span id="contact">-</span></div>
+  <div class="box"><strong>碰撞事件</strong><span id="event">无</span></div>
+</div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const R = 0.42;
+const L = 1.35;
+const cylLen = 2.8;
+const rodRadius = 0.018;
+const stickRadius = 0.026;
+const state = {scenario:1, theta:28, alpha:20, beta:18, phi:0, gap:0.06, speed:1, playing:false, phiDot:0, last:0, collisionFlash:0};
+const $ = id => document.getElementById(id);
+const deg = x => x*Math.PI/180;
+const rad2deg = x => x*180/Math.PI;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+const canvas = $('view');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0xeaf3ff, 1);
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xeaf3ff, 6, 13);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 50);
+camera.position.set(3.2, 2.2, 3.4);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0,0.25,0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x243044, 1.8));
+const dir = new THREE.DirectionalLight(0xffffff, 1.9); dir.position.set(3,4,3); scene.add(dir);
+const grid = new THREE.GridHelper(5, 20, 0x8ea2c0, 0xd8e4f7); grid.position.y=-0.58; scene.add(grid);
+
+const matCyl = new THREE.MeshPhysicalMaterial({color:0xb6d1ff, transparent:true, opacity:0.62, roughness:0.35, metalness:0.05, side:THREE.DoubleSide});
+const matEnd = new THREE.MeshStandardMaterial({color:0x88a8d8, transparent:true, opacity:0.75});
+const matRod = new THREE.MeshStandardMaterial({color:0x3c4453, roughness:0.6});
+const matStick = new THREE.MeshStandardMaterial({color:0x11161e, roughness:0.46});
+const matGhost = new THREE.MeshStandardMaterial({color:0xff7777, transparent:true, opacity:0.42, roughness:0.5});
+const matPoint = new THREE.MeshStandardMaterial({color:0x52e6a7, emissive:0x116644, emissiveIntensity:0.6});
+const matApex = new THREE.MeshStandardMaterial({color:0xffc95a, emissive:0x775100, emissiveIntensity:0.45});
+const matDanger = new THREE.MeshStandardMaterial({color:0xff3333, transparent:true, opacity:0.36, roughness:0.5});
+
+const cyl = new THREE.Mesh(new THREE.CylinderGeometry(R, R, cylLen, 72, 1, false), matCyl);
+cyl.rotation.z = Math.PI/2; scene.add(cyl);
+const end1 = new THREE.Mesh(new THREE.CircleGeometry(R,72), matEnd); end1.position.x = -cylLen/2; end1.rotation.y = Math.PI/2; scene.add(end1);
+const end2 = new THREE.Mesh(new THREE.CircleGeometry(R,72), matEnd); end2.position.x = cylLen/2; end2.rotation.y = -Math.PI/2; scene.add(end2);
+const axis = makeCylinderBetween(new THREE.Vector3(-cylLen/2-0.08,0,0), new THREE.Vector3(cylLen/2+0.08,0,0), 0.006, new THREE.MeshBasicMaterial({color:0x66758f})); scene.add(axis);
+
+const model = new THREE.Group(); scene.add(model);
+let supportRod, stickL, stickR, ghostStick, pL, pR, pA, ringGap;
+
+function supportDirection(){
+  if(state.scenario===1) return new THREE.Vector3(0,1,0);
+  if(state.scenario===2) return new THREE.Vector3(0,Math.cos(deg(state.alpha)),Math.sin(deg(state.alpha))).normalize();
+  return new THREE.Vector3(Math.sin(deg(state.beta)),Math.cos(deg(state.beta)),0).normalize();
+}
+function thetaPrime(phi=deg(state.phi)){
+  const th=deg(state.theta), b=deg(state.beta);
+  if(state.scenario===1 || state.scenario===2){ return Math.atan(Math.max(1e-6, Math.abs(Math.tan(th)*Math.cos(phi)))); }
+  const num = Math.sin(th)*Math.cos(phi);
+  const den = Math.cos(th)*Math.cos(b) + Math.sin(th)*Math.sin(b)*Math.sin(phi);
+  return Math.atan(Math.max(1e-6, Math.abs(num / Math.max(1e-6, Math.abs(den)))));
+}
+function apexPoint(){
+  const r = supportDirection();
+  const rp = Math.hypot(r.y, r.z) || 1;
+  const D = R/Math.sin(thetaPrime());
+  return r.clone().multiplyScalar(D/rp); // guarantees sqrt(y^2+z^2)=D
+}
+function tangentPointsYZ(A, radius=R){
+  const y=A.y, z=A.z;
+  const d2 = y*y + z*z;
+  const k = radius*radius/d2;
+  const m = radius*Math.sqrt(Math.max(0,d2-radius*radius))/d2;
+  return [
+    new THREE.Vector3(A.x, k*y - m*z, k*z + m*y),
+    new THREE.Vector3(A.x, k*y + m*z, k*z - m*y)
+  ];
+}
+function makeCylinderBetween(a,b,r,mat){
+  const dir = new THREE.Vector3().subVectors(b,a);
+  const len = dir.length();
+  const geom = new THREE.CylinderGeometry(r,r,Math.max(len,0.0001),20,1);
+  const mesh = new THREE.Mesh(geom,mat);
+  mesh.position.copy(a).add(b).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.normalize());
+  return mesh;
+}
+function makeSphere(pos,r,mat){const s=new THREE.Mesh(new THREE.SphereGeometry(r,24,16),mat); s.position.copy(pos); return s;}
+function minDistToCylinderAxis(a,b){
+  // Min sqrt(y^2+z^2) along segment. Since cylinder axis is X.
+  const ay=a.y, az=a.z, by=b.y, bz=b.z;
+  const dy=by-ay, dz=bz-az;
+  const denom=dy*dy+dz*dz;
+  let t=0;
+  if(denom>1e-10) t=clamp(-(ay*dy+az*dz)/denom,0,1);
+  const y=ay+dy*t, z=az+dz*t;
+  return Math.sqrt(y*y+z*z);
+}
+function build(){
+  model.clear();
+  const A = apexPoint();
+  const [T1,T2] = tangentPointsYZ(A,R);
+  let B1 = A.clone().add(T1.clone().sub(A).normalize().multiplyScalar(L));
+  let B2 = A.clone().add(T2.clone().sub(A).normalize().multiplyScalar(L));
+  let mat1=matStick, mat2=matStick, activeTxt='双侧切触';
+  let Tghost=null, Bghost=null;
+  if(state.scenario===3){
+    // One side is active tangent. The other side is deliberately lifted outward from the cylinder so it has positive clearance.
+    const activeRight = state.phi>=0;
+    activeTxt = activeRight ? '右侧切触，左侧脱离' : '左侧切触，右侧脱离';
+    const inactiveT = activeRight ? T1 : T2;
+    const inactiveB = activeRight ? B1 : B2;
+    const outwardT = new THREE.Vector3(0,inactiveT.y,inactiveT.z).normalize().multiplyScalar(state.gap);
+    const outwardB = new THREE.Vector3(0,inactiveB.y,inactiveB.z).normalize().multiplyScalar(state.gap);
+    Tghost = inactiveT.clone().add(outwardT);
+    Bghost = inactiveB.clone().add(outwardB);
+    if(activeRight){B1=Bghost; T1.copy(Tghost); mat1=matGhost;} else {B2=Bghost; T2.copy(Tghost); mat2=matGhost;}
+  }
+  const r = supportDirection();
+  supportRod = makeCylinderBetween(r.clone().multiplyScalar(-0.62), r.clone().multiplyScalar(1.95), rodRadius, matRod); model.add(supportRod);
+  stickL = makeCylinderBetween(A,B1,stickRadius,mat1); stickR = makeCylinderBetween(A,B2,stickRadius,mat2); model.add(stickL,stickR);
+  pL=makeSphere(T1,0.045,state.scenario===3 && mat1===matGhost ? matDanger : matPoint); pR=makeSphere(T2,0.045,state.scenario===3 && mat2===matGhost ? matDanger : matPoint); pA=makeSphere(A,0.055,matApex); model.add(pL,pR,pA);
+  // small torus marker on the cylinder radius, helps confirm no penetration
+  ringGap = new THREE.Mesh(new THREE.TorusGeometry(R,0.003,8,96), new THREE.MeshBasicMaterial({color:0x2f5fae, transparent:true, opacity:0.7}));
+  ringGap.rotation.y = Math.PI/2; ringGap.position.x = A.x; model.add(ringGap);
+  const d1=minDistToCylinderAxis(A,B1), d2=minDistToCylinderAxis(A,B2);
+  updateStatus(d1,d2,activeTxt);
+}
+function updateStatus(d1,d2,txt){
+  const fmt=d=>`${d.toFixed(4)} / R=${R.toFixed(2)} ` + (d>=R-1e-4?'✓':'穿模');
+  $('d1').innerHTML = `<span class="${d1>=R-1e-4?'ok':'bad'}">${fmt(d1)}</span>`;
+  $('d2').innerHTML = `<span class="${d2>=R-1e-4?'ok':'bad'}">${fmt(d2)}</span>`;
+  $('contact').textContent = txt;
+}
+function updateLabels(){
+  $('thetaTxt').textContent=`${state.theta.toFixed(0)}°`; $('alphaTxt').textContent=`${state.alpha.toFixed(0)}°`; $('betaTxt').textContent=`${state.beta.toFixed(0)}°`; $('phiTxt').textContent=`${state.phi.toFixed(1)}°`; $('gapTxt').textContent=state.gap.toFixed(3); $('speedTxt').textContent=`${state.speed.toFixed(1)}x`;
+  $('alphaBox').style.display = state.scenario===2 ? 'block':'none';
+  $('betaBox').style.display = state.scenario===3 ? 'block':'none';
+}
+for(const [id,key] of [['theta','theta'],['alpha','alpha'],['beta','beta'],['phi','phi'],['gap','gap'],['speed','speed']]){
+  $(id).addEventListener('input',()=>{state[key]=parseFloat($(id).value); if(key==='phi') state.phiDot=0; updateLabels(); build();});
+}
+$('scenario').addEventListener('change',()=>{state.scenario=parseInt($('scenario').value,10); state.playing=false; state.phiDot=0; updateLabels(); build();});
+$('release').addEventListener('click',()=>{if(Math.abs(state.phi)<1) state.phi=18; state.phiDot=0; state.playing=true; $('event').textContent='释放中'; updateLabels(); build();});
+$('reset').addEventListener('click',()=>{state.playing=false; state.phi=0; state.phiDot=0; $('phi').value=0; $('event').textContent='无'; updateLabels(); build();});
+function dynamicsStep(dt){
+  // teaching animation, not exact rigid-body solver. Uses small-vibration-like restoring force for cases 1/2.
+  const th=deg(state.theta);
+  let omega2 = (3*9.8*R*Math.cos(th)*Math.cos(th))/(1.2*1.2*Math.pow(Math.sin(th),3));
+  if(state.scenario===2) omega2 *= Math.cos(deg(state.alpha));
+  if(state.scenario===3){
+    const prev=state.phi;
+    state.phiDot += -omega2*deg(state.phi)*dt - 0.6*state.phiDot*dt;
+    state.phi += rad2deg(state.phiDot*dt);
+    if(Math.sign(prev)!==0 && Math.sign(prev)!==Math.sign(state.phi) && Math.abs(prev)>1.5){
+      state.phi=0; state.phiDot=0; state.playing=false; $('event').innerHTML='<span class="bad">非弹性碰撞：速度清零</span>';
+    }
+  } else {
+    state.phiDot += -omega2*deg(state.phi)*dt - 0.08*state.phiDot*dt;
+    state.phi += rad2deg(state.phiDot*dt);
+    if(Math.abs(state.phi)<0.02 && Math.abs(state.phiDot)<0.001) state.playing=false;
+  }
+  state.phi=clamp(state.phi,-70,70); $('phi').value=state.phi;
+}
+function resize(){const rect=canvas.getBoundingClientRect(); renderer.setSize(rect.width, rect.height, false); camera.aspect=rect.width/rect.height; camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);
+function animate(t){requestAnimationFrame(animate); const now=t*0.001; let dt=state.last?Math.min(0.03,now-state.last):0; state.last=now; dt*=state.speed; if(state.playing){dynamicsStep(dt); updateLabels(); build();} controls.update(); renderer.render(scene,camera);}
+resize(); updateLabels(); build(); animate(0);
+</script>
+</body>
+</html>
